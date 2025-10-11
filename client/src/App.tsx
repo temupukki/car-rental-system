@@ -6,14 +6,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        
-        <Route path="/" element={
-          <MainLayout>
-          <Home />
-          </MainLayout>
-          } />
-     
-        
+        <Route
+          path="/"
+          element={
+            <MainLayout>
+              <Home />
+            </MainLayout>
+          }
+        />
       </Routes>
     </Router>
   );
