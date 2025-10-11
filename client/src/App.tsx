@@ -6,9 +6,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <MainLayout>
-        <Route path="/" element={<Home />} />
-        </MainLayout>
+        
+        <Route path="/" element={
+          <MainLayout>
+          <Home />
+          </MainLayout>
+          } />
+     
         
       </Routes>
     </Router>
