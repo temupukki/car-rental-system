@@ -42,24 +42,31 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-3">
+           
             <motion.div
               whileHover={{
-                scale: 1.15,
-                
-                
-                transition: { duration: 0.3 },
+                scale: 1.15, 
+                transition: { duration: 0.2, ease: "easeOut" },
               }}
-              whileTap={{ scale: 1.4 }}
-              className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center"
+              whileTap={{ scale: 1.25 }}
+              className="flex-shrink-0" 
             >
-              <span className="text-white font-bold text-sm">ED</span>
+            
+              <img
+                src="/pppp.png" // <--- **CHANGE THIS PATH** to where you save the generated logo
+                alt="EliteDrive Car Rental Logo"
+                className="h-30 w-44 mt-4 ml-[-30px]" // Set height, maintain aspect ratio
+                loading="lazy"
+              />
             </motion.div>
+            {/* End Logo Integration */}
+
             <motion.div
               whileHover={{ x: 3 }}
-              whileTap={{scale:1.18}}
+              whileTap={{ scale: 1.18 }}
               transition={{ type: "spring", stiffness: 400 }}
             >
-              <h1 className="text-xl font-bold text-gray-900">EliteDrive</h1>
+              <h1 className="text-xl font-bold text-gray-900 ml-[-63px]">EliteDrive</h1>
             </motion.div>
           </Link>
 
@@ -73,10 +80,9 @@ export default function Navbar() {
               <motion.div
                 key={link.id}
                 whileHover={{
-                  scale: 1.15,
-                  
+                  scale: 1.05,
                 }}
-                whileTap={{ scale: 1.25 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <Link
                   to={link.href}
@@ -100,11 +106,7 @@ export default function Navbar() {
                     />
                   )}
 
-                  <motion.div
-                    className="absolute inset-0 border-2 border-blue-200 rounded-lg opacity-0"
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                  />
+                  {/* Removed the border-2 hover effect as it can be distracting in a navbar */}
                 </Link>
               </motion.div>
             ))}
@@ -132,16 +134,16 @@ export default function Navbar() {
           <motion.button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             whileHover={{
-              scale: 1.23,
-              rotate: 90,
+              scale: 1.1, // Slightly less aggressive hover for burger
+              rotate: isMenuOpen ? 90 : 0, // Animate rotate only on click
             }}
-            whileTap={{ scale: 1.49 }}
-            className="lg:hidden p-2 font-bold text-xl"
+            whileTap={{ scale: 0.9 }} // Consistent tap effect
+            className="lg:hidden p-2 font-bold text-xl text-gray-700" // Added text color for clarity
           >
             <motion.div
-              animate={{ rotate: isMenuOpen ? 180 : 0 }}
+              animate={{ rotate: isMenuOpen ? 90 : 0 }} // Smooth rotation for the icon
               transition={{ duration: 0.3 }}
-              className="w-6 h-6"
+              className="w-6 h-6 flex items-center justify-center" // Center the icon
             >
               {isMenuOpen ? "✕" : "☰"}
             </motion.div>
