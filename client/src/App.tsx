@@ -18,7 +18,7 @@ function App() {
           }
         />
         <Route
-        path="/service"
+        path="/services"
         element={
           <MainLayout>
             <Service/>
