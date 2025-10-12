@@ -11,9 +11,8 @@ interface NavLink {
 const navLinks: NavLink[] = [
   { id: 1, name: "Home", href: "/" },
   { id: 2, name: "Services", href: "/services" },
-  { id: 3, name: "Deals", href: "/deals" },
-  { id: 4, name: "About", href: "/about" },
-  { id: 5, name: "Contact", href: "/contact" },
+  { id: 3, name: "About", href: "/about" },
+  { id: 4, name: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -37,25 +36,23 @@ export default function Navbar() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 90, damping: 8, duration: 1 }}
-      className="bg-white sticky top-0 z-50 shadow-sm border-b"
+      className="bg-white sticky top-0 z-50 shadow-sm border-b p-3"
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center space-x-3">
-           
+          <Link to="/" className="flex items-center space-x-3 ml-[-80px]">
             <motion.div
               whileHover={{
-                scale: 1.15, 
+                scale: 1.15,
                 transition: { duration: 0.2, ease: "easeOut" },
               }}
               whileTap={{ scale: 1.25 }}
-              className="flex-shrink-0" 
+              className="flex-shrink-0"
             >
-            
               <img
                 src="/pppp.png" // <--- **CHANGE THIS PATH** to where you save the generated logo
                 alt="EliteDrive Car Rental Logo"
-                className="h-30 w-44 mt-4 ml-[-30px]" // Set height, maintain aspect ratio
+                className="h-40 w-44 mt-4 " // Set height, maintain aspect ratio
                 loading="lazy"
               />
             </motion.div>
@@ -66,7 +63,9 @@ export default function Navbar() {
               whileTap={{ scale: 1.18 }}
               transition={{ type: "spring", stiffness: 400 }}
             >
-              <h1 className="text-xl font-bold text-gray-900 ml-[-63px]">EliteDrive</h1>
+              <h1 className="text-xl font-bold text-gray-900 ml-[-43px]">
+                EliteDrive
+              </h1>
             </motion.div>
           </Link>
 
