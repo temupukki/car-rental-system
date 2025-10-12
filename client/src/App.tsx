@@ -4,9 +4,11 @@ import MainLayout from "./layouts/MainLayout";
 import Service from "./pages/Service";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import { ThemeProvider } from "./components/ThemeContext";
 
 function App() {
   return (
+    <ThemeProvider>
     <Router>
       <Routes>
         <Route
@@ -40,6 +42,7 @@ function App() {
         }/>
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 }
 
