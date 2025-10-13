@@ -13,7 +13,7 @@ export default function Home() {
         : 'from-gray-900 via-blue-900 to-gray-900'
       }
     `}>
-      {/* Background Elements */}
+     
       <div className={`
         absolute inset-0 z-0 transition-all duration-500
         ${theme === 'light' ? 'bg-white/40' : 'bg-black/40'}
