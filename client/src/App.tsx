@@ -8,6 +8,7 @@ import { ThemeProvider } from "./components/ThemeContext";
 import { LanguageProvider } from "./components/LanguageContext";
 import Privacy from "./pages/Privacy";
 import FAQ from "./pages/Faq";
+import Sign from "./(auth)/sign"
 
 function App() {
   return (

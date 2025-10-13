@@ -22,7 +22,7 @@ import { useLanguage } from "../components/LanguageContext";
 import { authClient } from "../lib/auth-client";
 import { toast } from "sonner";
 
-export default function SignIn() {
+export default function Sign() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { t } = useLanguage();
