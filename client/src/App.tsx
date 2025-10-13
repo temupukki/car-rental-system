@@ -9,6 +9,7 @@ import { LanguageProvider } from "./components/LanguageContext";
 import Privacy from "./pages/Privacy";
 import FAQ from "./pages/Faq";
 import Sign from "./(auth)/sign"
+import AuthLayout from "./layouts/AuthLayout";
 
 function App() {
   return (
@@ -67,9 +68,9 @@ function App() {
               <Route
               path="/sign"
               element={
-                <MainLayout>
+                <AuthLayout>
                   <Sign/>
-                </MainLayout>
+                </AuthLayout>
               }
             />
           </Routes>
