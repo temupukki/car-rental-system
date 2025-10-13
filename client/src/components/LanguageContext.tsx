@@ -228,6 +228,102 @@ const translations = {
   'privacy.securityTitle': 'Security Practices',
   'privacy.securityDesc': 'Discover our comprehensive security measures',
   'privacy.learnMore': 'Learn More',
+
+    // FAQ Page
+  'faq.title': 'Frequently Asked Questions',
+  'faq.subtitle': 'Find quick answers to common questions about EliteDrive car rental services',
+  'faq.searchPlaceholder': 'Search questions...',
+  'faq.noResults': 'No questions found matching your search.',
+  'faq.clearSearch': 'Clear search',
+  'faq.contactPrompt': "Can't find what you're looking for?",
+  'faq.contactButton': 'Contact Support',
+  
+  // FAQ Categories
+  'faq.category.general': 'General',
+  'faq.category.booking': 'Booking & Reservations',
+  'faq.category.payment': 'Payment & Pricing',
+  'faq.category.requirements': 'Requirements',
+  'faq.category.delivery': 'Delivery & Pickup',
+  'faq.category.insurance': 'Insurance & Protection',
+  'faq.category.support': 'Support',
+  
+  // General Questions
+  'faq.q1': 'What is EliteDrive?',
+  'faq.a1': 'EliteDrive is a premium car rental service offering luxury and economy vehicles for short-term and long-term rentals. We provide convenient delivery options, comprehensive insurance, and 24/7 customer support.',
+  
+  'faq.q2': 'Where does EliteDrive operate?',
+  'faq.a2': 'We currently operate in major cities across Ethiopia including Addis Ababa, Dire Dawa, Hawassa, Bahir Dar, and Mekele. We\'re continuously expanding to serve more locations.',
+  
+  'faq.q3': 'What are your operating hours?',
+  'faq.a3': 'Our customer support is available 24/7. Vehicle delivery and pickup can be arranged at any time, including weekends and holidays.',
+  
+  'faq.q4': 'Do you offer one-way rentals?',
+  'faq.a4': 'Yes, we offer one-way rentals between major cities. Additional fees may apply depending on the distance and location.',
+  
+  // Booking Questions
+  'faq.q5': 'How far in advance should I book?',
+  'faq.a5': 'We recommend booking at least 24-48 hours in advance for the best vehicle selection. For peak seasons and holidays, book 1-2 weeks ahead.',
+  
+  'faq.q6': 'Can I modify or cancel my reservation?',
+  'faq.a6': 'Yes, you can modify or cancel your reservation up to 4 hours before your scheduled pickup time free of charge. Late cancellations may incur fees.',
+  
+  'faq.q7': 'What happens if I return the car late?',
+  'faq.a7': 'Late returns are subject to additional rental fees. We provide a 59-minute grace period. Contact us immediately if you anticipate being late.',
+  
+  'faq.q8': 'Can I extend my rental period?',
+  'faq.a8': 'Yes, rental extensions are possible subject to vehicle availability. Please contact us at least 6 hours before your scheduled return time.',
+  
+  // Payment Questions
+  'faq.q9': 'What payment methods do you accept?',
+  'faq.a9': 'We accept cash, credit/debit cards, mobile banking (CBE Birr, M-Birr, HelloCash), and bank transfers.',
+  
+  'faq.q10': 'Is there a security deposit?',
+  'faq.a10': 'Yes, a refundable security deposit is required. The amount varies by vehicle type and is fully refunded after vehicle inspection upon return.',
+  
+  'faq.q11': 'What is included in the rental price?',
+  'faq.a11': 'Our rental prices include basic insurance, maintenance, and roadside assistance. Fuel, tolls, and traffic fines are additional.',
+  
+  'faq.q12': 'Are there any hidden fees?',
+  'faq.a12': 'No hidden fees. All charges are clearly displayed during booking. Additional fees may apply for extras like GPS, child seats, or delivery outside standard areas.',
+  
+  // Requirements Questions
+  'faq.q13': 'What documents do I need to rent a car?',
+  'faq.a13': 'You need a valid driver\'s license, national ID or passport, and a valid payment method. International renters need a valid passport and international driving permit.',
+  
+  'faq.q14': 'What is the minimum age to rent a car?',
+  'faq.a14': 'The minimum age is 21 years. Drivers under 25 may pay a young driver surcharge.',
+  
+  'faq.q15': 'Do I need insurance?',
+  'faq.a15': 'Basic insurance is included. We offer additional coverage options for enhanced protection at competitive rates.',
+  
+  'faq.q16': 'Can I rent without a credit card?',
+  'faq.a16': 'Yes, we accept cash and mobile payment options. However, a higher security deposit may be required.',
+  
+  // Delivery Questions
+  'faq.q17': 'Do you deliver vehicles?',
+  'faq.a17': 'Yes, we offer free delivery within city centers. Delivery to airports, hotels, or specific addresses is available for a small fee.',
+  
+  'faq.q18': 'How does the pickup process work?',
+  'faq.a18': 'We meet you at your chosen location, complete paperwork, inspect the vehicle together, and provide orientation. The process takes about 15-20 minutes.',
+  
+  'faq.q19': 'What if I have problems with the vehicle?',
+  'faq.a19': 'Contact our 24/7 support immediately. We\'ll arrange assistance, replacement vehicle, or troubleshooting based on the situation.',
+  
+  'faq.q20': 'Can someone else drive the rental car?',
+  'faq.a20': 'Only authorized drivers listed on the rental agreement are permitted to drive. Additional drivers can be added for a small fee.',
+  
+  // Support Questions
+  'faq.q21': 'How do I contact customer support?',
+  'faq.a21': 'Call us at +251 911 234 567, email support@elitedrive.com, or use the in-app chat. We\'re available 24/7.',
+  
+  'faq.q22': 'What is your cancellation policy?',
+  'faq.a22': 'Free cancellation up to 4 hours before pickup. Later cancellations may incur a fee equal to one day\'s rental.',
+  
+  'faq.q23': 'Do you offer long-term rentals?',
+  'faq.a23': 'Yes, we offer discounted rates for weekly, monthly, and long-term rentals. Contact us for custom long-term rental packages.',
+  
+  'faq.q24': 'Are pets allowed in rental vehicles?',
+  'faq.a24': 'Pets are allowed in economy vehicles with an additional cleaning fee. They are not permitted in luxury vehicles.',
   },
   am: {
     // Navigation - አሰሳ
@@ -429,6 +525,103 @@ const translations = {
   'privacy.securityTitle': 'የደህንነት ልምዶች',
   'privacy.securityDesc': 'ሙሉ የሆኑ የደህንነት እርምጃዎቻችንን ይወቁ',
   'privacy.learnMore': 'ተጨማሪ ለመረዳት',
+
+  
+  // FAQ Page - Amharic
+  'faq.title': 'ተደጋግሞ የሚጠየቁ ጥያቄዎች',
+  'faq.subtitle': 'ስለ ኤሊትድራይቭ የመኪና ኪራይ አገልግሎቶች ለተለመዱ ጥያቄዎች ፈጣን መልሶችን ያግኙ',
+  'faq.searchPlaceholder': 'ጥያቄዎችን ይፈልጉ...',
+  'faq.noResults': 'ከፍለጋዎ ጋር የሚመሳሰሉ ጥያቄዎች አልተገኙም።',
+  'faq.clearSearch': 'ፍለጋ አጽዳ',
+  'faq.contactPrompt': 'የሚፈልጉትን ማግኘት አልቻሉም?',
+  'faq.contactButton': 'ድጋፍ ያግኙ',
+  
+  // FAQ Categories - Amharic
+  'faq.category.general': 'አጠቃላይ',
+  'faq.category.booking': 'ቅድሚያ ማስያዝ እና ቀጠሮ',
+  'faq.category.payment': 'ክፍያ እና የዋጋ አሰጣጥ',
+  'faq.category.requirements': 'ማስፈላጊያዎች',
+  'faq.category.delivery': 'የመጫኛ እና መመለስ',
+  'faq.category.insurance': 'ዲዛይን እና ጥበቃ',
+  'faq.category.support': 'ድጋፍ',
+  
+  // General Questions - Amharic
+  'faq.q1': 'ኤሊትድራይቭ ምንድን ነው?',
+  'faq.a1': 'ኤሊትድራይቭ ለአጭር ጊዜ እና ለረጅም ጊዜ ኪራይ የሚያገለግሉ የላክሲዩሪ እና ኢኮኖሚ ተሽከርካሪዎችን የሚያቀርብ ሙዚቃ የመኪና ኪራይ አገልግሎት ነው። ምቹ የመጫኛ አማራጮችን፣ ሙሉ ዲዛይን እና 24/7 የደንበኛ ድጋፍ እናቀርባለን።',
+  
+  'faq.q2': 'ኤሊትድራይቭ የት ይሠራል?',
+  'faq.a2': 'በአሁኑ ጊዜ በአዲስ አበባ፣ ድሬዳዋ፣ አዋሳ፣ ባህር ዳር እና መቀሌ ጨምሮ በኢትዮጵያ ውስጥ በዋነኛ ከተሞች እየሰራን ነው። ተጨማሪ ቦታዎችን ለማገልገል በመስፋፋት ላይ ነን።',
+  
+  'faq.q3': 'የስራ ሰዓቶቻችሁ ምን ያህል ናቸው?',
+  'faq.a3': 'የደንበኛ ድጋፋችን 24/7 ይገኛል። የተሽከርካሪ መጫኛ እና መመለስ በማንኛውም ጊዜ ማለትም ቅዳሜ እና እሁድ እና በዓላት ጨምሮ ሊደራጅ ይችላል።',
+  
+  'faq.q4': 'አንድ አቅጣጫ ኪራይ ትሰጣላችሁ?',
+  'faq.a4': 'አዎ፣ በዋነኛ ከተሞች መካከል አንድ አቅጣጫ ኪራይ እናቀርባለን። ተጨማሪ ክፍያዎች በርቀቱ እና በቦታው ላይ በመመስረት ሊጠየቁ ይችላሉ።',
+  
+  // Booking Questions - Amharic
+  'faq.q5': 'ምን ያህል ቀደም ብዬ ማስያዝ አለብኝ?',
+  'faq.a5': 'ለምርጥ የተሽከርካሪ ምርጫ ቢያንስ 24-48 ሰዓታት ቀድሞ ማስያዝ እንመክራለን። ለጨፍጋፊ ወቅቶች እና በዓላት 1-2 ሳምንታት ቀድሞ ያስይዙ።',
+  
+  'faq.q6': 'ቀጠሮዬን ማስተካከል ወይም ማቋረጥ እችላለሁ?',
+  'faq.a6': 'አዎ፣ ቀጠሮዎን ከታቀደው የመጫኛ ሰዓትዎ በፊት እስከ 4 ሰዓት ድረስ ከክፍያ ነፃ ማስተካከል ወይም ማቋረጥ ይችላሉ። የዘገየ ስሌት ክፍያ ሊጠየቅ ይችላል።',
+  
+  'faq.q7': 'መኪናውን ማስቀሬ ብመልስስ ምን ይሆናል?',
+  'faq.a7': 'የማስቀሬ መመለሻዎች ተጨማሪ የኪራይ ክፍያዎች ይጠየቃሉ። 59-ደቂቃ የቸር ጊዜ እናቀርባለን። ማስቀሬ መሆንዎን ከተገለጠልዎ ወዲያውኑ ያግኙን።',
+  
+  'faq.q8': 'የኪራይ ጊዜዬን ማራዘም እችላለሁ?',
+  'faq.a8': 'አዎ፣ የኪራይ ማራዘም በተሽከርካሪ መገኘት ላይ በመመስረት ይቻላል። እባክዎ ከታቀደው የመመለሻ ሰዓትዎ ቢያንስ 6 ሰዓታት ቀድሞ ያግኙን።',
+  
+  // Payment Questions - Amharic
+  'faq.q9': 'የትኞቹን የክፍያ ዘዴዎች ትቀበላላችሁ?',
+  'faq.a9': 'ነጭ ገንዘብ፣ ክሬዲት/ዴቢት ካርዶች፣ ሞባይል ባንኪንግ (CBE Birr, M-Birr, HelloCash) እና የባንክ ማስተላለፊያዎችን እንቀበላለን።',
+  
+  'faq.q10': 'የደህንነት ተቀማጭ ገንዘብ አለ?',
+  'faq.a10': 'አዎ፣ የሚመለስ የደህንነት ተቀማጭ ገንዘብ ያስፈልጋል። መጠኑ በተሽከርካሪ አይነት ይለያያል እና ከተሽከርካሪ ቁጥጥር በኋላ ሙሉ በሙሉ ይመለሳል።',
+  
+  'faq.q11': 'በኪራይ ዋጋ ውስጥ ምን ሁሉ ተካትቷል?',
+  'faq.a11': 'የኪራይ ዋጋችን መሰረታዊ ዲዛይን፣ ጥገና እና የጎዳና ርዳታን ያካትታል። ነዳጅ፣ ቶሎ እና የትራፊክ ቅጣቶች ተጨማሪ ናቸው።',
+  
+  'faq.q12': 'ምንም የተደበቁ ክፍያዎች አሉ?',
+  'faq.a12': 'የተደበቁ ክፍያዎች የሉም። ሁሉም ክፍያዎች በሚያስይዙበት ጊዜ በግልፅ ይታያሉ። ለ GPS፣ የልጆች መቀመጫዎች ወይም ከመደበኛ አካባቢዎች ውጭ ለሚደረገው መጫኛ ተጨማሪ ክፍያዎች ሊጠየቁ ይችላሉ።',
+  
+  // Requirements Questions - Amharic
+  'faq.q13': 'መኪና ለመክራየት ምን ምን ሰነዶች ያስፈልገኛል?',
+  'faq.a13': 'የሚሠራ የሹፌር ፍቃድ፣ የብሔር መታወቂያ ወይም ፓስፖርት እና የሚሠራ የክፍያ ዘዴ ያስፈልግዎታል። ዓለም አቀፍ ኪራይ ለሚያደርጉ ደግሞ የሚሠራ ፓስፖርት እና ዓለም አቀፍ የሹፌር ፍቃድ ያስፈልጋል።',
+  
+  'faq.q14': 'መኪና ለመክራየት ዝቅተኛው ዕድሜ ምን ያህል ነው?',
+  'faq.a14': 'ዝቅተኛው ዕድሜ 21 ዓመት ነው። ከ25 ዓመት በታች የሆኑ ሹፌሮች ለወጣት ሹፌር ተጨማሪ ክፍያ ሊከፍሉ ይችላሉ።',
+  
+  'faq.q15': 'ዲዛይን ያስፈልገኛል?',
+  'faq.a15': 'መሰረታዊ ዲዛይን ተካትቷል። ለተሻሻለ ጥበቃ ተጨማሪ የመደፈጫ አማራጮችን በወዳጅነት በሚገጣጠሙ ዋጋዎች እናቀርባለን።',
+  
+  'faq.q16': 'ያለ ክሬዲት ካርድ መክራየት እችላለሁ?',
+  'faq.a16': 'አዎ፣ ነጭ ገንዘብ እና የሞባይል ክፍያ አማራጮችን እንቀበላለን። ሆኖም ከፍ ያለ የደህንነት ተቀማጭ ገንዘብ ሊጠየቅ ይችላል።',
+  
+  // Delivery Questions - Amharic
+  'faq.q17': 'ተሽከርካሪዎችን ትጨምራላችሁ?',
+  'faq.a17': 'አዎ፣ በከተማ ማዕከሎች ውስጥ ነፃ መጫኛ እናቀርባለን። ለአውሮፕላን ማረፊያዎች፣ ሆቴሎች ወይም ልዩ አድራሻዎች መጫኛ በትንሽ ክፍያ ይገኛል።',
+  
+  'faq.q18': 'የመጫኛ ሂደቱ እንዴት ነው የሚሠራው?',
+  'faq.a18': 'በመረጡት ቦታ እንገናኝዎታለን፣ የወረቀት ስራውን እንጨርሳለን፣ ተሽከርካሪውን አንድ ላይ እንመረምራለን እና አቅጣጫ እንሰጣለን። ሂደቱ በግምት 15-20 ደቂቃዎች ይወስዳል።',
+  
+  'faq.q19': 'በተሽከርካሪው ችግር ብገጥመኝስ?',
+  'faq.a19': 'ወዲያውኑ 24/7 ድጋፋችንን ያግኙ። በሁኔታው መሰረት ርዳታ፣ ምትክ ተሽከርካሪ ወይም ችግር መፍትሄ እናደራጃለን።',
+  
+  'faq.q20': 'ሌላ ሰው የተከራየችውን መኪና መንዳት ይችላል?',
+  'faq.a20': 'በኪራይ ስምምነት ላይ የተመዘገቡ አሻግራ የተፈቀዱ ሹፌሮች ብቻ መንዳት ይችላሉ። ተጨማሪ ሹፌሮች በትንሽ ክፍያ ሊጨመሩ ይችላሉ።',
+  
+  // Support Questions - Amharic
+  'faq.q21': 'የደንበኛ ድጋፍን እንዴት ማግኘት እችላለሁ?',
+  'faq.a21': 'በ +251 911 234 567 ይደውሉልን፣ ወይም ወደ support@elitedrive.com ኢሜል ይላኩ፣ ወይም በአፕ ውስጥ ያለውን የቻት ይጠቀሙ። 24/7 እንገኛለን።',
+  
+  'faq.q22': 'የስሌት ፖሊሲዎ ምንድን ነው?',
+  'faq.a22': 'ከመጫኛዎ በፊት እስከ 4 ሰዓት ድረስ ነፃ ማስለቀቅ። የዘገየ ስሌት ከአንድ ቀን ኪራይ ጋር እኩል የሆነ ክፍያ ሊጠየቅ ይችላል።',
+  
+  'faq.q23': 'ለረጅም ጊዜ ኪራይ ትሰጣላችሁ?',
+  'faq.a23': 'አዎ፣ ለሳምንታዊ፣ ወርሃዊ እና ረጅም ጊዜ ኪራይ ተባርሮ ዋጋ እናቀርባለን። ለብጁ የረጅም ጊዜ ኪራይ ጥቅሎች ያግኙን።',
+  
+  'faq.q24': 'በተከራዩ ተሽከርካሪዎች ውስጥ የቤት እንስሳት መግባት ይችላሉ?',
+  'faq.a24': 'የቤት እንስሳት በተጨማሪ የማጽጃ ክፍያ በኢኮኖሚ ተሽከርካሪዎች ውስጥ መግባት ይችላሉ። በላክሲዩሪ ተሽከርካሪዎች ውስጥ አይፈቀድም።',
   },
 };
 

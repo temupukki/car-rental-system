@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import { ThemeProvider } from "./components/ThemeContext";
 import { LanguageProvider } from "./components/LanguageContext";
 import Privacy from "./pages/Privacy";
+import FAQ from "./pages/Faq";
 
 function App() {
   return (
@@ -51,6 +52,14 @@ function App() {
               element={
                 <MainLayout>
                   <Privacy />
+                </MainLayout>
+              }
+            />
+              <Route
+              path="/faq"
+              element={
+                <MainLayout>
+                  <FAQ />
                 </MainLayout>
               }
             />
