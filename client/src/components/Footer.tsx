@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useTheme } from './ThemeContext';
+import { useTheme } from '../components/ThemeContext';
+import { useLanguage } from '../components/LanguageContext';
 
 export default function Footer() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -39,7 +41,7 @@ export default function Footer() {
               mb-6 leading-relaxed
               ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
             `}>
-              Your premier car rental service offering luxury, reliability, and unmatched customer experience since 2010.
+              {t('footer.company')}
             </p>
             <div className="flex space-x-4">
               {['facebook', 'twitter', 'instagram', 'linkedin'].map((social) => (
@@ -76,14 +78,14 @@ export default function Footer() {
             <h4 className={`
               text-lg font-semibold mb-6
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
-            `}>Quick Links</h4>
+            `}>{t('footer.quickLinks')}</h4>
             <ul className="space-y-3">
               {[
-                { name: 'Home', path: '/' },
-                { name: 'Services', path: '/services' },
-                { name: 'About Us', path: '/about' },
-                { name: 'Contact', path: '/contact' },
-                { name: 'FAQ', path: '/faq' },
+                { name: t('nav.home'), path: '/' },
+                { name: t('nav.services'), path: '/services' },
+                { name: t('nav.about'), path: '/about' },
+                { name: t('nav.contact'), path: '/contact' },
+                { name: t('footer.faq'), path: '/faq' },
               ].map((link) => (
                 <li key={link.name}>
                   <Link
@@ -116,15 +118,15 @@ export default function Footer() {
             <h4 className={`
               text-lg font-semibold mb-6
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
-            `}>Our Services</h4>
+            `}>{t('footer.services')}</h4>
             <ul className="space-y-3">
               {[
-                'Luxury Car Rental',
-                'SUV & Family Cars',
-                'Business Rentals',
-                'Long Term Leasing',
-                'Airport Pickup',
-                '24/7 Roadside Assistance'
+                t('services.luxury'),
+                t('services.suv'),
+                t('services.business'),
+                t('services.leasing'),
+                t('services.airport'),
+                t('services.assistance')
               ].map((service) => (
                 <li key={service}>
                   <span className={`
@@ -154,7 +156,7 @@ export default function Footer() {
             <h4 className={`
               text-lg font-semibold mb-6
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
-            `}>Contact Info</h4>
+            `}>{t('footer.contact')}</h4>
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <div className={`
@@ -186,7 +188,7 @@ export default function Footer() {
                   `}>(555) 123-4567</p>
                   <p className={`
                     ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
-                  `}>24/7 Support</p>
+                  `}>{t('footer.support247')}</p>
                 </div>
               </div>
               
@@ -229,18 +231,18 @@ export default function Footer() {
                 text-2xl font-bold mb-2
                 ${theme === 'light' ? 'text-gray-900' : 'text-white'}
               `}>
-                Stay Updated with EliteDrive
+                {t('footer.newsletter.title')}
               </h4>
               <p className={`
                 ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
               `}>
-                Get exclusive deals, new vehicle announcements, and travel tips delivered to your inbox.
+                {t('footer.newsletter.subtitle')}
               </p>
             </div>
             <div className="lg:w-1/2 flex space-x-4">
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t('footer.newsletter.placeholder')}
                 className={`
                   flex-1 px-4 py-3 rounded-xl border-2 transition-colors duration-300
                   ${theme === 'light'
@@ -260,7 +262,7 @@ export default function Footer() {
                   }
                 `}
               >
-                Subscribe
+                {t('footer.newsletter.button')}
               </motion.button>
             </div>
           </div>
@@ -281,11 +283,15 @@ export default function Footer() {
                 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
               `}
             >
-              © {currentYear} EliteDrive Car Rental. All rights reserved.
+              © {currentYear} EliteDrive Car Rental. {t('footer.rights')}
             </motion.p>
             
             <div className="flex space-x-6">
-              {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (
+              {[
+                t('footer.privacy'),
+                t('footer.terms'),
+                t('footer.cookies')
+              ].map((item) => (
                 <motion.a
                   key={item}
                   href="#"
@@ -334,13 +340,13 @@ export default function Footer() {
               font-semibold text-sm transition-colors duration-300
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
             `}>
-              Need Help?
+              {t('footer.help.title')}
             </p>
             <p className={`
               text-xs transition-colors duration-300
               ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
             `}>
-              Chat with us 24/7
+              {t('footer.help.subtitle')}
             </p>
           </div>
           <motion.button

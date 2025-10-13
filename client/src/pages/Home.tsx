@@ -145,7 +145,7 @@ export default function Home() {
           >
             {[
               { number: "500+", label: t("home.stats.vehicles") },
-              { number: "50+", label: t("home.stats.locations") },
+              { number: "10", label: t("home.stats.locations") },
               { number: "24/7", label: t("home.stats.support") },
               { number: "98%", label: t("home.stats.satisfaction") },
             ].map((stat, index) => (
