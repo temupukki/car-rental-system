@@ -63,6 +63,14 @@ function App() {
                 </MainLayout>
               }
             />
+              <Route
+              path="/sign"
+              element={
+                <MainLayout>
+                  <Sign/>
+                </MainLayout>
+              }
+            />
           </Routes>
         </Router>
       </LanguageProvider>

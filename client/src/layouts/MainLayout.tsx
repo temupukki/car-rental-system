@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { useTheme } from "../components/ThemeContext"; 
@@ -17,6 +18,7 @@ export default function MainLayout({ children }: MainLayout) {
     `}>
       <Navbar />
       {children}
+      <Toaster/>
       <Footer />
     </div>
   );
