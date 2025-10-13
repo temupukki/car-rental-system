@@ -72,12 +72,60 @@ const translations = {
     "footer.terms": "Terms of Service",
 
     // Services
-    "services.luxury": "Luxury Car Rental",
-    "services.suv": "SUV & Family Cars",
+
     "services.business": "Business Rentals",
     "services.leasing": "Long Term Leasing",
-    "services.airport": "Airport Pickup",
-    "services.assistance": "24/7 Roadside Assistance",
+
+    "services.title": "Our Services",
+    "services.subtitle":
+      "Discover our wide range of premium vehicles and exceptional rental services tailored to your needs",
+    "services.cta.primary": "Book Your Vehicle",
+    "services.cta.secondary": "View All Vehicles",
+    "services.featuredTitle": "Featured Vehicles",
+    "services.categoriesTitle": "Browse By Category",
+    "services.rentNow": "Rent Now",
+    "services.viewCars": "View Cars",
+    "services.whyChoose": "Why Choose EliteDrive?",
+    "services.why1": "Wide Selection",
+    "services.whyDesc1":
+      "Choose from 100+ well-maintained vehicles across all categories",
+    "services.why2": "Best Prices",
+    "services.whyDesc2":
+      "Competitive rates with no hidden fees and price match guarantee",
+    "services.why3": "Premium Service",
+    "services.whyDesc3": "24/7 customer support and premium rental experience",
+    "services.all": "All Cars",
+    "services.noFeatured": "No featured vehicles in this category",
+    "services.tryAnother": "Try selecting another category",
+    "services.popular": "Most Popular",
+    "services.includes": "Includes",
+
+    // Categories
+    "services.luxury": "Luxury Cars",
+    "services.luxuryDesc":
+      "Experience ultimate comfort and style with our premium luxury vehicle collection",
+    "services.suv": "SUV Vehicles",
+    "services.suvDesc":
+      "Spacious and comfortable SUVs perfect for family trips and group travel",
+    "services.sedan": "Sedan Cars",
+    "services.sedanDesc":
+      "Comfortable and efficient sedans perfect for business and personal use",
+    "services.economy": "Economy Cars",
+    "services.economyDesc":
+      "Fuel-efficient and affordable vehicles perfect for city driving and budget trips",
+    "services.sports": "Sports Cars",
+    "services.sportsDesc":
+      "High-performance sports cars for an exhilarating driving experience",
+    "services.vans": "Vans & Minivans",
+    "services.vansDesc":
+      "Spacious vans perfect for group travel and large luggage",
+
+    // Bottom CTA
+    "services.bottomCta.title": "Ready to Find Your Perfect Vehicle?",
+    "services.bottomCta.subtitle":
+      "Join thousands of satisfied customers and experience the EliteDrive difference",
+    "services.bottomCta.primary": "Get Started Today",
+    "services.bottomCta.secondary": "Call Us Now",
   },
   am: {
     // Navigation - አሰሳ
@@ -89,7 +137,7 @@ const translations = {
     "company.name": "ኤሊት ድራይቭ",
 
     // Home Page - ዋና ገጽ
-    "home.badge": "መኪና ኪራይ በምርጥ ዋጋ !",
+    "home.badge": "የመኪና ኪራይ በምርጥ ዋጋ !",
     "home.hero.title": "የፈለጉትን መኪና እኛ ጋር ያግኙ ",
     "home.hero.with": "ከኤሊትድራይቭ ጋር",
     "home.hero.subtitle":
@@ -131,13 +179,52 @@ const translations = {
     "footer.rights": "ሁሉም መብቶች የተጠበቁ ናቸው።",
     "footer.privacy": "የግላዊነት ፖሊሲ",
     "footer.terms": "የአገልግሎት ውሎች",
-   
 
     // Services - አገልግሎቶች
-    "services.luxury": "የውበት መኪና ኪራይ",
-    "services.suv": "SUV እና የቤተሰብ መኪኖች",
+
     "services.business": "የንግድ ኪራይ",
     "services.leasing": "ረጅም ጊዜ ኪራይ",
+    "services.title": "አገልግሎቶቻችን",
+    "services.subtitle": "የተለያዩ ፕሪሚየም ተሽከርካሪዎችን እና ልዩ የኪራይ አገልግሎቶችን ያስሱ",
+    "services.cta.primary": "ተሽከርካሪዎን ይቅዱ",
+    "services.cta.secondary": "ሁሉንም ተሽከርካሪዎች ይመልከቱ",
+    "services.featuredTitle": "የተለዩ ተሽከርካሪዎች",
+    "services.categoriesTitle": "በምድብ ይመልከቱ",
+    "services.rentNow": "አሁን ይቅዱ",
+    "services.viewCars": "ተሽከርካሪዎችን ይመልከቱ",
+    "services.whyChoose": "ለምን ኤሊትድራይቭ ይመርጡ?",
+    "services.why1": "ሰፊ ምርጫ",
+    "services.whyDesc1": "ከ100+ በላይ በደንብ የተጠጉ ተሽከርካሪዎች ለሁሉም ምድቦች ይምረጡ",
+    "services.why2": "ምርጥ ዋጋዎች",
+    "services.whyDesc2": "ውድድር ያለው ዋጋ እና ምንም የተደበቁ ክፍያዎች የሉም",
+    "services.why3": "ፕሪሚየም አገልግሎት",
+    "services.whyDesc3": "24/7 የደንበኞች ድጋፍ እና ፕሪሚየም የኪራይ ተሞክሮ",
+    "services.all": "ሁሉም መኪኖች",
+    "services.noFeatured": "በዚህ ምድብ ውስጥ የተለዩ ተሽከርካሪዎች የሉም",
+    "services.tryAnother": "ሌላ ምድብ ይምረጡ",
+    "services.popular": "በጣም ተወዳጅ",
+    "services.includes": "የሚጨምር",
+
+    // Categories - Amharic
+    "services.luxury": "የውበት መኪኖች",
+    "services.luxuryDesc": "ከፍተኛ አለባበስ እና ሙዚቃ ያላቸውን ፕሪሚየም የውበት ተሽከርካሪዎች ይለማመዱ",
+    "services.suv": "SUV ተሽከርካሪዎች",
+    "services.suvDesc": "ሰፊ እና ምቹ የSUV ተሽከርካሪዎች ለቤተሰብ ጉዞዎች እና ለቡድን ጉዞ",
+    "services.sedan": "ሴዳን መኪኖች",
+    "services.sedanDesc": "ምቹ እና ቀልጣፋ ሴዳን መኪኖች ለንግድ እና የግል አጠቃቀም",
+    "services.economy": "ኢኮኖሚ መኪኖች",
+    "services.economyDesc": "የተጣራ ነዳጅ የሚጠቀሙ እና ርካሽ ተሽከርካሪዎች ለከተማ እና በጀት ጉዞዎች",
+    "services.sports": "ስፖርት መኪኖች",
+    "services.sportsDesc": "ከፍተኛ አፈጻጸም ያላቸው ስፖርት መኪኖች ለማራኪ የመንገድ ተሞክሮ",
+    "services.vans": "ቫን እና ሚኒቫን",
+    "services.vansDesc": "ሰፊ ቫኖች ለቡድን ጉዞ እና ትላልቅ እቃዎች",
+
+    // Bottom CTA - Amharic
+    "services.bottomCta.title": "ፍጹም ተሽከርካሪዎን ለማግኘት ዝግጁ ነዎት?",
+    "services.bottomCta.subtitle":
+      "ከሺዎች የሚቆጠሩ የተረኩ ደንበኞች ጋር ይቀላቀሉ እና የኤሊትድራይቭ ልዩነት ይለማመዱ",
+    "services.bottomCta.primary": "ዛሬ ይ_start ያድርጉ",
+    "services.bottomCta.secondary": "አሁን ይደውሉልን",
   },
 };
 
