@@ -35,28 +35,7 @@ export default function Home() {
           transition={{ duration: 0.8 }}
           className="max-w-6xl mx-auto"
         >
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className={`
-              inline-flex items-center px-4 py-2 rounded-full border mb-8 transition-all duration-300
-              ${theme === 'light'
-                ? 'bg-blue-600/20 border-blue-500/30'
-                : 'bg-blue-400/20 border-blue-400/30'
-              }
-            `}
-          >
-            <span className={`
-              text-sm font-semibold transition-colors duration-300
-              ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}
-            `}>
-              🏆 #1 Rated Car Rental in the City
-            </span>
-          </motion.div>
-
-          {/* Main Heading */}
+        
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

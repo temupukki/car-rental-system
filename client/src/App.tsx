@@ -5,43 +5,49 @@ import Service from "./pages/Service";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import { ThemeProvider } from "./components/ThemeContext";
+import { LanguageProvider } from "./components/LanguageContext";
 
 function App() {
   return (
     <ThemeProvider>
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <MainLayout>
-              <Home />
-            </MainLayout>
-          }
-        />
-        <Route
-        path="/services"
-        element={
-          <MainLayout>
-            <Service/>
-          </MainLayout>
-        }/>
-         <Route
-        path="/about"
-        element={
-          <MainLayout>
-            <About/>
-          </MainLayout>
-        }/>
-         <Route
-        path="/contact"
-        element={
-          <MainLayout>
-            <Contact/>
-          </MainLayout>
-        }/>
-      </Routes>
-    </Router>
+      <LanguageProvider>
+        <Router>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <MainLayout>
+                  <Home />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/services"
+              element={
+                <MainLayout>
+                  <Service />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <MainLayout>
+                  <About />
+                </MainLayout>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <MainLayout>
+                  <Contact />
+                </MainLayout>
+              }
+            />
+          </Routes>
+        </Router>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
