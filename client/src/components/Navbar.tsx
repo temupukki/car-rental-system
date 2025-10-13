@@ -67,7 +67,8 @@ export default function Navbar() {
                 ${theme === "light" ? "text-gray-900" : "text-white"}
               `}
               >
-                EliteDrive
+               {t("company.name")}
+                
               </h1>
             </motion.div>
           </Link>

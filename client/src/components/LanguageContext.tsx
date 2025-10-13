@@ -19,6 +19,7 @@ const translations = {
     'nav.about': 'About',
     'nav.contact': 'Contact',
     'nav.book': 'Book Now',
+    'company.name':"Elite Drive",
     
     // Home Page
     'home.hero.title': 'Drive Your Dreams With EliteDrive',
@@ -66,7 +67,8 @@ const translations = {
     'nav.services': 'አገልግሎቶች',
     'nav.about': 'ስለ እኛ',
     'nav.contact': 'አግኙን',
-    'nav.book': 'አሁን ይቅዱ',
+    'nav.book': 'አሁንኑ ይከራዩ',
+    'company.name':'ኤሊት ድራይቭ',
     
     // Home Page - ዋና ገጽ
     'home.hero.title': 'ህልምዎን ከኤሊትድራይቭ ጋር ይግዙ',
