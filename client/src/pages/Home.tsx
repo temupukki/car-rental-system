@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useTheme } from "../components/ThemeContext";
+import { useLanguage } from "../components/LanguageContext";
 
 export default function Home() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <div className={`
@@ -35,7 +37,28 @@ export default function Home() {
           transition={{ duration: 0.8 }}
           className="max-w-6xl mx-auto"
         >
-        
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className={`
+              inline-flex items-center px-4 py-2 rounded-full border mb-8 transition-all duration-300
+              ${theme === 'light'
+                ? 'bg-blue-600/20 border-blue-500/30'
+                : 'bg-blue-400/20 border-blue-400/30'
+              }
+            `}
+          >
+            <span className={`
+              text-sm font-semibold transition-colors duration-300
+              ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}
+            `}>
+              🏆 {t('home.badge')}
+            </span>
+          </motion.div>
+
+          {/* Main Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -45,16 +68,16 @@ export default function Home() {
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
             `}
           >
-            Drive Your
+            {t('home.hero.title')}
             <span className={`
               bg-clip-text text-transparent bg-gradient-to-r transition-all duration-500
               ${theme === 'light'
                 ? 'from-blue-600 to-cyan-500'
                 : 'from-blue-400 to-cyan-300'
               }
-            `}> Dreams</span>
+            `}> {t('home.hero.dreams')}</span>
             <br />
-            With EliteDrive
+            {t('home.hero.with')}
           </motion.h1>
 
           {/* Subheading */}
@@ -67,8 +90,7 @@ export default function Home() {
               ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
             `}
           >
-            Experience luxury, reliability, and unmatched service. From economy to premium, 
-            we have the perfect vehicle for every journey.
+            {t('home.hero.subtitle')}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -90,7 +112,7 @@ export default function Home() {
                   bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600
                 `}
               >
-                🚗 Explore Our Fleet
+                {t('home.hero.explore')}
               </motion.button>
             </Link>
             
@@ -106,7 +128,7 @@ export default function Home() {
                   bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600
                 `}
               >
-                💰 View Hot Deals
+                {t('home.hero.deals')}
               </motion.button>
             </Link>
           </motion.div>
@@ -119,10 +141,10 @@ export default function Home() {
             className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto"
           >
             {[
-              { number: "500+", label: "Vehicles" },
-              { number: "50+", label: "Locations" },
-              { number: "24/7", label: "Support" },
-              { number: "98%", label: "Satisfaction" }
+              { number: "500+", label: t('home.stats.vehicles') },
+              { number: "50+", label: t('home.stats.locations') },
+              { number: "24/7", label: t('home.stats.support') },
+              { number: "98%", label: t('home.stats.satisfaction') }
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -169,7 +191,7 @@ export default function Home() {
               ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
             `}
           >
-            <span>Scroll to explore</span>
+            <span>{t('home.scroll')}</span>
             <div className={`
               w-4 h-8 border-2 rounded-full flex justify-center mt-2 transition-colors duration-300
               ${theme === 'light' ? 'border-gray-600' : 'border-gray-400'}
@@ -205,40 +227,40 @@ export default function Home() {
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
             `}
           >
-            Why Choose <span className="text-blue-500">EliteDrive</span>?
+            {t('home.features.title')} <span className="text-blue-500">EliteDrive</span>?
           </motion.h2>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 icon: "⚡",
-                title: "Instant Booking",
-                description: "Book your dream car in under 2 minutes with our seamless process"
+                title: t('home.features.booking'),
+                description: t('home.features.bookingDesc')
               },
               {
                 icon: "🛡️",
-                title: "Full Insurance",
-                description: "Comprehensive coverage for complete peace of mind on every trip"
+                title: t('home.features.insurance'),
+                description: t('home.features.insuranceDesc')
               },
               {
                 icon: "💰",
-                title: "Best Prices",
-                description: "Competitive rates with no hidden fees. Price match guarantee!"
+                title: t('home.features.prices'),
+                description: t('home.features.pricesDesc')
               },
               {
                 icon: "🚀",
-                title: "Premium Fleet",
-                description: "From economy to luxury, all vehicles maintained to highest standards"
+                title: t('home.features.fleet'),
+                description: t('home.features.fleetDesc')
               },
               {
                 icon: "📱",
-                title: "Mobile App",
-                description: "Manage your rentals on the go with our feature-rich mobile application"
+                title: t('home.features.app'),
+                description: t('home.features.appDesc')
               },
               {
                 icon: "⭐",
-                title: "5-Star Support",
-                description: "24/7 customer service to assist you whenever you need help"
+                title: t('home.features.support'),
+                description: t('home.features.supportDesc')
               }
             ].map((feature, index) => (
               <motion.div
@@ -296,13 +318,13 @@ export default function Home() {
             text-3xl md:text-4xl font-bold mb-6 transition-colors duration-300
             ${theme === 'light' ? 'text-gray-900' : 'text-white'}
           `}>
-            Ready to Hit the Road?
+            {t('home.cta.title')}
           </h2>
           <p className={`
             text-xl mb-8 transition-colors duration-300
             ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
           `}>
-            Join thousands of satisfied customers and experience the EliteDrive difference today.
+            {t('home.cta.subtitle')}
           </p>
           <Link to="/contact">
             <motion.button
@@ -313,7 +335,7 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
               className="px-12 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-bold text-lg shadow-2xl transition-all duration-300 hover:from-blue-700 hover:to-cyan-600"
             >
-              Start Your Journey Now
+              {t('home.cta.button')}
             </motion.button>
           </Link>
         </motion.div>

@@ -22,6 +22,7 @@ const translations = {
     'company.name':"Elite Drive",
     
     // Home Page
+    'home.badge':'Best Price in the city!',
     'home.hero.title': 'Drive Your Dreams With EliteDrive',
     'home.hero.subtitle': 'Experience luxury, reliability, and unmatched service. From economy to premium, we have the perfect vehicle for every journey.',
     'home.hero.explore': '🚗 Explore Our Fleet',
@@ -71,6 +72,7 @@ const translations = {
     'company.name':'ኤሊት ድራይቭ',
     
     // Home Page - ዋና ገጽ
+    'home.badge':'መኪና ኪራይ በምርጥ ዋጋ !',
     'home.hero.title': 'ህልምዎን ከኤሊትድራይቭ ጋር ይግዙ',
     'home.hero.subtitle': 'ውበት፣ አስተማማኝነት እና ያልተወዳደረ አገልግሎት ይለማመዱ። ከኢኮኖሚ እስከ ፕሪሚየም ለእያንዳንዱ ጉዞ ፍጹም ተሽከርካሪ አለን።',
     'home.hero.explore': '🚗 ተሽከርካሪዎቻችንን ይመልከቱ',
