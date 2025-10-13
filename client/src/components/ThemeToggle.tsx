@@ -30,7 +30,7 @@ export default function ThemeToggle() {
         {theme === 'light' ? '☀️' : '🌙'}
       </motion.div>
       
-      {/* Animated background dot */}
+      
       <motion.div
         className={`
           absolute inset-0 rounded-2xl -z-10
