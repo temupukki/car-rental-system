@@ -65,6 +65,11 @@ const translations = {
     "footer.newsletter.button": "Subscribe",
     "footer.help.title": "Need Help?",
     "footer.help.subtitle": "Chat with us 24/7",
+    "footer.faq": "FAQ",
+    "footer.support247": "24/7 Support",
+    "footer.rights": "All rights reserved.",
+    "footer.privacy": "Privacy Policy",
+    "footer.terms": "Terms of Service",
 
     // Services
     "services.luxury": "Luxury Car Rental",
@@ -110,7 +115,7 @@ const translations = {
 
     // Footer - መጨረሻ
     "footer.company":
-      "ከ2010 ጀምሮ ውበት፣ አስተማማኝነት እና ያልተወዳደረ የደንበኞች ተሞክሮ የሚያቀርብ የተሻለ የመኪና ኪራይ አገልግሎት።",
+      "ከ2014 ጀምሮ ውበት፣ አስተማማኝነት እና ያልተወዳደረ የደንበኞች ተሞክሮ የሚያቀርብ የተሻለ የመኪና ኪራይ አገልግሎት።",
     "footer.quickLinks": "ፈጣን አገናኞች",
     "footer.services": "አገልግሎቶቻችን",
     "footer.contact": "የመገኛ መረጃ",
@@ -121,14 +126,18 @@ const translations = {
     "footer.newsletter.button": "ይመዝገቡ",
     "footer.help.title": "እርዳታ ይፈልጋሉ?",
     "footer.help.subtitle": "ማንኛውም ጊዜ ይነጋገሩን",
+    "footer.faq": "ተደጋግሞ የሚጠየቁ ጥያቄዎች",
+    "footer.support247": "24/7 ድጋፍ",
+    "footer.rights": "ሁሉም መብቶች የተጠበቁ ናቸው።",
+    "footer.privacy": "የግላዊነት ፖሊሲ",
+    "footer.terms": "የአገልግሎት ውሎች",
+   
 
     // Services - አገልግሎቶች
     "services.luxury": "የውበት መኪና ኪራይ",
     "services.suv": "SUV እና የቤተሰብ መኪኖች",
     "services.business": "የንግድ ኪራይ",
     "services.leasing": "ረጅም ጊዜ ኪራይ",
-    "services.airport": "ከአውሮፕላን ማረፊያ መግዛት",
-    "services.assistance": "24/7 የመንገድ ድጋፍ",
   },
 };
 

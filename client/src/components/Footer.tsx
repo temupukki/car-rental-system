@@ -35,7 +35,7 @@ export default function Footer() {
               <h3 className={`
                 text-2xl font-bold
                 ${theme === 'light' ? 'text-gray-900' : 'text-white'}
-              `}>EliteDrive</h3>
+              `}>{t('company.name')}</h3>
             </div>
             <p className={`
               mb-6 leading-relaxed
@@ -69,7 +69,7 @@ export default function Footer() {
             </div>
           </motion.div>
 
-          {/* Quick Links */}
+      
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -125,8 +125,8 @@ export default function Footer() {
                 t('services.suv'),
                 t('services.business'),
                 t('services.leasing'),
-                t('services.airport'),
-                t('services.assistance')
+        
+               
               ].map((service) => (
                 <li key={service}>
                   <span className={`
@@ -147,7 +147,7 @@ export default function Footer() {
             </ul>
           </motion.div>
 
-          {/* Contact Info */}
+      
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -168,13 +168,13 @@ export default function Footer() {
                 <div>
                   <p className={`
                     ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
-                  `}>123 Drive Street</p>
+                  `}>Gondar</p>
                   <p className={`
                     ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
-                  `}>City, State 12345</p>
+                  `}>Gondar, Maraki</p>
                 </div>
               </div>
-              
+             
               <div className="flex items-center space-x-3">
                 <div className={`
                   w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300
@@ -185,7 +185,7 @@ export default function Footer() {
                 <div>
                   <p className={`
                     ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
-                  `}>(555) 123-4567</p>
+                  `}>0909090909</p>
                   <p className={`
                     ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
                   `}>{t('footer.support247')}</p>
@@ -212,63 +212,6 @@ export default function Footer() {
           </motion.div>
         </div>
 
-        {/* Newsletter Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className={`
-            rounded-2xl p-8 mb-12 border transition-all duration-500
-            ${theme === 'light' 
-              ? 'bg-white shadow-lg border-gray-200' 
-              : 'bg-gray-900 border-gray-800'
-            }
-          `}
-        >
-          <div className="flex flex-col lg:flex-row items-center justify-between">
-            <div className="lg:w-1/2 mb-6 lg:mb-0">
-              <h4 className={`
-                text-2xl font-bold mb-2
-                ${theme === 'light' ? 'text-gray-900' : 'text-white'}
-              `}>
-                {t('footer.newsletter.title')}
-              </h4>
-              <p className={`
-                ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
-              `}>
-                {t('footer.newsletter.subtitle')}
-              </p>
-            </div>
-            <div className="lg:w-1/2 flex space-x-4">
-              <input
-                type="email"
-                placeholder={t('footer.newsletter.placeholder')}
-                className={`
-                  flex-1 px-4 py-3 rounded-xl border-2 transition-colors duration-300
-                  ${theme === 'light'
-                    ? 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:bg-white focus:shadow-lg'
-                    : 'bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-blue-400 focus:bg-gray-700'
-                  }
-                `}
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`
-                  px-6 py-3 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg
-                  ${theme === 'light'
-                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 hover:shadow-xl'
-                    : 'bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500'
-                  }
-                `}
-              >
-                {t('footer.newsletter.button')}
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Bottom Bar */}
         <div className={`
           border-t pt-8 transition-colors duration-500
           ${theme === 'light' ? 'border-gray-300' : 'border-gray-700'}
@@ -290,7 +233,7 @@ export default function Footer() {
               {[
                 t('footer.privacy'),
                 t('footer.terms'),
-                t('footer.cookies')
+               
               ].map((item) => (
                 <motion.a
                   key={item}
@@ -311,59 +254,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-
-      {/* Floating CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.5 }}
-        className={`
-          fixed bottom-6 right-6 z-50 transition-all duration-500 shadow-2xl
-          ${theme === 'light' 
-            ? 'bg-white border border-gray-200' 
-            : 'bg-gray-800 border-gray-700'
-          }
-          rounded-2xl p-4
-        `}
-      >
-        <div className="flex items-center space-x-3">
-          <div className="text-center">
-            <div className={`
-              w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300
-              ${theme === 'light' ? 'bg-green-500' : 'bg-green-400'}
-            `}>
-              <span className="text-white text-sm">💬</span>
-            </div>
-          </div>
-          <div>
-            <p className={`
-              font-semibold text-sm transition-colors duration-300
-              ${theme === 'light' ? 'text-gray-900' : 'text-white'}
-            `}>
-              {t('footer.help.title')}
-            </p>
-            <p className={`
-              text-xs transition-colors duration-300
-              ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-            `}>
-              {t('footer.help.subtitle')}
-            </p>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className={`
-              w-8 h-8 rounded-full flex items-center justify-center text-white text-sm transition-all duration-300 shadow-lg
-              ${theme === 'light'
-                ? 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'
-                : 'bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500'
-              }
-            `}
-          >
-            →
-          </motion.button>
-        </div>
-      </motion.div>
     </footer>
   );
 }
