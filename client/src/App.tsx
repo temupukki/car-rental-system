@@ -6,6 +6,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import { ThemeProvider } from "./components/ThemeContext";
 import { LanguageProvider } from "./components/LanguageContext";
+import Privacy from "./pages/Privacy";
 
 function App() {
   return (
@@ -42,6 +43,14 @@ function App() {
               element={
                 <MainLayout>
                   <Contact />
+                </MainLayout>
+              }
+            />
+              <Route
+              path="/privacy"
+              element={
+                <MainLayout>
+                  <Privacy />
                 </MainLayout>
               }
             />

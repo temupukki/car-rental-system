@@ -237,7 +237,7 @@ export default function Footer() {
               ].map((item) => (
                 <motion.a
                   key={item}
-                  href="#"
+                  href="/privacy"
                   whileHover={{ scale: 1.05 }}
                   className={`
                     text-sm transition-colors duration-300
