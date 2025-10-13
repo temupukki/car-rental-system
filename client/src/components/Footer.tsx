@@ -10,7 +10,7 @@ export default function Footer() {
     <footer className={`
       transition-colors duration-500
       ${theme === 'light' 
-        ? 'bg-gray-900 text-white' 
+        ? 'bg-gradient-to-br from-blue-50 to-gray-100 text-gray-800 border-t border-gray-200' 
         : 'bg-gray-950 text-gray-300'
       }
     `}>
@@ -30,9 +30,15 @@ export default function Footer() {
                 alt="EliteDrive Logo"
                 className="h-12 w-auto"
               />
-              <h3 className="text-2xl font-bold text-white">EliteDrive</h3>
+              <h3 className={`
+                text-2xl font-bold
+                ${theme === 'light' ? 'text-gray-900' : 'text-white'}
+              `}>EliteDrive</h3>
             </div>
-            <p className="text-gray-400 mb-6 leading-relaxed">
+            <p className={`
+              mb-6 leading-relaxed
+              ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
+            `}>
               Your premier car rental service offering luxury, reliability, and unmatched customer experience since 2010.
             </p>
             <div className="flex space-x-4">
@@ -45,12 +51,12 @@ export default function Footer() {
                   className={`
                     w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
                     ${theme === 'light' 
-                      ? 'bg-gray-800 hover:bg-blue-600' 
-                      : 'bg-gray-800 hover:bg-blue-500'
+                      ? 'bg-white shadow-lg border border-gray-200 hover:bg-blue-500 hover:text-white hover:shadow-xl' 
+                      : 'bg-gray-800 hover:bg-blue-500 text-white'
                     }
                   `}
                 >
-                  <span className="text-white text-sm">
+                  <span className="text-sm">
                     {social === 'facebook' && '📘'}
                     {social === 'twitter' && '🐦'}
                     {social === 'instagram' && '📷'}
@@ -61,13 +67,16 @@ export default function Footer() {
             </div>
           </motion.div>
 
-         
+          {/* Quick Links */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <h4 className="text-lg font-semibold text-white mb-6">Quick Links</h4>
+            <h4 className={`
+              text-lg font-semibold mb-6
+              ${theme === 'light' ? 'text-gray-900' : 'text-white'}
+            `}>Quick Links</h4>
             <ul className="space-y-3">
               {[
                 { name: 'Home', path: '/' },
@@ -79,9 +88,18 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     to={link.path}
-                    className="text-gray-400 hover:text-blue-400 transition-colors duration-300 flex items-center space-x-2"
+                    className={`
+                      transition-colors duration-300 flex items-center space-x-2
+                      ${theme === 'light' 
+                        ? 'text-gray-600 hover:text-blue-600' 
+                        : 'text-gray-400 hover:text-blue-400'
+                      }
+                    `}
                   >
-                    <span>→</span>
+                    <span className={`
+                      transition-colors duration-300
+                      ${theme === 'light' ? 'text-blue-500' : 'text-cyan-400'}
+                    `}>→</span>
                     <span>{link.name}</span>
                   </Link>
                 </li>
@@ -89,13 +107,16 @@ export default function Footer() {
             </ul>
           </motion.div>
 
-    
+          {/* Services */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h4 className="text-lg font-semibold text-white mb-6">Our Services</h4>
+            <h4 className={`
+              text-lg font-semibold mb-6
+              ${theme === 'light' ? 'text-gray-900' : 'text-white'}
+            `}>Our Services</h4>
             <ul className="space-y-3">
               {[
                 'Luxury Car Rental',
@@ -106,8 +127,17 @@ export default function Footer() {
                 '24/7 Roadside Assistance'
               ].map((service) => (
                 <li key={service}>
-                  <span className="text-gray-400 hover:text-blue-400 transition-colors duration-300 flex items-center space-x-2 cursor-pointer">
-                    <span>🚗</span>
+                  <span className={`
+                    transition-colors duration-300 flex items-center space-x-2 cursor-pointer
+                    ${theme === 'light' 
+                      ? 'text-gray-600 hover:text-blue-600' 
+                      : 'text-gray-400 hover:text-blue-400'
+                    }
+                  `}>
+                    <span className={`
+                      transition-colors duration-300
+                      ${theme === 'light' ? 'text-yellow-500' : 'text-yellow-300'}
+                    `}>🚗</span>
                     <span>{service}</span>
                   </span>
                 </li>
@@ -115,65 +145,95 @@ export default function Footer() {
             </ul>
           </motion.div>
 
+          {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <h4 className="text-lg font-semibold text-white mb-6">Contact Info</h4>
+            <h4 className={`
+              text-lg font-semibold mb-6
+              ${theme === 'light' ? 'text-gray-900' : 'text-white'}
+            `}>Contact Info</h4>
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm">📍</span>
+                <div className={`
+                  w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300
+                  ${theme === 'light' ? 'bg-blue-500 text-white' : 'bg-blue-500'}
+                `}>
+                  <span className="text-sm">📍</span>
                 </div>
                 <div>
-                  <p className="text-gray-400">123 Drive Street</p>
-                  <p className="text-gray-400">City, State 12345</p>
+                  <p className={`
+                    ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
+                  `}>123 Drive Street</p>
+                  <p className={`
+                    ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
+                  `}>City, State 12345</p>
                 </div>
               </div>
               
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm">📞</span>
+                <div className={`
+                  w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300
+                  ${theme === 'light' ? 'bg-green-500 text-white' : 'bg-green-500'}
+                `}>
+                  <span className="text-sm">📞</span>
                 </div>
                 <div>
-                  <p className="text-gray-400">(555) 123-4567</p>
-                  <p className="text-gray-400">24/7 Support</p>
+                  <p className={`
+                    ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
+                  `}>(555) 123-4567</p>
+                  <p className={`
+                    ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
+                  `}>24/7 Support</p>
                 </div>
               </div>
               
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm">✉️</span>
+                <div className={`
+                  w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300
+                  ${theme === 'light' ? 'bg-purple-500 text-white' : 'bg-purple-500'}
+                `}>
+                  <span className="text-sm">✉️</span>
                 </div>
                 <div>
-                  <p className="text-gray-400">info@elitedrive.com</p>
-                  <p className="text-gray-400">bookings@elitedrive.com</p>
+                  <p className={`
+                    ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
+                  `}>info@elitedrive.com</p>
+                  <p className={`
+                    ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
+                  `}>bookings@elitedrive.com</p>
                 </div>
               </div>
             </div>
           </motion.div>
         </div>
 
-      
+        {/* Newsletter Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           className={`
-            rounded-2xl p-8 mb-12
+            rounded-2xl p-8 mb-12 border transition-all duration-500
             ${theme === 'light' 
-              ? 'bg-gray-800' 
-              : 'bg-gray-900'
+              ? 'bg-white shadow-lg border-gray-200' 
+              : 'bg-gray-900 border-gray-800'
             }
           `}
         >
           <div className="flex flex-col lg:flex-row items-center justify-between">
             <div className="lg:w-1/2 mb-6 lg:mb-0">
-              <h4 className="text-2xl font-bold text-white mb-2">
+              <h4 className={`
+                text-2xl font-bold mb-2
+                ${theme === 'light' ? 'text-gray-900' : 'text-white'}
+              `}>
                 Stay Updated with EliteDrive
               </h4>
-              <p className="text-gray-400">
+              <p className={`
+                ${theme === 'light' ? 'text-gray-700' : 'text-gray-400'}
+              `}>
                 Get exclusive deals, new vehicle announcements, and travel tips delivered to your inbox.
               </p>
             </div>
@@ -182,17 +242,23 @@ export default function Footer() {
                 type="email"
                 placeholder="Enter your email"
                 className={`
-                  flex-1 px-4 py-3 rounded-xl border transition-colors duration-300
+                  flex-1 px-4 py-3 rounded-xl border-2 transition-colors duration-300
                   ${theme === 'light'
-                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500'
-                    : 'bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-blue-400'
+                    ? 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:bg-white focus:shadow-lg'
+                    : 'bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-blue-400 focus:bg-gray-700'
                   }
                 `}
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-cyan-600 transition-all duration-300"
+                className={`
+                  px-6 py-3 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg
+                  ${theme === 'light'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 hover:shadow-xl'
+                    : 'bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500'
+                  }
+                `}
               >
                 Subscribe
               </motion.button>
@@ -201,13 +267,19 @@ export default function Footer() {
         </motion.div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 pt-8">
+        <div className={`
+          border-t pt-8 transition-colors duration-500
+          ${theme === 'light' ? 'border-gray-300' : 'border-gray-700'}
+        `}>
           <div className="flex flex-col md:flex-row items-center justify-between">
             <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
-              className="text-gray-400 text-sm mb-4 md:mb-0"
+              className={`
+                text-sm mb-4 md:mb-0
+                ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
+              `}
             >
               © {currentYear} EliteDrive Car Rental. All rights reserved.
             </motion.p>
@@ -217,8 +289,14 @@ export default function Footer() {
                 <motion.a
                   key={item}
                   href="#"
-                  whileHover={{ scale: 1.05, color: '#60A5FA' }}
-                  className="text-gray-400 hover:text-blue-400 text-sm transition-colors duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  className={`
+                    text-sm transition-colors duration-300
+                    ${theme === 'light' 
+                      ? 'text-gray-600 hover:text-blue-600' 
+                      : 'text-gray-500 hover:text-cyan-400'
+                    }
+                  `}
                 >
                   {item}
                 </motion.a>
@@ -234,30 +312,32 @@ export default function Footer() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.5 }}
         className={`
-          fixed bottom-6 right-6 z-50
+          fixed bottom-6 right-6 z-50 transition-all duration-500 shadow-2xl
           ${theme === 'light' 
-            ? 'bg-white shadow-2xl' 
-            : 'bg-gray-800 shadow-2xl'
+            ? 'bg-white border border-gray-200' 
+            : 'bg-gray-800 border-gray-700'
           }
-          rounded-2xl p-4 border
-          ${theme === 'light' ? 'border-gray-200' : 'border-gray-700'}
+          rounded-2xl p-4
         `}
       >
         <div className="flex items-center space-x-3">
           <div className="text-center">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+            <div className={`
+              w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300
+              ${theme === 'light' ? 'bg-green-500' : 'bg-green-400'}
+            `}>
               <span className="text-white text-sm">💬</span>
             </div>
           </div>
           <div>
             <p className={`
-              font-semibold text-sm
+              font-semibold text-sm transition-colors duration-300
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
             `}>
               Need Help?
             </p>
             <p className={`
-              text-xs
+              text-xs transition-colors duration-300
               ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
             `}>
               Chat with us 24/7
@@ -267,8 +347,11 @@ export default function Footer() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             className={`
-              w-8 h-8 rounded-full flex items-center justify-center text-white text-sm
-              bg-gradient-to-r from-blue-600 to-cyan-500
+              w-8 h-8 rounded-full flex items-center justify-center text-white text-sm transition-all duration-300 shadow-lg
+              ${theme === 'light'
+                ? 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'
+                : 'bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500'
+              }
             `}
           >
             →
