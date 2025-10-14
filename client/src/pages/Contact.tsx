@@ -76,10 +76,8 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
     setTimeout(() => {
       setIsSubmitting(false);
-      // Handle form submission here
       console.log("Form submitted:", formData);
     }, 2000);
   };
@@ -95,14 +93,12 @@ export default function Contact() {
       }
     `}
     >
-      {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Hero Section */}
       <section className="relative py-24 px-6">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/5 to-black/10"></div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
@@ -147,7 +143,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Contact Methods */}
       <section className="py-16 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
@@ -167,7 +162,6 @@ export default function Contact() {
                   }
                 `}
               >
-                {/* Background Gradient on Hover */}
                 <motion.div
                   className={`absolute inset-0 bg-gradient-to-br ${method.gradient} opacity-0`}
                   whileHover={{ opacity: 0.05 }}
@@ -213,7 +207,6 @@ export default function Contact() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Form */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -435,7 +428,6 @@ export default function Contact() {
               transition={{ duration: 0.8 }}
               className="space-y-8"
             >
-              {/* Map Placeholder */}
               <div
                 className={`
                 rounded-3xl overflow-hidden backdrop-blur-sm border-2

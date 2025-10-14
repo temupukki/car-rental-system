@@ -229,8 +229,6 @@ export default function About() {
           </div>
         </div>
       </section>
-
-      {/* Timeline Section */}
       <section className={`
         py-20 px-6 relative
         ${theme === 'light' 
