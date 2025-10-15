@@ -102,97 +102,77 @@ export default function Contact() {
       }
     `}
     >
-      {/* Enhanced Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute top-20 left-20 w-32 h-32 bg-yellow-500/5 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-20 right-20 w-32 h-32 bg-green-500/5 rounded-full blur-2xl"></div>
-      </div>
 
-      {/* Hero Section with Photo */}
-      <section className="relative py-24 px-6 min-h-[60vh] flex items-center">
-        {/* Background with Image and Overlay */}
-        <div 
+      <div className="relative h-[500px] rounded-b-3xl overflow-hidden">
+      
+        <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/contact-hero.jpg')",
+            backgroundImage:
+              "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/contact.jpg')",
           }}
         />
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-purple-900/60 to-cyan-900/80"></div>
 
-        <div className="max-w-6xl mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="inline-flex items-center px-6 py-3 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 mb-6"
-          >
-            <span className="text-lg font-semibold text-white">
-              💬 {t("contact.heroBadge") || "Get In Touch"}
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold mb-6 text-white leading-tight"
-          >
-            Let's Start a{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-cyan-300">
-              Conversation
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-xl md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed text-gray-200"
-          >
-            {t("contact.subtitle") || "Have questions? We're here to help. Get in touch with our team and let's discuss how we can assist you."}
-          </motion.p>
-
-          {/* Quick Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto"
-          >
-            {[
-              { number: "2h", label: "Avg. Response" },
-              { number: "24/7", label: "Support" },
-              { number: "100%", label: "Satisfaction" },
-              { number: "5.0", label: "Rating" },
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 + index * 0.1 }}
-                className="text-center"
+        <div className="absolute inset-0 flex items-center px-8">
+          <div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+            >
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                Get In
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500">
+                  Touch
+                </span>
+              </h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-xl text-gray-200 mb-8 max-w-2xl"
               >
-                <div className="text-2xl md:text-3xl font-bold text-white mb-1">
-                  {stat.number}
-                </div>
-                <div className="text-sm text-gray-300">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+                {t("contact.subtitle") || "Have questions? We're here to help. Get in touch with our team and let's discuss how we can assist you."}
+              </motion.p>
 
-      {/* Contact Methods & Form Section */}
+         
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="grid grid-cols-2 md:grid-cols-4 gap-6"
+              >
+                {[
+                  { number: "2h", label: "Avg. Response" },
+                  { number: "24/7", label: "Support" },
+                  { number: "100%", label: "Satisfaction" },
+                  { number: "5.0", label: "Rating" },
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                    className="text-center"
+                  >
+                    <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                      {stat.number}
+                    </div>
+                    <div className="text-sm text-gray-300">
+                      {stat.label}
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+ 
       <section className="py-20 px-6 relative -mt-20">
         <div className="max-w-7xl mx-auto">
-          {/* Contact Methods */}
+       
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
             {contactMethods.map((method, index) => (
               <motion.div
@@ -214,14 +194,14 @@ export default function Contact() {
                   }
                 `}
               >
-                {/* Background Gradient on Hover */}
+           
                 <motion.div
                   className={`absolute inset-0 bg-gradient-to-br ${method.gradient} opacity-0`}
                   whileHover={{ opacity: 0.05 }}
                   transition={{ duration: 0.3 }}
                 />
 
-                {/* Icon */}
+      
                 <motion.div
                   className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br ${method.gradient} text-white text-3xl mb-6 mx-auto shadow-2xl relative overflow-hidden`}
                   whileHover={{ 
@@ -242,8 +222,6 @@ export default function Contact() {
                     transition={{ duration: 0.3 }}
                   />
                 </motion.div>
-
-                {/* Content */}
                 <h3
                   className={`
                   text-xl font-bold mb-3 relative z-10
@@ -271,7 +249,7 @@ export default function Contact() {
                   {method.description}
                 </p>
 
-                {/* Floating Elements */}
+             
                 <motion.div
                   className={`absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-br ${method.gradient} opacity-20`}
                   animate={{ 
@@ -288,9 +266,9 @@ export default function Contact() {
             ))}
           </div>
 
-          {/* Form and Additional Info */}
+     
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Form */}
+   
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -304,7 +282,7 @@ export default function Contact() {
                 }
               `}
             >
-              {/* Form Background Pattern */}
+      
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-2xl"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500 rounded-full blur-2xl"></div>
@@ -517,14 +495,14 @@ export default function Contact() {
               </div>
             </motion.div>
 
-            {/* Map & FAQ Section */}
+        
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               className="space-y-8"
             >
-              {/* Office Location */}
+           
               <div
                 className={`
                 rounded-3xl overflow-hidden backdrop-blur-sm border-2 relative
@@ -535,17 +513,17 @@ export default function Contact() {
                 }
               `}
               >
-                <div className="h-80 bg-cover bg-center relative" style={{ backgroundImage: "url('/office-location.jpg')" }}>
+                <div className="h-80 bg-cover bg-center relative" style={{ backgroundImage: "url('/show-room.jpg')" }}>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 text-white">
                     <h3 className="text-2xl font-bold mb-2">
                       {t("contact.visitUs") || "Visit Our Office"}
                     </h3>
                     <p className="text-blue-100 text-lg">
-                      123 Drive Street, City, State 12345
+                     Gondar, Maraki,Kebele 18
                     </p>
                     <p className="text-gray-300 mt-2">
-                      🕒 Mon - Fri: 9:00 AM - 6:00 PM
+                      🕒 Mon - Fri: 2:00 AM - 11:00 AM LT
                     </p>
                   </div>
                 </div>
