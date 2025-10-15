@@ -10,26 +10,26 @@ export default function About() {
   const milestones = [
     {
       year: "2010",
-      title: "Company Founded",
-      description: "Started with 10 vehicles in downtown location",
+      title: t("about.milestones.2010.title") || "Company Founded",
+      description: t("about.milestones.2010.description") || "Started with 10 vehicles in downtown location",
       icon: "🚀",
     },
     {
       year: "2014",
-      title: "Fleet Expansion",
-      description: "Grew to 50+ vehicles across 3 locations",
+      title: t("about.milestones.2014.title") || "Fleet Expansion",
+      description: t("about.milestones.2014.description") || "Grew to 50+ vehicles across 3 locations",
       icon: "📈",
     },
     {
       year: "2018",
-      title: "Premium Launch",
-      description: "Introduced luxury and premium vehicle categories",
+      title: t("about.milestones.2018.title") || "Premium Launch",
+      description: t("about.milestones.2018.description") || "Introduced luxury and premium vehicle categories",
       icon: "🏎️",
     },
     {
       year: "2023",
-      title: "Digital Transformation",
-      description: "Launched mobile app and online booking platform",
+      title: t("about.milestones.2023.title") || "Digital Transformation",
+      description: t("about.milestones.2023.description") || "Launched mobile app and online booking platform",
       icon: "📱",
     },
   ];
@@ -37,31 +37,38 @@ export default function About() {
   const values = [
     {
       icon: "🤝",
-      title: "Customer First",
-      description: "We prioritize customer satisfaction above all else",
+      title: t("about.values.customer.title") || "Customer First",
+      description: t("about.values.customer.description") || "We prioritize customer satisfaction above all else",
     },
     {
       icon: "⚡",
-      title: "Excellence",
-      description: "We strive for excellence in every aspect of our service",
+      title: t("about.values.excellence.title") || "Excellence",
+      description: t("about.values.excellence.description") || "We strive for excellence in every aspect of our service",
     },
     {
       icon: "🛡️",
-      title: "Reliability",
-      description: "You can count on us to deliver what we promise",
+      title: t("about.values.reliability.title") || "Reliability",
+      description: t("about.values.reliability.description") || "You can count on us to deliver what we promise",
     },
     {
       icon: "💡",
-      title: "Innovation",
-      description: "We continuously improve and embrace new technologies",
+      title: t("about.values.innovation.title") || "Innovation",
+      description: t("about.values.innovation.description") || "We continuously improve and embrace new technologies",
     },
   ];
 
   const teamStats = [
-    { number: "50+", label: "Team Members" },
-    { number: "24/7", label: "Support" },
-    { number: "99%", label: "Satisfaction Rate" },
-    { number: "5.0", label: "Average Rating" },
+    { number: "50+", label: t("about.stats.team") || "Team Members" },
+    { number: "24/7", label: t("about.stats.support") || "Support" },
+    { number: "99%", label: t("about.stats.satisfaction") || "Satisfaction Rate" },
+    { number: "5.0", label: t("about.stats.rating") || "Average Rating" },
+  ];
+
+  const additionalStats = [
+    { number: "500+", label: t("about.stats.vehicles") || "Vehicles", color: "blue" },
+    { number: "50+", label: t("about.stats.locations") || "Locations", color: "green" },
+    { number: "10K+", label: t("about.stats.customers") || "Customers", color: "purple" },
+    { number: "15+", label: t("about.stats.cities") || "Cities", color: "orange" },
   ];
 
   return (
@@ -75,6 +82,7 @@ export default function About() {
       }
     `}
     >
+      {/* Hero Section */}
       <div className="relative h-[500px] rounded-b-3xl overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -92,9 +100,9 @@ export default function About() {
               transition={{ duration: 0.7 }}
             >
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                Driving
+                {t("about.hero.title.line1") || "Driving"}
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500">
-                  Excellence
+                  {t("about.hero.title.line2") || "Excellence"}
                 </span>
               </h1>
               <motion.p
@@ -103,7 +111,7 @@ export default function About() {
                 transition={{ delay: 0.2 }}
                 className="text-xl text-gray-200 mb-8 max-w-2xl"
               >
-                {t("about.subtitle") ||
+                {t("about.hero.subtitle") ||
                   "We're revolutionizing the car rental experience with innovation, reliability, and unmatched customer service."}
               </motion.p>
 
@@ -133,6 +141,7 @@ export default function About() {
         </div>
       </div>
 
+      {/* Story Section */}
       <section className="py-20 px-6 relative">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -147,9 +156,9 @@ export default function About() {
                 ${theme === "light" ? "text-gray-900" : "text-white"}
               `}
               >
-                Our Journey of{" "}
+                {t("about.story.title.line1") || "Our Journey of"}{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                  Innovation
+                  {t("about.story.title.line2") || "Innovation"}
                 </span>
               </h2>
               <div
@@ -159,37 +168,27 @@ export default function About() {
               `}
               >
                 <p>
-                  Founded in 2010, we started with a simple mission: to make car
-                  rental accessible, affordable, and enjoyable for everyone.
-                  What began as a small fleet of 10 vehicles has grown into a
-                  comprehensive mobility solution serving thousands of
-                  customers.
+                  {t("about.story.paragraph1") ||
+                    "Founded in 2010, we started with a simple mission: to make car rental accessible, affordable, and enjoyable for everyone. What began as a small fleet of 10 vehicles has grown into a comprehensive mobility solution serving thousands of customers."}
                 </p>
                 <p>
-                  Our commitment to innovation and customer satisfaction has
-                  driven our expansion across multiple cities, introducing
-                  premium vehicles and digital solutions that redefine the
-                  rental experience.
+                  {t("about.story.paragraph2") ||
+                    "Our commitment to innovation and customer satisfaction has driven our expansion across multiple cities, introducing premium vehicles and digital solutions that redefine the rental experience."}
                 </p>
                 <p>
-                  Today, we continue to push boundaries, leveraging technology
-                  to create seamless experiences while maintaining the personal
-                  touch that our customers love.
+                  {t("about.story.paragraph3") ||
+                    "Today, we continue to push boundaries, leveraging technology to create seamless experiences while maintaining the personal touch that our customers love."}
                 </p>
               </div>
 
+              {/* Enhanced Stats */}
               <motion.div
                 className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
               >
-                {[
-                  { number: "500+", label: "Vehicles", color: "blue" },
-                  { number: "50+", label: "Locations", color: "green" },
-                  { number: "10K+", label: "Customers", color: "purple" },
-                  { number: "15+", label: "Cities", color: "orange" },
-                ].map((stat, index) => (
+                {additionalStats.map((stat, index) => (
                   <motion.div
                     key={stat.label}
                     whileHover={{ scale: 1.05, y: -5 }}
@@ -202,9 +201,7 @@ export default function About() {
                       }
                     `}
                   >
-                    <div
-                      className={`text-3xl font-bold text-${stat.color}-600 dark:text-${stat.color}-400 mb-2`}
-                    >
+                    <div className={`text-3xl font-bold text-${stat.color}-600 dark:text-${stat.color}-400 mb-2`}>
                       {stat.number}
                     </div>
                     <div
@@ -219,6 +216,7 @@ export default function About() {
               </motion.div>
             </motion.div>
 
+            {/* Values Grid */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -238,7 +236,7 @@ export default function About() {
                 ${theme === "light" ? "text-gray-900" : "text-white"}
               `}
               >
-                Our Values
+                {t("about.values.title") || "Our Values"}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {values.map((value, index) => (
@@ -291,6 +289,7 @@ export default function About() {
         </div>
       </section>
 
+      {/* Timeline Section */}
       <section
         className={`
         py-20 px-6 relative
@@ -314,9 +313,9 @@ export default function About() {
               ${theme === "light" ? "text-gray-900" : "text-white"}
             `}
             >
-              Our{" "}
+              {t("about.timeline.title.line1") || "Our"}{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                Journey
+                {t("about.timeline.title.line2") || "Journey"}
               </span>
             </h2>
             <p
@@ -325,12 +324,13 @@ export default function About() {
               ${theme === "light" ? "text-gray-600" : "text-gray-400"}
             `}
             >
-              From humble beginnings to industry leadership - our story of
-              growth and innovation
+              {t("about.timeline.subtitle") ||
+                "From humble beginnings to industry leadership - our story of growth and innovation"}
             </p>
           </motion.div>
 
           <div className="relative">
+            {/* Timeline Line */}
             <div
               className={`
               absolute left-1/2 transform -translate-x-1/2 h-full w-1
@@ -353,6 +353,7 @@ export default function About() {
                     index % 2 === 0 ? "flex-row" : "flex-row-reverse"
                   }`}
                 >
+                  {/* Content */}
                   <div
                     className={`w-1/2 ${index % 2 === 0 ? "pr-12" : "pl-12"}`}
                   >
@@ -367,6 +368,7 @@ export default function About() {
                         }
                       `}
                     >
+                      {/* Background Gradient on Hover */}
                       <div
                         className={`
                         absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300
@@ -413,6 +415,7 @@ export default function About() {
                     </motion.div>
                   </div>
 
+                  {/* Timeline Dot */}
                   <div className="relative z-10">
                     <motion.div
                       whileHover={{ scale: 1.3 }}
@@ -427,6 +430,7 @@ export default function About() {
                     ></motion.div>
                   </div>
 
+                  {/* Spacer */}
                   <div className="w-1/2"></div>
                 </motion.div>
               ))}
@@ -435,6 +439,7 @@ export default function About() {
         </div>
       </section>
 
+      {/* CTA Section */}
       <section
         className={`
         py-20 px-6 relative overflow-hidden
@@ -445,6 +450,7 @@ export default function About() {
         }
       `}
       >
+        {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-0 w-72 h-72 bg-blue-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-72 h-72 bg-cyan-500 rounded-full blur-3xl"></div>
@@ -481,7 +487,7 @@ export default function About() {
               ${theme === "light" ? "text-gray-900" : "text-white"}
             `}
             >
-              Ready to Experience Excellence?
+              {t("about.cta.title") || "Ready to Experience Excellence?"}
             </h2>
 
             <p
@@ -490,9 +496,8 @@ export default function About() {
               ${theme === "light" ? "text-gray-700" : "text-gray-300"}
             `}
             >
-              Join thousands of satisfied customers who trust us for their
-              mobility needs. Discover why we're the preferred choice for car
-              rentals.
+              {t("about.cta.subtitle") ||
+                "Join thousands of satisfied customers who trust us for their mobility needs. Discover why we're the preferred choice for car rentals."}
             </p>
 
             <motion.div
@@ -514,7 +519,9 @@ export default function About() {
                     bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl
                   `}
                 >
-                  <span className="relative z-10">Explore Our Fleet</span>
+                  <span className="relative z-10">
+                    {t("about.cta.primaryButton") || "Explore Our Fleet"}
+                  </span>
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     initial={false}
@@ -539,7 +546,7 @@ export default function About() {
                     }
                   `}
                 >
-                  Get In Touch
+                  {t("about.cta.secondaryButton") || "Get In Touch"}
                 </motion.button>
               </Link>
             </motion.div>

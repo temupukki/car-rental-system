@@ -255,32 +255,53 @@ const translations = {
 "vehicles.cars.suburban.features.luxury": "Luxury",
 
     // About Page
-    "about.title": "About EliteDrive",
-    "about.heroBadge": "Our Story & Mission",
-    "about.subtitle":
-      "Driving excellence in car rental services since 2010. Discover our journey, values, and the team behind your premium rental experience.",
-    "about.storyTitle": "Our Journey",
-    "about.story1":
-      "Founded in 2010, EliteDrive started as a small local car rental service with just 10 vehicles and a big dream: to revolutionize the car rental industry through exceptional service and premium vehicles.",
-    "about.story2":
-      "Over the years, we have grown into a trusted name in car rentals, expanding our fleet to over 500 vehicles and serving thousands of satisfied customers across multiple locations.",
-    "about.story3":
-      "Today, we continue to innovate and set new standards in the industry, combining cutting-edge technology with personalized service to deliver unforgettable driving experiences.",
-    "about.vehiclesCount": "Premium Vehicles",
-    "about.locationsCount": "Service Locations",
-    "about.customersCount": "Happy Customers",
-    "about.timelineTitle": "Our Milestones",
-    "about.timelineSubtitle":
-      "Key moments that shaped our journey to excellence",
-    "about.teamTitle": "Meet Our Team",
-    "about.teamSubtitle":
-      "The passionate professionals dedicated to your rental experience",
-    "about.missionTitle": "Our Mission",
-    "about.missionStatement":
-      "To provide exceptional car rental experiences through premium vehicles, innovative technology, and unparalleled customer service. We are committed to making every journey memorable, comfortable, and hassle-free for our valued customers.",
-    "about.ctaServices": "Explore Our Fleet",
-    "about.ctaContact": "Get In Touch",
+ 
+"about.hero.title.line1": "Driving",
+"about.hero.title.line2": "Excellence",
+"about.hero.subtitle": "We're revolutionizing the car rental experience with innovation, reliability, and unmatched customer service.",
 
+"about.story.title.line1": "Our Journey of",
+"about.story.title.line2": "Innovation",
+"about.story.paragraph1": "Founded in 2010, we started with a simple mission: to make car rental accessible, affordable, and enjoyable for everyone. What began as a small fleet of 10 vehicles has grown into a comprehensive mobility solution serving thousands of customers.",
+"about.story.paragraph2": "Our commitment to innovation and customer satisfaction has driven our expansion across multiple cities, introducing premium vehicles and digital solutions that redefine the rental experience.",
+"about.story.paragraph3": "Today, we continue to push boundaries, leveraging technology to create seamless experiences while maintaining the personal touch that our customers love.",
+
+"about.values.title": "Our Values",
+"about.values.customer.title": "Customer First",
+"about.values.customer.description": "We prioritize customer satisfaction above all else",
+"about.values.excellence.title": "Excellence",
+"about.values.excellence.description": "We strive for excellence in every aspect of our service",
+"about.values.reliability.title": "Reliability",
+"about.values.reliability.description": "You can count on us to deliver what we promise",
+"about.values.innovation.title": "Innovation",
+"about.values.innovation.description": "We continuously improve and embrace new technologies",
+
+"about.timeline.title.line1": "Our",
+"about.timeline.title.line2": "Journey",
+"about.timeline.subtitle": "From humble beginnings to industry leadership - our story of growth and innovation",
+
+"about.milestones.2010.title": "Company Founded",
+"about.milestones.2010.description": "Started with 10 vehicles in downtown location",
+"about.milestones.2014.title": "Fleet Expansion",
+"about.milestones.2014.description": "Grew to 50+ vehicles across 3 locations",
+"about.milestones.2018.title": "Premium Launch",
+"about.milestones.2018.description": "Introduced luxury and premium vehicle categories",
+"about.milestones.2023.title": "Digital Transformation",
+"about.milestones.2023.description": "Launched mobile app and online booking platform",
+
+"about.stats.team": "Team Members",
+"about.stats.support": "Support",
+"about.stats.satisfaction": "Satisfaction Rate",
+"about.stats.rating": "Average Rating",
+"about.stats.vehicles": "Vehicles",
+"about.stats.locations": "Locations",
+"about.stats.customers": "Customers",
+"about.stats.cities": "Cities",
+
+"about.cta.title": "Ready to Experience Excellence?",
+"about.cta.subtitle": "Join thousands of satisfied customers who trust us for their mobility needs. Discover why we're the preferred choice for car rentals.",
+"about.cta.primaryButton": "Explore Our Fleet",
+"about.cta.secondaryButton": "Get In Touch",
     // Contact Page
     "contact.title": "Get In Touch",
     "contact.heroBadge": "We are Here to Help",
@@ -693,7 +714,6 @@ const translations = {
     "footer.privacy": "የግላዊነት ፖሊሲ",
     "footer.terms": "የአገልግሎት ውሎች",
 
-   // Add to your amharicTranslations object
 "vehicles.hero.title.line1": "የእርስዎን ፍጹም",
 "vehicles.hero.title.line2": "መኪና ያግኙ",
 "vehicles.hero.subtitle": "የእኛን ማሻሻያ የመኪና እፅዋት ያግኙ። ከትናንሽ መኪኖች እስከ ሊክስ ሱቮች፣ ከስልጣኔዎ እና ፍላጎትዎ ጋር የሚጣጣም ፍጹም መኪና ያግኙ።",
@@ -804,31 +824,52 @@ const translations = {
 "vehicles.cars.suburban.features.family": "ለቤተሰብ",
 "vehicles.cars.suburban.features.luxury": "ሊክስ",
 
-    // About Page - Amharic
-    "about.title": "ስለ ኤሊትድራይቭ",
-    "about.heroBadge": "የእኛ ታሪክ እና ተልዕኮ",
-    "about.subtitle":
-      "ከ2014 ጀምሮ በመኪና ኪራይ አገልግሎት የምንሰራ። ጉዞዎችን፣ እሴቶቻችንን እና የፕሪሚየም ኪራይ ተሞክሮዎችዎን የሚያቀናጁ ቡድናችንን ይወቁ።",
-    "about.storyTitle": "የእኛ ጉዞ",
-    "about.story1":
-      "በ2014 የተመሠረተው ኤሊትድራይቭ ከ10 ተሽከርካሪዎች እና ከትልቅ ህልም ጋር እንደ አነስተኛ የመኪና ኪራይ አገልግሎት ጀመረ፡  አገልግሎት እና ፕሪሚየም ተሽከርካሪዎች በመኪና ኪራይ ኢንዱስትሪ ለማደስ።",
-    "about.story2":
-      "በዓመታት ሂደት፣ በመኪና ኪራይ ውስጥ የሚታመን ስም ሆነን በመቀጠል ተሽከርካሪዎቻችንን ከ500 በላይ በማድረግ በብዙ ቦታዎች በሚገኙ በሺዎች የሚቆጠሩ ደንበኞች አገልግለናል።",
-    "about.story3":
-      "ዛሬም በቀጣይነት በኢንዱስትሪው ውስጥ አዳዲስ መስፈርቶችን በማዘጋጀት እና በመሻሻል እየሰራን ፕሬሚየም ቴክኖሎጂን ከግላዊ አገልግሎት ጋር በማጣመር የማይረሳ የመንገድ ተሞክሮዎችን እናቀርባለን።",
-    "about.vehiclesCount": "ፕሪሚየም ተሽከርካሪዎች",
-    "about.locationsCount": "የአገልግሎት ቦታዎች",
-    "about.customersCount": " ደንበኞች",
-    "about.timelineTitle": "የእኛ ማዕከላዊ ጊዜያት",
-    "about.timelineSubtitle": "ጉዞዎቻችንን ወደ አለባበስ የሚያመሩ ቁልፍ ጊዜያት",
-    "about.teamTitle": "ቡድናችንን ያነጋግሩ",
-    "about.teamSubtitle": "ለኪራይ ተሞክሮዎ የተለዩ ፕሮፌሽናሎች",
-    "about.missionTitle": "የእኛ ተልዕኮ",
-    "about.missionStatement":
-      "ፕሪሚየም ተሽከርካሪዎች፣ ፈጠራዊ ቴክኖሎጂ እና ያልተወዳደረ የደንበኞች አገልግሎት በመስጠት አስደናቂ የመኪና ኪራይ ተሞክሮዎችን ለመስጠት። ለእያንዳንዱ ጉዞ ለሚመለከቱት ደንበኞቻችን ያልተረሳ፣ ምቹ እና ቀላል እንዲሆን ቃል እንገባለን።",
-    "about.ctaServices": "ተሽከርካሪዎቻችንን ይመልከቱ",
-    "about.ctaContact": "አግኙን",
+"about.hero.title.line1": "መንዳት",
+"about.hero.title.line2": "ሙሉ ማሟያ",
+"about.hero.subtitle": "የመኪና ኪራይ ተሞክሮን በማሻሻል፣ አስተማማኝነት እና ያልተለመደ የደንበኛ አገልግሎት እየቀየርን ነው።",
 
+"about.story.title.line1": "የእኛ ጉዞ",
+"about.story.title.line2": "ማሻሻል",
+"about.story.paragraph1": "በ2010 የተመሠረተው እኛ ቀላል ተልዕኮ አለን፡ የመኪና ኪራይ ለሁሉም ሰው ተደራሽ፣ ሊገጠም የሚችል እና አስደሳች ማድረግ። ከ10 መኪኖች የጀመረው አሁን በሺዎች የሚቆጠሩ ደንበኞችን የሚያገለግል ሙሉ የሞባይሊቲ መፍትሄ ሆኗል።",
+"about.story.paragraph2": "ለማሻሻል እና ለደንበኛ እርካታ ያለን ቁርጠኝነት በብዙ ከተሞች ማስፋፋታችንን አስከትሏል፣ የማሻሻያ መኪኖችን እና ዲጂታል መፍትሄዎችን በማስተዋወቅ የኪራይ ተሞክሮን እየቀየርን ነው።",
+"about.story.paragraph3": "ዛሬም ድንበሮችን በመጣስ ቀጠለን፣ ቴክኖሎጂን በመጠቀም ልምምድ የሌለው ተሞክሮ ለመፍጠር እና ደንበኞቻችን የሚወዷቸውን የግል ንክኪ ለመጠበቅ ነው።",
+
+"about.values.title": "የእኛ እሴቶች",
+"about.values.customer.title": "ደንበኛ በመጀመሪያ",
+"about.values.customer.description": "የደንበኛ እርካታን ከሁሉም ነገር በላይ እናስቀድማለን",
+"about.values.excellence.title": "ሙሉ ማሟያ",
+"about.values.excellence.description": "በአገልግሎታችን ሁሉ ላይ ሙሉ ማሟያ ለማምጣት እንጥራለን",
+"about.values.reliability.title": "አስተማማኝነት",
+"about.values.reliability.description": "የምናስበውን እንደምናደርግ በእኛ ሊታመኑ ይችላሉ",
+"about.values.innovation.title": "ማሻሻል",
+"about.values.innovation.description": "በቀጣይነት እንሻሻላለን እና አዳዲስ ቴክኖሎጂዎችን እንቀበላለን",
+
+"about.timeline.title.line1": "የእኛ",
+"about.timeline.title.line2": "ጉዞ",
+"about.timeline.subtitle": "ከተቸራረሱ መነሻዎች እስከ ኢንዱስትሪ አመራር - የእድገት እና የማሻሻል ታሪካችን",
+
+"about.milestones.2010.title": "ኩባንያ ተመሠረተ",
+"about.milestones.2010.description": "በ10 መኪኖች በከተማ ማዕከል ጀመረ",
+"about.milestones.2014.title": "የመኪና እፅዋት ማስፋፋት",
+"about.milestones.2014.description": "በ3 ቦታዎች ወደ 50+ መኪኖች አድጓል",
+"about.milestones.2018.title": "ማሻሻያ ማስጀመር",
+"about.milestones.2018.description": "ሊክስ እና ማሻሻያ የመኪና ምድቦችን አስተዋወቀ",
+"about.milestones.2023.title": "ዲጂታል ለውጥ",
+"about.milestones.2023.description": "ሞባይል አፕ እና የመስመር ላይ ማርዝም መድረክ አስጀመረ",
+
+"about.stats.team": "የቡድን አባላት",
+"about.stats.support": "ድጋፍ",
+"about.stats.satisfaction": "የእርካታ መጠን",
+"about.stats.rating": "አማካኝ ደረጃ",
+"about.stats.vehicles": "መኪኖች",
+"about.stats.locations": "ቦታዎች",
+"about.stats.customers": "ደንበኞች",
+"about.stats.cities": "ከተሞች",
+
+"about.cta.title": "ሙሉ ማሟያ ለማለት ዝግጁ ነዎት?",
+"about.cta.subtitle": "ለሞባይሊቲ ፍላጎታቸው በእኛ የሚታመኑ በሺዎች የሚቆጠሩ የተረኩ ደንበኞች ይቀላቀሉ። ለመኪና ኪራይ የተመረጥንበትን ምክንያት ይወቁ።",
+"about.cta.primaryButton": "መኪናችንን ይመልከቱ",
+"about.cta.secondaryButton": "አግኙን",
     // Contact Page - Amharic
     "contact.title": "አግኙን",
     "contact.heroBadge": "ለመርዳት እዚህ ነን",
