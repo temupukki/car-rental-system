@@ -45,6 +45,60 @@ const translations = {
       "Comprehensive insurance coverage for peace of mind",
       "home.features.family.title": "Family Friendly",
        "home.features.family.descrption": "Spacious vehicles perfect for family trips",
+       
+  "home.mainFeatures.availability.title": "Easy Availability",
+  "home.mainFeatures.availability.description": "Find and book your perfect car in minutes with our real-time availability system.",
+  "home.mainFeatures.comfort.title": "Premium Comfort",
+  "home.mainFeatures.comfort.description": "Travel in style with our well-maintained, comfortable, and clean vehicles.",
+  "home.mainFeatures.savings.title": "Great Savings",
+  "home.mainFeatures.savings.description": "Competitive pricing with no hidden fees. Get the best value for your money.",
+
+  "home.carExperience.title": "Luxury Experience",
+  "home.carExperience.subtitle": "Premium vehicles for extraordinary journeys",
+
+  "home.whyChoose.title": "Why Choose Our Cars?",
+  "home.whyChoose.description": "Our fleet is meticulously maintained and equipped with the latest features to ensure your journey is safe, comfortable, and memorable.",
+  "home.whyChoose.button": "Explore Features",
+
+  "home.carFeatures.gps": "GPS Navigation System",
+  "home.carFeatures.bluetooth": "Bluetooth Connectivity",
+  "home.carFeatures.climate": "Climate Control",
+  "home.carFeatures.sound": "Premium Sound System",
+  "home.carFeatures.camera": "Backup Camera",
+  "home.carFeatures.seats": "Leather Seats",
+  "home.carFeatures.sunroof": "Sunroof/Moonroof",
+
+  "home.cars.camry.name": "Toyota Camry",
+  "home.cars.camry.type": "Sedan",
+  "home.cars.camry.price": "$45/day",
+  "home.cars.camry.features.seats": "5 Seats",
+  "home.cars.camry.features.transmission": "Automatic",
+  "home.cars.camry.features.ac": "Air Conditioning",
+
+  "home.cars.crv.name": "Honda CR-V",
+  "home.cars.crv.type": "SUV",
+  "home.cars.crv.price": "$65/day",
+  "home.cars.crv.features.seats": "7 Seats",
+  "home.cars.crv.features.drive": "4WD",
+  "home.cars.crv.features.space": "Spacious",
+
+  "home.cars.bmw.name": "BMW 3 Series",
+  "home.cars.bmw.type": "Luxury",
+  "home.cars.bmw.price": "$89/day",
+  "home.cars.bmw.features.premium": "Premium",
+  "home.cars.bmw.features.sport": "Sport Mode",
+  "home.cars.bmw.features.leather": "Leather",
+
+  "home.featuredCars.title": "Featured Vehicles",
+  "home.featuredCars.subtitle": "Discover our handpicked selection of premium vehicles for every occasion and budget.",
+  "home.featuredCars.bookButton": "Book Now",
+  "home.featuredCars.detailsButton": "Details",
+  "home.featuredCars.viewAllButton": "View All Vehicles",
+
+  "home.cta.title": "Ready to Start Your Journey?",
+  "home.cta.subtitle": "Join thousands of satisfied customers who trust us for their travel needs. Book your perfect car today and hit the road with confidence.",
+  "home.cta.primaryButton": "Book Your Car Now",
+  "home.cta.secondaryButton": "Contact Us",
 
     "home.hero.title": "Drive Your Dreams With EliteDrive",
     "home.hero.with": "With EliteDrive",
@@ -68,10 +122,7 @@ const translations = {
     "home.features.pricesDesc": "The Best Price in the city!",
 
     "home.features.support": "5-Star Support",
-    "home.cta.title": "Ready to Hit the Road?",
-    "home.cta.subtitle":
-      "Join thousands of satisfied customers and experience the EliteDrive difference today.",
-    "home.cta.button": "Start Your Journey Now",
+   
 
     // Footer
     "footer.company":
@@ -474,11 +525,83 @@ const translations = {
     "company.name": "ኤሊት ድራይቭ",
 
     // Home Page - ዋና ገጽ
+ "home.hero.title.line1": "መንገዱን ያለመታወቅ",
+  "home.hero.title.line2": "በሙሉ ይግለጹ",
+  "home.hero.subtitle": "ለጉዞዎ ፍጹም መኪና ያግኙ። ከትናንሽ መኪኖች እስከ ሊክስ ሱቮች፣ ያልተለመደ ምቾት እና አስተማማኝነት የሚያቀርቡ ማሻሻያ የመኪና ኪራይ አገልግሎቶችን እናቀርባለን።",
+  "home.hero.cta.primary": "ሁሉንም መኪኖች ይመልከቱ",
+  "home.hero.cta.secondary": "ተጨማሪ ይወቁ",
+
+  "home.bookingCard.title": "መኪናዎን ያርዝሙ",
+  "home.bookingCard.subtitle": "ለመንገድ ለመውጣት የሚያስፈልግዎ ነገር ሁሉ።",
+  "home.bookingCard.button": "ለማርዝም ይመዝገቡ",
+
+  "home.features.locations.title": "ማሻሻያ ቦታዎች",
+  "home.features.locations.description": "በብዙ ምቹ ቦታዎች ይውሰዱ እና ይመልሱ",
+  "home.features.service.title": "24/7 አገልግሎት",
+  "home.features.service.description": "ቀን ከሌሊት የማርዝም እና የደንበኛ አገልግሎት",
+  "home.features.insurance.title": "ሙሉ ኢንሹራንስ",
+  "home.features.insurance.description": "ለሰላም አእምሮ ሙሉ የኢንሹራንስ ሽፋን",
+  "home.features.family.title": "ለቤተሰብ ተስማሚ",
+  "home.features.family.description": "ለቤተሰብ ጉዞዎች ፍጹም ሰፊ መኪኖች",
+
+  "home.mainFeatures.availability.title": "ቀላል መገኘት",
+  "home.mainFeatures.availability.description": "በእውነተኛ-ጊዜ መገኘት ስርዓታችን ፍጹም መኪናዎን በማግኘት ያርዝሙ።",
+  "home.mainFeatures.comfort.title": "ማሻሻያ አለባበስ",
+  "home.mainFeatures.comfort.description": "በደንበኛነት የተጠሩ፣ ምቹ እና ንጹህ መኪኖቻችን ይጓዙ።",
+  "home.mainFeatures.savings.title": "ታላቅ ቁጠባ",
+  "home.mainFeatures.savings.description": "የተደባለቁ ዋጋዎች ያለምንም የተደበቁ ክፍያዎች። ለገንዘብዎ ምርጥ ዋጋ ያግኙ።",
+
+  "home.carExperience.title": "ሊክስ ተሞክሮ",
+  "home.carExperience.subtitle": "ለተለየ ጉዞዎች ማሻሻያ መኪኖች",
+
+  "home.whyChoose.title": "ለምን መኪናችንን መምረጥ?",
+  "home.whyChoose.description": "መኪናችን ጉዞዎ ደህንነቱ የተጠበቀ፣ ምቹ እና ትዝ አለው መሆኑን ለማረጋገጥ በደንብ ተጠርቶ በዘመናዊ ባህሪያት ተጭኗል።",
+  "home.whyChoose.button": "ባህሪያትን ይመልከቱ",
+
+  "home.carFeatures.gps": "ጂፒኤስ አቅጣጫ ማሳያ",
+  "home.carFeatures.bluetooth": "ብሉቱዝ ግንኙነት",
+  "home.carFeatures.climate": "አየር ማስተካከያ",
+  "home.carFeatures.sound": "ማሻሻያ የድምፅ ስርዓት",
+  "home.carFeatures.camera": "የመመለሻ ካሜራ",
+  "home.carFeatures.seats": "የቆዳ መቀመጫዎች",
+  "home.carFeatures.sunroof": "ፀሐይ/ጨረቃ መስኮት",
+
+  "home.cars.camry.name": "ቶዮታ ካምሪ",
+  "home.cars.camry.type": "ሴዳን",
+  "home.cars.camry.price": "45 ዶላር/ቀን",
+  "home.cars.camry.features.seats": "5 መቀመጫዎች",
+  "home.cars.camry.features.transmission": "አውቶማቲክ",
+  "home.cars.camry.features.ac": "አየር ማስተካከያ",
+
+  "home.cars.crv.name": "ሆንዳ ሲአር-ቪ",
+  "home.cars.crv.type": "ሱቭ",
+  "home.cars.crv.price": "65 ዶላር/ቀን",
+  "home.cars.crv.features.seats": "7 መቀመጫዎች",
+  "home.cars.crv.features.drive": "4 ወለል አሽከር",
+  "home.cars.crv.features.space": "ሰፊ",
+
+  "home.cars.bmw.name": "ቢኤምዋይ 3 ሴሪዝ",
+  "home.cars.bmw.type": "ሊክስ",
+  "home.cars.bmw.price": "89 ዶላር/ቀን",
+  "home.cars.bmw.features.premium": "ማሻሻያ",
+  "home.cars.bmw.features.sport": "ስፖርት ሞድ",
+  "home.cars.bmw.features.leather": "ቆዳ",
+
+  "home.featuredCars.title": "የተመረጡ መኪኖች",
+  "home.featuredCars.subtitle": "ለእያንዳንዱ አጋጣሚ እና በጀት የተመረጡ ማሻሻያ መኪኖችን ያግኙ።",
+  "home.featuredCars.bookButton": "አሁን ያርዙ",
+  "home.featuredCars.detailsButton": "ዝርዝሮች",
+  "home.featuredCars.viewAllButton": "ሁሉንም መኪኖች ይመልከቱ",
+
+  "home.cta.title": "ጉዞዎን ለመጀመር ዝግጁ ነዎት?",
+  "home.cta.subtitle": "ለጉዞ ፍላጎታቸው በእኛ የሚታመኑ በሺዎች የሚቆጠሩ የተረኩ ደንበኞች ይቀላቀሉ። ፍጹም መኪናዎን ዛሬ ያርዙ እና በራስ መተማመን ወደ መንገድ ይውጡ።",
+  "home.cta.primaryButton": "መኪናዎን አሁን ያርዙ",
+  "home.cta.secondaryButton": "አግኙን",
+
     "home.badge": "የመኪና ኪራይ በምርጥ ዋጋ !",
     "home.hero.title": "የፈለጉትን መኪና እኛ ጋር ያግኙ ",
     "home.hero.with": "ከኤሊትድራይቭ ጋር",
-    "home.hero.subtitle":
-      "ውበት፣ አስተማማኝነት እና አሪፍ አገልግሎት ያግኙ። ከኢኮኖሚ እስከ ፕሪሚየም ለእያንዳንዱ ጉዞ ፍጹም ተሽከርካሪ አለን።",
+   
     "home.hero.explore": "🚗 ተሽከርካሪዎቻችንን ይመልከቱ",
     "home.hero.deals": "💰 ማራኪ ቅናሾችን ይመልከቱ",
     "home.stats.vehicles": "ተሽከርካሪዎች",
@@ -493,9 +616,7 @@ const translations = {
     "home.features.bookingDesc": "የፈለጉትን  መኪና ከ2 ደቂቃ ባልበለጠ ጊዜ ውስጥ በቀላሉ ይዘዙ",
     "home.features.insuranceDesc": "ሙሉ የኢንሹራንስ ሽፋን ለእያንዳንዱ ጉዞ ",
     "home.features.pricesDesc": "በከተማው አሪፉ ዋጋ!",
-    "home.cta.title": "ለመንገድ ዝግጁ ነዎት?",
-    "home.cta.subtitle":
-      "ከሺዎች የሚቆጠሩ  ደንበኞቻችን ጋር ይቀላቀሉ እና የኤሊትድራይቭ ልዩነት ዛሬ ይለማመዱ።",
+ 
     "home.cta.button": "ጉዞዎን አሁኑኑ ይጀምሩ ",
 
     // Footer - መጨረሻ
