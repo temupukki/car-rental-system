@@ -143,61 +143,116 @@ const translations = {
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Service",
 
-    // Services
+    // Add to your englishTranslations object
+"vehicles.hero.title.line1": "Find Your",
+"vehicles.hero.title.line2": "Perfect Ride",
+"vehicles.hero.subtitle": "Discover our premium fleet of vehicles. From compact cars to luxury SUVs, find the perfect car that matches your style and needs.",
 
-    "services.business": "Business Rentals",
-    "services.leasing": "Long Term Leasing",
+"vehicles.searchLabel": "Search Vehicles",
+"vehicles.searchPlaceholder": "Search by car name, model, or type...",
+"vehicles.vehicleType": "Vehicle Type",
+"vehicles.selectTypePlaceholder": "Select type",
+"vehicles.perDay": "/day",
 
-    "services.title": "Our Services",
-    "services.subtitle":
-      "Discover our wide range of premium vehicles and exceptional rental services tailored to your needs",
-    "services.cta.primary": "Book Your Vehicle",
-    "services.cta.secondary": "View All Vehicles",
-    "services.featuredTitle": "Featured Vehicles",
-    "services.categoriesTitle": "Browse By Category",
-    "services.rentNow": "Rent Now",
-    "services.viewCars": "View Cars",
-    "services.whyChoose": "Why Choose EliteDrive?",
-    "services.why1": "Wide Selection",
-    "services.whyDesc1":
-      "Choose from 100+ well-maintained vehicles across all categories",
-    "services.why2": "Best Prices",
-    "services.whyDesc2":
-      "Competitive rates with no hidden fees and price match guarantee",
-    "services.why3": "Premium Service",
-    "services.whyDesc3": "24/7 customer support and premium rental experience",
-    "services.all": "All Cars",
-    "services.noFeatured": "No featured vehicles in this category",
-    "services.tryAnother": "Try selecting another category",
-    "services.popular": "Most Popular",
-    "services.includes": "Includes",
+"vehicles.allVehicles": "All Vehicles",
+"vehicles.sedan": "Sedan",
+"vehicles.suv": "SUV",
+"vehicles.luxury": "Luxury",
+"vehicles.sports": "Sports",
+"vehicles.compact": "Compact",
+"vehicles.van": "Van",
 
-    // Categories
-    "services.luxury": "Luxury Cars",
-    "services.luxuryDesc":
-      "Experience ultimate comfort and style with our premium luxury vehicle collection",
-    "services.suv": "SUV Vehicles",
-    "services.suvDesc":
-      "Spacious and comfortable SUVs perfect for family trips and group travel",
-    "services.sedan": "Sedan Cars",
-    "services.sedanDesc":
-      "Comfortable and efficient sedans perfect for business and personal use",
-    "services.economy": "Economy Cars",
-    "services.economyDesc":
-      "Fuel-efficient and affordable vehicles perfect for city driving and budget trips",
-    "services.sports": "Sports Cars",
-    "services.sportsDesc":
-      "High-performance sports cars for an exhilarating driving experience",
-    "services.vans": "Vans & Minivans",
-    "services.vansDesc":
-      "Spacious vans perfect for group travel and large luggage",
+"vehicles.sortBy": "Sort by",
+"vehicles.featured": "Featured",
+"vehicles.priceLow": "Price: Low to High",
+"vehicles.priceHigh": "Price: High to Low",
+"vehicles.rating": "Highest Rated",
+"vehicles.popular": "Most Popular",
 
-    // Bottom CTA
-    "services.bottomCta.title": "Ready to Find Your Perfect Vehicle?",
-    "services.bottomCta.subtitle":
-      "Join thousands of satisfied customers and experience the EliteDrive difference",
-    "services.bottomCta.primary": "Get Started Today",
-    "services.bottomCta.secondary": "Call Us Now",
+"vehicles.availableVehicles": "Available Vehicles",
+"vehicles.vehiclesFound": "vehicles found",
+"vehicles.inCategory": "in",
+"vehicles.forSearch": "for",
+
+"vehicles.noVehiclesFound": "No vehicles found",
+"vehicles.adjustFilters": "Try adjusting your search filters",
+"vehicles.resetFilters": "Reset Filters",
+
+"vehicles.passengers": "Pass",
+"vehicles.more": "more",
+"vehicles.bookNow": "Book Now",
+"vehicles.details": "Details",
+"vehicles.loadMore": "Load More Vehicles",
+
+"vehicles.fuelTypes.hybrid": "Hybrid",
+"vehicles.fuelTypes.gasoline": "Gasoline",
+"vehicles.transmissionTypes.automatic": "Automatic",
+"vehicles.transmissionTypes.manual": "Manual",
+"vehicles.mileage.unlimited": "Unlimited",
+
+"vehicles.benefits.insured.title": "Fully Insured",
+"vehicles.benefits.insured.description": "Comprehensive coverage for complete peace of mind",
+"vehicles.benefits.support.title": "24/7 Support",
+"vehicles.benefits.support.description": "Round-the-clock assistance whenever you need it",
+"vehicles.benefits.price.title": "Best Price Guarantee",
+"vehicles.benefits.price.description": "Find a better price? We'll match it!",
+
+"vehicles.trustedBrands.title": "Trusted by Leading Brands",
+"vehicles.trustedBrands.subtitle": "We partner with the world's most reputable automotive manufacturers to bring you the best vehicles",
+
+"vehicles.cta.title": "Ready to Find Your Perfect Car?",
+"vehicles.cta.subtitle": "Browse our extensive collection of premium vehicles and book your dream car today. Experience the best in car rental services.",
+"vehicles.cta.primaryButton": "Browse All Vehicles",
+"vehicles.cta.secondaryButton": "Contact Sales",
+
+// Car specific translations
+"vehicles.cars.camry.name": "Toyota Camry 2023",
+"vehicles.cars.camry.features.seats": "5 Seats",
+"vehicles.cars.camry.features.transmission": "Automatic",
+"vehicles.cars.camry.features.ac": "Air Conditioning",
+"vehicles.cars.camry.features.gps": "GPS",
+
+"vehicles.cars.crv.name": "Honda CR-V Elite",
+"vehicles.cars.crv.features.seats": "7 Seats",
+"vehicles.cars.crv.features.drive": "4WD",
+"vehicles.cars.crv.features.space": "Spacious",
+"vehicles.cars.crv.features.sunroof": "Sunroof",
+
+"vehicles.cars.bmw.name": "BMW 3 Series",
+"vehicles.cars.bmw.features.premium": "Premium",
+"vehicles.cars.bmw.features.sport": "Sport Mode",
+"vehicles.cars.bmw.features.leather": "Leather",
+"vehicles.cars.bmw.features.sound": "Premium Sound",
+
+"vehicles.cars.mercedes.name": "Mercedes-Benz C-Class",
+"vehicles.cars.mercedes.features.luxury": "Luxury",
+"vehicles.cars.mercedes.features.seats": "Heated Seats",
+"vehicles.cars.mercedes.features.roof": "Panoramic Roof",
+"vehicles.cars.mercedes.features.assist": "Assist",
+
+"vehicles.cars.mustang.name": "Ford Mustang",
+"vehicles.cars.mustang.features.sport": "Sport",
+"vehicles.cars.mustang.features.convertible": "Convertible",
+"vehicles.cars.mustang.features.premium": "Premium",
+"vehicles.cars.mustang.features.fast": "Fast",
+
+"vehicles.cars.rav4.name": "Toyota RAV4",
+"vehicles.cars.rav4.features.seats": "5 Seats",
+"vehicles.cars.rav4.features.drive": "AWD",
+"vehicles.cars.rav4.features.economical": "Economical",
+"vehicles.cars.rav4.features.space": "Spacious",
+
+"vehicles.cars.civic.name": "Honda Civic",
+"vehicles.cars.civic.features.seats": "5 Seats",
+"vehicles.cars.civic.features.economical": "Economical",
+"vehicles.cars.civic.features.tech": "Tech",
+"vehicles.cars.civic.features.safe": "Safe",
+
+"vehicles.cars.suburban.name": "Chevrolet Suburban",
+"vehicles.cars.suburban.features.seats": "8 Seats",
+"vehicles.cars.suburban.features.space": "Spacious",
+"vehicles.cars.suburban.features.family": "Family",
+"vehicles.cars.suburban.features.luxury": "Luxury",
 
     // About Page
     "about.title": "About EliteDrive",
@@ -638,51 +693,116 @@ const translations = {
     "footer.privacy": "የግላዊነት ፖሊሲ",
     "footer.terms": "የአገልግሎት ውሎች",
 
-    // Services - አገልግሎቶች
+   // Add to your amharicTranslations object
+"vehicles.hero.title.line1": "የእርስዎን ፍጹም",
+"vehicles.hero.title.line2": "መኪና ያግኙ",
+"vehicles.hero.subtitle": "የእኛን ማሻሻያ የመኪና እፅዋት ያግኙ። ከትናንሽ መኪኖች እስከ ሊክስ ሱቮች፣ ከስልጣኔዎ እና ፍላጎትዎ ጋር የሚጣጣም ፍጹም መኪና ያግኙ።",
 
-    "services.business": "የንግድ ኪራይ",
-    "services.leasing": "ረጅም ጊዜ ኪራይ",
-    "services.title": "አገልግሎቶቻችን",
-    "services.subtitle": "የተለያዩ ፕሪሚየም ተሽከርካሪዎችን እና ልዩ የኪራይ አገልግሎቶችን ያስሱ",
-    "services.cta.primary": "ተሽከርካሪዎን ይቅዱ",
-    "services.cta.secondary": "ሁሉንም ተሽከርካሪዎች ይመልከቱ",
-    "services.featuredTitle": "የተለዩ ተሽከርካሪዎች",
-    "services.categoriesTitle": "በምድብ ይመልከቱ",
-    "services.rentNow": "አሁን ይቅዱ",
-    "services.viewCars": "ተሽከርካሪዎችን ይመልከቱ",
-    "services.whyChoose": "ለምን ኤሊትድራይቭ ይመርጡ?",
-    "services.why1": "ሰፊ ምርጫ",
-    "services.whyDesc1": "ከ100+ በላይ በደንብ የተጠጉ ተሽከርካሪዎች ለሁሉም ምድቦች ይምረጡ",
-    "services.why2": "ምርጥ ዋጋዎች",
-    "services.whyDesc2": "ውድድር ያለው ዋጋ እና ምንም የተደበቁ ክፍያዎች የሉም",
-    "services.why3": "ፕሪሚየም አገልግሎት",
-    "services.whyDesc3": "24/7 የደንበኞች ድጋፍ እና ፕሪሚየም የኪራይ ተሞክሮ",
-    "services.all": "ሁሉም መኪኖች",
-    "services.noFeatured": "በዚህ ምድብ ውስጥ የተለዩ ተሽከርካሪዎች የሉም",
-    "services.tryAnother": "ሌላ ምድብ ይምረጡ",
-    "services.popular": "በጣም ተወዳጅ",
-    "services.includes": "የሚጨምር",
+"vehicles.searchLabel": "መኪኖችን ይፈልጉ",
+"vehicles.searchPlaceholder": "በመኪና ስም፣ ሞዴል ወይም አይነት ይፈልጉ...",
+"vehicles.vehicleType": "የመኪና አይነት",
+"vehicles.selectTypePlaceholder": "አይነት ይምረጡ",
+"vehicles.perDay": "/ቀን",
 
-    // Categories - Amharic
-    "services.luxury": "የውበት መኪኖች",
-    "services.luxuryDesc": "ከፍተኛ አለባበስ እና ሙዚቃ ያላቸውን ፕሪሚየም የውበት ተሽከርካሪዎች ይለማመዱ",
-    "services.suv": "SUV ተሽከርካሪዎች",
-    "services.suvDesc": "ሰፊ እና ምቹ የSUV ተሽከርካሪዎች ለቤተሰብ ጉዞዎች እና ለቡድን ጉዞ",
-    "services.sedan": "ሴዳን መኪኖች",
-    "services.sedanDesc": "ምቹ እና ቀልጣፋ ሴዳን መኪኖች ለንግድ እና የግል አጠቃቀም",
-    "services.economy": "ኢኮኖሚ መኪኖች",
-    "services.economyDesc": "የተጣራ ነዳጅ የሚጠቀሙ እና ርካሽ ተሽከርካሪዎች ለከተማ እና በጀት ጉዞዎች",
-    "services.sports": "ስፖርት መኪኖች",
-    "services.sportsDesc": "ከፍተኛ አፈጻጸም ያላቸው ስፖርት መኪኖች ለማራኪ የመንገድ ተሞክሮ",
-    "services.vans": "ቫን እና ሚኒቫን",
-    "services.vansDesc": "ሰፊ ቫኖች ለቡድን ጉዞ እና ትላልቅ እቃዎች",
+"vehicles.allVehicles": "ሁሉም መኪኖች",
+"vehicles.sedan": "ሴዳን",
+"vehicles.suv": "ሱቭ",
+"vehicles.luxury": "ሊክስ",
+"vehicles.sports": "ስፖርት",
+"vehicles.compact": "ትናንሽ",
+"vehicles.van": "ቫን",
 
-    // Bottom CTA - Amharic
-    "services.bottomCta.title": "ፍጹም ተሽከርካሪዎን ለማግኘት ዝግጁ ነዎት?",
-    "services.bottomCta.subtitle":
-      "ከሺዎች የሚቆጠሩ የተረኩ ደንበኞች ጋር ይቀላቀሉ እና የኤሊትድራይቭ ልዩነት ይለማመዱ",
-    "services.bottomCta.primary": "ዛሬ ይ_start ያድርጉ",
-    "services.bottomCta.secondary": "አሁን ይደውሉልን",
+"vehicles.sortBy": "በማዘጋጀት",
+"vehicles.featured": "የተመረጡ",
+"vehicles.priceLow": "ዋጋ: ከዝቅ ወደ ከፍተኛ",
+"vehicles.priceHigh": "ዋጋ: ከከፍተኛ ወደ ዝቅተኛ",
+"vehicles.rating": "ከፍተኛ ደረጃ",
+"vehicles.popular": "በጣም ተወዳጅ",
+
+"vehicles.availableVehicles": "የሚገኙ መኪኖች",
+"vehicles.vehiclesFound": "መኪኖች ተገኝተዋል",
+"vehicles.inCategory": "በ",
+"vehicles.forSearch": "ለ",
+
+"vehicles.noVehiclesFound": "ምንም መኪና አልተገኘም",
+"vehicles.adjustFilters": "የፍለጋ ማጣሪያዎችዎን ይለውጡ",
+"vehicles.resetFilters": "ማጣሪያዎችን ዳግም ያቀናብሩ",
+
+"vehicles.passengers": "ተሳፋሪ",
+"vehicles.more": "ተጨማሪ",
+"vehicles.bookNow": "አሁን ያርዙ",
+"vehicles.details": "ዝርዝሮች",
+"vehicles.loadMore": "ተጨማሪ መኪኖች ይጫኑ",
+
+"vehicles.fuelTypes.hybrid": "ሃይብሪድ",
+"vehicles.fuelTypes.gasoline": "ቤንዚን",
+"vehicles.transmissionTypes.automatic": "ራስ-ሰር",
+"vehicles.transmissionTypes.manual": "እጅ",
+"vehicles.mileage.unlimited": "ያልተገደበ",
+
+"vehicles.benefits.insured.title": "ሙሉ ኢንሹራንስ",
+"vehicles.benefits.insured.description": "ለሙሉ የሰላም አእምሮ ሙሉ የኢንሹራንስ ሽፋን",
+"vehicles.benefits.support.title": "24/7 ድጋፍ",
+"vehicles.benefits.support.description": "በሚፈልጉበት ቁጥር የሌሊት እና ቀን እርዳታ",
+"vehicles.benefits.price.title": "ምርጥ የዋጋ አስተማማኝነት",
+"vehicles.benefits.price.description": "ተጨማሪ ጥሩ ዋጋ አግኝተዋል? እናመሳስለዋለን!",
+
+"vehicles.trustedBrands.title": "በሚመሩ ብራንዶች የታመነ",
+"vehicles.trustedBrands.subtitle": "ምርጥ መኪኖችን ለማቅረብ ከዓለም ታዋቂ የመኪና አምራቾች ጋር እንሰራለን",
+
+"vehicles.cta.title": "ፍጹም መኪናዎን ለማግኘት ዝግጁ ነዎት?",
+"vehicles.cta.subtitle": "የማሻሻያ መኪናችንን ሰፊ ስብስብ ይመልከቱ እና የህልምዎን መኪና ዛሬ ያርዙ። ምርጡን የመኪና ኪራይ አገልግሎት ይለማመዱ።",
+"vehicles.cta.primaryButton": "ሁሉንም መኪኖች ይመልከቱ",
+"vehicles.cta.secondaryButton": "ከሽያጭ ያግኙን",
+
+// Car specific translations
+"vehicles.cars.camry.name": "ቶዮታ ካምሪ 2023",
+"vehicles.cars.camry.features.seats": "5 መቀመጫዎች",
+"vehicles.cars.camry.features.transmission": "ራስ-ሰር",
+"vehicles.cars.camry.features.ac": "አየር ማስተካከያ",
+"vehicles.cars.camry.features.gps": "ጂፒኤስ",
+
+"vehicles.cars.crv.name": "ሆንዳ ሲአር-ቪ ኤሊት",
+"vehicles.cars.crv.features.seats": "7 መቀመጫዎች",
+"vehicles.cars.crv.features.drive": "4 ወለል አሽከር",
+"vehicles.cars.crv.features.space": "ሰፊ",
+"vehicles.cars.crv.features.sunroof": "ፀሐይ መስኮት",
+
+"vehicles.cars.bmw.name": "ቢኤምዋይ 3 ሴሪዝ",
+"vehicles.cars.bmw.features.premium": "ማሻሻያ",
+"vehicles.cars.bmw.features.sport": "ስፖርት ሞድ",
+"vehicles.cars.bmw.features.leather": "ቆዳ",
+"vehicles.cars.bmw.features.sound": "ማሻሻያ ድምፅ",
+
+"vehicles.cars.mercedes.name": "መርሴዲስ-ቤንዝ ሲ-ክላስ",
+"vehicles.cars.mercedes.features.luxury": "ሊክስ",
+"vehicles.cars.mercedes.features.seats": "የሚሞቁ መቀመጫዎች",
+"vehicles.cars.mercedes.features.roof": "ፓኖራማ ጣራ",
+"vehicles.cars.mercedes.features.assist": "እርዳታ",
+
+"vehicles.cars.mustang.name": "ፎርድ ማስታንግ",
+"vehicles.cars.mustang.features.sport": "ስፖርት",
+"vehicles.cars.mustang.features.convertible": "ኮንቨርቲብል",
+"vehicles.cars.mustang.features.premium": "ማሻሻያ",
+"vehicles.cars.mustang.features.fast": "ፈጣን",
+
+"vehicles.cars.rav4.name": "ቶዮታ ራቭ4",
+"vehicles.cars.rav4.features.seats": "5 መቀመጫዎች",
+"vehicles.cars.rav4.features.drive": "ሁሉንም ወለል አሽከር",
+"vehicles.cars.rav4.features.economical": "ኢኮኖሚ",
+"vehicles.cars.rav4.features.space": "ሰፊ",
+
+"vehicles.cars.civic.name": "ሆንዳ ሲቪክ",
+"vehicles.cars.civic.features.seats": "5 መቀመጫዎች",
+"vehicles.cars.civic.features.economical": "ኢኮኖሚ",
+"vehicles.cars.civic.features.tech": "ቴክኖሎጂ",
+"vehicles.cars.civic.features.safe": "ደህንነቱ የተጠበቀ",
+
+"vehicles.cars.suburban.name": "ሼቭሮሌት ሳብክርባን",
+"vehicles.cars.suburban.features.seats": "8 መቀመጫዎች",
+"vehicles.cars.suburban.features.space": "ሰፊ",
+"vehicles.cars.suburban.features.family": "ለቤተሰብ",
+"vehicles.cars.suburban.features.luxury": "ሊክስ",
 
     // About Page - Amharic
     "about.title": "ስለ ኤሊትድራይቭ",

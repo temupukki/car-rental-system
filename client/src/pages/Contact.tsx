@@ -20,7 +20,7 @@ export default function Contact() {
     {
       icon: "📞",
       title: t("contact.phone") || "Phone",
-      details: "+1 (555) 123-4567",
+      details: "09090909090",
       description: t("contact.phoneDesc") || "Mon-Sun, 24/7 Support",
       gradient: "from-blue-500 to-cyan-500",
       bgColor: "bg-blue-500/10",
@@ -36,7 +36,7 @@ export default function Contact() {
     {
       icon: "📍",
       title: t("contact.address") || "Address",
-      details: "123 Drive Street, City",
+      details: "Gondar,Maraki",
       description: t("contact.addressDesc") || "Visit our main office",
       gradient: "from-green-500 to-emerald-500",
       bgColor: "bg-green-500/10",
@@ -121,10 +121,7 @@ export default function Contact() {
               transition={{ duration: 0.7 }}
             >
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                Get In
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500">
-                  Touch
-                </span>
+               {t("contact.title")}
               </h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}

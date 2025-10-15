@@ -27,35 +27,50 @@ import {
   Clock,
 } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "../components/LanguageContext";
 
 export default function Vehicles() {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [priceRange, setPriceRange] = useState([0, 200]);
 
   const vehicleTypes = [
-    { value: "all", label: "All Vehicles" },
-    { value: "sedan", label: "Sedan" },
-    { value: "suv", label: "SUV" },
-    { value: "luxury", label: "Luxury" },
-    { value: "sports", label: "Sports" },
-    { value: "compact", label: "Compact" },
-    { value: "van", label: "Van" },
+    { value: "all", label: t("vehicles.allVehicles") || "All Vehicles" },
+    { value: "sedan", label: t("vehicles.sedan") || "Sedan" },
+    { value: "suv", label: t("vehicles.suv") || "SUV" },
+    { value: "luxury", label: t("vehicles.luxury") || "Luxury" },
+    { value: "sports", label: t("vehicles.sports") || "Sports" },
+    { value: "compact", label: t("vehicles.compact") || "Compact" },
+    { value: "van", label: t("vehicles.van") || "Van" },
+  ];
+
+  const sortOptions = [
+    { value: "featured", label: t("vehicles.featured") || "Featured" },
+    { value: "price-low", label: t("vehicles.priceLow") || "Price: Low to High" },
+    { value: "price-high", label: t("vehicles.priceHigh") || "Price: High to Low" },
+    { value: "rating", label: t("vehicles.rating") || "Highest Rated" },
+    { value: "popular", label: t("vehicles.popular") || "Most Popular" },
   ];
 
   const vehicles = [
     {
       id: 1,
-      name: "Toyota Camry 2023",
+      name: t("vehicles.cars.camry.name") || "Toyota Camry 2023",
       type: "sedan",
       price: 45,
       image: "/bmw.jfif",
-      features: ["5 Seats", "Automatic", "Air Conditioning", "GPS"],
+      features: [
+        t("vehicles.cars.camry.features.seats") || "5 Seats",
+        t("vehicles.cars.camry.features.transmission") || "Automatic",
+        t("vehicles.cars.camry.features.ac") || "Air Conditioning",
+        t("vehicles.cars.camry.features.gps") || "GPS"
+      ],
       specs: {
         passengers: 5,
-        fuel: "Hybrid",
-        transmission: "Automatic",
-        mileage: "Unlimited",
+        fuel: t("vehicles.fuelTypes.hybrid") || "Hybrid",
+        transmission: t("vehicles.transmissionTypes.automatic") || "Automatic",
+        mileage: t("vehicles.mileage.unlimited") || "Unlimited",
       },
       rating: 4.8,
       reviews: 124,
@@ -63,16 +78,21 @@ export default function Vehicles() {
     },
     {
       id: 2,
-      name: "Honda CR-V Elite",
+      name: t("vehicles.cars.crv.name") || "Honda CR-V Elite",
       type: "suv",
       price: 65,
       image: "/bmw.jfif",
-      features: ["7 Seats", "4WD", "Spacious", "Sunroof"],
+      features: [
+        t("vehicles.cars.crv.features.seats") || "7 Seats",
+        t("vehicles.cars.crv.features.drive") || "4WD",
+        t("vehicles.cars.crv.features.space") || "Spacious",
+        t("vehicles.cars.crv.features.sunroof") || "Sunroof"
+      ],
       specs: {
         passengers: 7,
-        fuel: "Gasoline",
-        transmission: "Automatic",
-        mileage: "Unlimited",
+        fuel: t("vehicles.fuelTypes.gasoline") || "Gasoline",
+        transmission: t("vehicles.transmissionTypes.automatic") || "Automatic",
+        mileage: t("vehicles.mileage.unlimited") || "Unlimited",
       },
       rating: 4.7,
       reviews: 89,
@@ -80,16 +100,21 @@ export default function Vehicles() {
     },
     {
       id: 3,
-      name: "BMW 3 Series",
+      name: t("vehicles.cars.bmw.name") || "BMW 3 Series",
       type: "luxury",
       price: 89,
       image: "/bmw.jfif",
-      features: ["Premium", "Sport Mode", "Leather", "Premium Sound"],
+      features: [
+        t("vehicles.cars.bmw.features.premium") || "Premium",
+        t("vehicles.cars.bmw.features.sport") || "Sport Mode",
+        t("vehicles.cars.bmw.features.leather") || "Leather",
+        t("vehicles.cars.bmw.features.sound") || "Premium Sound"
+      ],
       specs: {
         passengers: 5,
-        fuel: "Gasoline",
-        transmission: "Automatic",
-        mileage: "Unlimited",
+        fuel: t("vehicles.fuelTypes.gasoline") || "Gasoline",
+        transmission: t("vehicles.transmissionTypes.automatic") || "Automatic",
+        mileage: t("vehicles.mileage.unlimited") || "Unlimited",
       },
       rating: 4.9,
       reviews: 67,
@@ -97,16 +122,21 @@ export default function Vehicles() {
     },
     {
       id: 4,
-      name: "Mercedes-Benz C-Class",
+      name: t("vehicles.cars.mercedes.name") || "Mercedes-Benz C-Class",
       type: "luxury",
       price: 95,
       image: "/bmw.jfif",
-      features: ["Luxury", "Heated Seats", "Panoramic Roof", "Assist"],
+      features: [
+        t("vehicles.cars.mercedes.features.luxury") || "Luxury",
+        t("vehicles.cars.mercedes.features.seats") || "Heated Seats",
+        t("vehicles.cars.mercedes.features.roof") || "Panoramic Roof",
+        t("vehicles.cars.mercedes.features.assist") || "Assist"
+      ],
       specs: {
         passengers: 5,
-        fuel: "Gasoline",
-        transmission: "Automatic",
-        mileage: "Unlimited",
+        fuel: t("vehicles.fuelTypes.gasoline") || "Gasoline",
+        transmission: t("vehicles.transmissionTypes.automatic") || "Automatic",
+        mileage: t("vehicles.mileage.unlimited") || "Unlimited",
       },
       rating: 4.9,
       reviews: 92,
@@ -114,16 +144,21 @@ export default function Vehicles() {
     },
     {
       id: 5,
-      name: "Ford Mustang",
+      name: t("vehicles.cars.mustang.name") || "Ford Mustang",
       type: "sports",
       price: 75,
       image: "/bmw.jfif",
-      features: ["Sport", "Convertible", "Premium", "Fast"],
+      features: [
+        t("vehicles.cars.mustang.features.sport") || "Sport",
+        t("vehicles.cars.mustang.features.convertible") || "Convertible",
+        t("vehicles.cars.mustang.features.premium") || "Premium",
+        t("vehicles.cars.mustang.features.fast") || "Fast"
+      ],
       specs: {
         passengers: 4,
-        fuel: "Gasoline",
-        transmission: "Manual",
-        mileage: "Unlimited",
+        fuel: t("vehicles.fuelTypes.gasoline") || "Gasoline",
+        transmission: t("vehicles.transmissionTypes.manual") || "Manual",
+        mileage: t("vehicles.mileage.unlimited") || "Unlimited",
       },
       rating: 4.6,
       reviews: 78,
@@ -131,16 +166,21 @@ export default function Vehicles() {
     },
     {
       id: 6,
-      name: "Toyota RAV4",
+      name: t("vehicles.cars.rav4.name") || "Toyota RAV4",
       type: "suv",
       price: 55,
       image: "/bmw.jfif",
-      features: ["5 Seats", "AWD", "Economical", "Spacious"],
+      features: [
+        t("vehicles.cars.rav4.features.seats") || "5 Seats",
+        t("vehicles.cars.rav4.features.drive") || "AWD",
+        t("vehicles.cars.rav4.features.economical") || "Economical",
+        t("vehicles.cars.rav4.features.space") || "Spacious"
+      ],
       specs: {
         passengers: 5,
-        fuel: "Hybrid",
-        transmission: "Automatic",
-        mileage: "Unlimited",
+        fuel: t("vehicles.fuelTypes.hybrid") || "Hybrid",
+        transmission: t("vehicles.transmissionTypes.automatic") || "Automatic",
+        mileage: t("vehicles.mileage.unlimited") || "Unlimited",
       },
       rating: 4.7,
       reviews: 156,
@@ -148,16 +188,21 @@ export default function Vehicles() {
     },
     {
       id: 7,
-      name: "Honda Civic",
+      name: t("vehicles.cars.civic.name") || "Honda Civic",
       type: "compact",
       price: 35,
       image: "/bmw.jfif",
-      features: ["5 Seats", "Economical", "Tech", "Safe"],
+      features: [
+        t("vehicles.cars.civic.features.seats") || "5 Seats",
+        t("vehicles.cars.civic.features.economical") || "Economical",
+        t("vehicles.cars.civic.features.tech") || "Tech",
+        t("vehicles.cars.civic.features.safe") || "Safe"
+      ],
       specs: {
         passengers: 5,
-        fuel: "Gasoline",
-        transmission: "Automatic",
-        mileage: "Unlimited",
+        fuel: t("vehicles.fuelTypes.gasoline") || "Gasoline",
+        transmission: t("vehicles.transmissionTypes.automatic") || "Automatic",
+        mileage: t("vehicles.mileage.unlimited") || "Unlimited",
       },
       rating: 4.5,
       reviews: 203,
@@ -165,16 +210,21 @@ export default function Vehicles() {
     },
     {
       id: 8,
-      name: "Chevrolet Suburban",
+      name: t("vehicles.cars.suburban.name") || "Chevrolet Suburban",
       type: "van",
       price: 85,
       image: "/bmw.jfif",
-      features: ["8 Seats", "Spacious", "Family", "Luxury"],
+      features: [
+        t("vehicles.cars.suburban.features.seats") || "8 Seats",
+        t("vehicles.cars.suburban.features.space") || "Spacious",
+        t("vehicles.cars.suburban.features.family") || "Family",
+        t("vehicles.cars.suburban.features.luxury") || "Luxury"
+      ],
       specs: {
         passengers: 8,
-        fuel: "Gasoline",
-        transmission: "Automatic",
-        mileage: "Unlimited",
+        fuel: t("vehicles.fuelTypes.gasoline") || "Gasoline",
+        transmission: t("vehicles.transmissionTypes.automatic") || "Automatic",
+        mileage: t("vehicles.mileage.unlimited") || "Unlimited",
       },
       rating: 4.8,
       reviews: 45,
@@ -240,9 +290,9 @@ export default function Vehicles() {
               transition={{ duration: 0.7 }}
             >
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                Find Your
+                {t("vehicles.hero.title.line1") || "Find Your"}
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
-                  Perfect Ride
+                  {t("vehicles.hero.title.line2") || "Perfect Ride"}
                 </span>
               </h1>
               <motion.p
@@ -251,9 +301,7 @@ export default function Vehicles() {
                 transition={{ delay: 0.2 }}
                 className="text-xl text-gray-200 mb-8 max-w-2xl"
               >
-                Discover our premium fleet of vehicles. From compact cars to
-                luxury SUVs, find the perfect car that matches your style and
-                needs.
+                {t("vehicles.hero.subtitle") || "Discover our premium fleet of vehicles. From compact cars to luxury SUVs, find the perfect car that matches your style and needs."}
               </motion.p>
             </motion.div>
           </div>
@@ -275,12 +323,12 @@ export default function Vehicles() {
                     className="text-sm font-semibold text-gray-700 mb-2 block"
                   >
                     <Search className="w-4 h-4 inline mr-2" />
-                    Search Vehicles
+                    {t("vehicles.searchLabel") || "Search Vehicles"}
                   </Label>
                   <div className="relative">
                     <Input
                       id="search"
-                      placeholder="Search by car name, model, or type..."
+                      placeholder={t("vehicles.searchPlaceholder") || "Search by car name, model, or type..."}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-4 py-3 rounded-xl border-gray-300 text-lg"
@@ -291,11 +339,11 @@ export default function Vehicles() {
                 <div>
                   <Label className="text-sm font-semibold text-gray-700 mb-2 block">
                     <Filter className="w-4 h-4 inline mr-2" />
-                    Vehicle Type
+                    {t("vehicles.vehicleType") || "Vehicle Type"}
                   </Label>
                   <Select value={selectedType} onValueChange={setSelectedType}>
                     <SelectTrigger className="rounded-xl border-gray-300 py-3">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder={t("vehicles.selectTypePlaceholder") || "Select type"} />
                     </SelectTrigger>
                     <SelectContent>
                       {vehicleTypes.map((type) => (
@@ -317,7 +365,7 @@ export default function Vehicles() {
                       {" "}
                       ${priceRange[1]}
                     </span>
-                    /day
+                    {t("vehicles.perDay") || "/day"}
                   </Label>
                   <div className="space-y-2">
                     <input
@@ -345,7 +393,7 @@ export default function Vehicles() {
                   onClick={() => setSelectedType("all")}
                   className="rounded-xl"
                 >
-                  All Cars
+                  {t("vehicles.allVehicles") || "All Cars"}
                 </Button>
                 <Button
                   variant={selectedType === "suv" ? "default" : "outline"}
@@ -353,7 +401,7 @@ export default function Vehicles() {
                   className="rounded-xl"
                 >
                   <Car className="w-4 h-4 mr-2" />
-                  SUV
+                  {t("vehicles.suv") || "SUV"}
                 </Button>
                 <Button
                   variant={selectedType === "sedan" ? "default" : "outline"}
@@ -361,7 +409,7 @@ export default function Vehicles() {
                   className="rounded-xl"
                 >
                   <Car className="w-4 h-4 mr-2" />
-                  Sedan
+                  {t("vehicles.sedan") || "Sedan"}
                 </Button>
                 <Button
                   variant={selectedType === "luxury" ? "default" : "outline"}
@@ -369,7 +417,7 @@ export default function Vehicles() {
                   className="rounded-xl"
                 >
                   <Star className="w-4 h-4 mr-2" />
-                  Luxury
+                  {t("vehicles.luxury") || "Luxury"}
                 </Button>
                 <Button
                   variant={selectedType === "sports" ? "default" : "outline"}
@@ -377,7 +425,7 @@ export default function Vehicles() {
                   className="rounded-xl"
                 >
                   <Gauge className="w-4 h-4 mr-2" />
-                  Sports
+                  {t("vehicles.sports") || "Sports"}
                 </Button>
                 <Button
                   variant={selectedType === "compact" ? "default" : "outline"}
@@ -385,7 +433,7 @@ export default function Vehicles() {
                   className="rounded-xl"
                 >
                   <Car className="w-4 h-4 mr-2" />
-                  Compact
+                  {t("vehicles.compact") || "Compact"}
                 </Button>
               </div>
             </CardContent>
@@ -401,28 +449,28 @@ export default function Vehicles() {
         >
           <div>
             <h2 className="text-3xl font-bold text-gray-800">
-              Available Vehicles
+              {t("vehicles.availableVehicles") || "Available Vehicles"}
             </h2>
             <p className="text-gray-600 mt-2">
-              {filteredVehicles.length} vehicles found
+              {filteredVehicles.length} {t("vehicles.vehiclesFound") || "vehicles found"}
               {selectedType !== "all" &&
-                ` in ${
+                ` ${t("vehicles.inCategory") || "in"} ${
                   vehicleTypes.find((t) => t.value === selectedType)?.label
                 }`}
-              {searchTerm && ` for "${searchTerm}"`}
+              {searchTerm && ` ${t("vehicles.forSearch") || "for"} "${searchTerm}"`}
             </p>
           </div>
           <div className="flex items-center gap-4 mt-4 sm:mt-0">
             <Select defaultValue="featured">
               <SelectTrigger className="w-[180px] rounded-xl border-gray-300">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t("vehicles.sortBy") || "Sort by"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="featured">Featured</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
-                <SelectItem value="popular">Most Popular</SelectItem>
+                {sortOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -436,10 +484,10 @@ export default function Vehicles() {
           >
             <Car className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">
-              No vehicles found
+              {t("vehicles.noVehiclesFound") || "No vehicles found"}
             </h3>
             <p className="text-gray-500 mb-4">
-              Try adjusting your search filters
+              {t("vehicles.adjustFilters") || "Try adjusting your search filters"}
             </p>
             <Button
               onClick={() => {
@@ -449,7 +497,7 @@ export default function Vehicles() {
               }}
               className="rounded-xl"
             >
-              Reset Filters
+              {t("vehicles.resetFilters") || "Reset Filters"}
             </Button>
           </motion.div>
         ) : (
@@ -486,8 +534,8 @@ export default function Vehicles() {
                   </button>
                   <div className="absolute top-3 left-3">
                     <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-                      {vehicle.type.charAt(0).toUpperCase() +
-                        vehicle.type.slice(1)}
+                      {vehicleTypes.find(t => t.value === vehicle.type)?.label || 
+                       vehicle.type.charAt(0).toUpperCase() + vehicle.type.slice(1)}
                     </span>
                   </div>
                   <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1 shadow-lg">
@@ -507,7 +555,9 @@ export default function Vehicles() {
                       <h3 className="font-bold text-lg text-gray-800 mb-1">
                         {vehicle.name}
                       </h3>
-                      <p className="text-gray-500 text-sm">Per day</p>
+                      <p className="text-gray-500 text-sm">
+                        {t("vehicles.perDay") || "Per day"}
+                      </p>
                     </div>
                     <div className="text-right">
                       <span className="text-2xl font-bold text-blue-600">
@@ -519,7 +569,7 @@ export default function Vehicles() {
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Users className="w-4 h-4" />
-                      <span>{vehicle.specs.passengers} Pass</span>
+                      <span>{vehicle.specs.passengers} {t("vehicles.passengers") || "Pass"}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Fuel className="w-4 h-4" />
@@ -546,20 +596,20 @@ export default function Vehicles() {
                     ))}
                     {vehicle.features.length > 3 && (
                       <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                        +{vehicle.features.length - 3} more
+                        +{vehicle.features.length - 3} {t("vehicles.more") || "more"}
                       </span>
                     )}
                   </div>
 
                   <div className="flex gap-2">
                     <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-semibold">
-                      Book Now
+                      {t("vehicles.bookNow") || "Book Now"}
                     </Button>
                     <Button
                       variant="outline"
                       className="border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3 px-4"
                     >
-                      Details
+                      {t("vehicles.details") || "Details"}
                     </Button>
                   </div>
                 </div>
@@ -574,7 +624,7 @@ export default function Vehicles() {
               variant="outline"
               className="border-blue-600 text-blue-600 hover:bg-blue-50 rounded-2xl px-8 py-3 font-semibold"
             >
-              Load More Vehicles
+              {t("vehicles.loadMore") || "Load More Vehicles"}
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
@@ -590,23 +640,29 @@ export default function Vehicles() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <Shield className="w-12 h-12 mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-2">Fully Insured</h3>
+              <h3 className="text-xl font-bold mb-2">
+                {t("vehicles.benefits.insured.title") || "Fully Insured"}
+              </h3>
               <p className="text-blue-100">
-                Comprehensive coverage for complete peace of mind
+                {t("vehicles.benefits.insured.description") || "Comprehensive coverage for complete peace of mind"}
               </p>
             </div>
             <div className="text-center">
               <Clock className="w-12 h-12 mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-2">24/7 Support</h3>
+              <h3 className="text-xl font-bold mb-2">
+                {t("vehicles.benefits.support.title") || "24/7 Support"}
+              </h3>
               <p className="text-blue-100">
-                Round-the-clock assistance whenever you need it
+                {t("vehicles.benefits.support.description") || "Round-the-clock assistance whenever you need it"}
               </p>
             </div>
             <div className="text-center">
               <CheckCircle className="w-12 h-12 mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-2">Best Price Guarantee</h3>
+              <h3 className="text-xl font-bold mb-2">
+                {t("vehicles.benefits.price.title") || "Best Price Guarantee"}
+              </h3>
               <p className="text-blue-100">
-                Find a better price? We'll match it!
+                {t("vehicles.benefits.price.description") || "Find a better price? We'll match it!"}
               </p>
             </div>
           </div>
@@ -620,11 +676,10 @@ export default function Vehicles() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            Trusted by Leading Brands
+            {t("vehicles.trustedBrands.title") || "Trusted by Leading Brands"}
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            We partner with the world's most reputable automotive manufacturers
-            to bring you the best vehicles
+            {t("vehicles.trustedBrands.subtitle") || "We partner with the world's most reputable automotive manufacturers to bring you the best vehicles"}
           </p>
         </motion.div>
 
@@ -661,21 +716,20 @@ export default function Vehicles() {
           className="bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-12 text-center text-white shadow-2xl"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Find Your Perfect Car?
+            {t("vehicles.cta.title") || "Ready to Find Your Perfect Car?"}
           </h2>
           <p className="text-orange-100 text-lg mb-8 max-w-2xl mx-auto">
-            Browse our extensive collection of premium vehicles and book your
-            dream car today. Experience the best in car rental services.
+            {t("vehicles.cta.subtitle") || "Browse our extensive collection of premium vehicles and book your dream car today. Experience the best in car rental services."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button className="bg-white text-orange-600 hover:bg-gray-100 font-bold rounded-2xl px-8 py-3 text-lg">
-              Browse All Vehicles
+              {t("vehicles.cta.primaryButton") || "Browse All Vehicles"}
             </Button>
             <Button
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-orange-600 rounded-2xl px-8 py-3 text-lg"
             >
-              Contact Sales
+              {t("vehicles.cta.secondaryButton") || "Contact Sales"}
             </Button>
           </div>
         </motion.div>
