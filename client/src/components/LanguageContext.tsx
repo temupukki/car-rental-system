@@ -24,11 +24,32 @@ const translations = {
     "company.name": "Elite Drive",
 
     // Home Page
-    "home.badge": "Best Price in the city!",
+    "home.hero.title.line1": "Experience the road",
+    "home.hero.title.line2": "like never before",
+    "home.hero.cta.primary": "View All Cars",
+    "home.hero.cta.secondary": "Learn more",
+    "home.bookingCard.title": "Book your car",
+    "home.bookingCard.subtitle": "Everything you need to hit the road.",
+    "home.bookingCard.button": "Sign up/in to book a car",
+    "home.features.locations.title": "Flexible Locations",
+    "home.features.locations.description":
+      "Pick up and drop off at multiple convenient locations",
+    "home.features.service.title": "24/7 Service",
+
+    "home.features.service.description":
+      "Round-the-clock booking and customer support",
+
+    "home.features.insurance.title": "Fully Insured",
+
+    "home.features.insurance.description":
+      "Comprehensive insurance coverage for peace of mind",
+      "home.features.family.title": "Family Friendly",
+       "home.features.family.descrption": "Spacious vehicles perfect for family trips",
+
     "home.hero.title": "Drive Your Dreams With EliteDrive",
     "home.hero.with": "With EliteDrive",
     "home.hero.subtitle":
-      "Experience luxury, reliability, and unmatched service. From economy to premium, we have the perfect vehicle for every journey.",
+      "Discover the perfect vehicle for your journey. From compact cars to luxury SUVs, we offer premium rental services with unmatched convenience and reliability.",
     "home.hero.explore": "🚗 Explore Our Fleet",
     "home.hero.deals": "💰 View Hot Deals",
     "home.stats.vehicles": "Vehicles",

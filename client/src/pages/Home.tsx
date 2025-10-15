@@ -231,7 +231,7 @@ export default function Home() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     {features.map((feature, index) => (
                       <div key={index} className={`
                         flex items-center gap-2 p-3 rounded-lg
@@ -250,12 +250,7 @@ export default function Home() {
                           `}>
                             {feature.title}
                           </p>
-                          <p className={`
-                            text-xs
-                            ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-                          `}>
-                            {feature.description}
-                          </p>
+                     
                         </div>
                       </div>
                     ))}
@@ -266,7 +261,7 @@ export default function Home() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className={`
-                        w-full font-semibold py-4 rounded-xl transition-all duration-200
+                        w-full font-semibold py-4 rounded-xl transition-all duration-200 mt-4
                         ${theme === 'light'
                           ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
                           : 'bg-gradient-to-r from-blue-700 to-purple-700 hover:from-blue-800 hover:to-purple-800 text-white'
