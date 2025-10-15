@@ -14,7 +14,7 @@ interface NavLink {
 
 const navLinks :NavLink[] = [
   { id: 1, name: "nav.home", href: "/" },
-  { id: 2, name: "nav.services", href: "/services" },
+  { id: 2, name: "nav.vehicles", href: "/vehicles" },
   { id: 3, name: "nav.about", href: "/about" },
   { id: 4, name: "nav.contact", href: "/contact" },
 ];

@@ -17,7 +17,7 @@ const translations = {
   en: {
     // Navigation
     "nav.home": "Home",
-    "nav.services": "Services",
+    "nav.vehicles": "Vehicles",
     "nav.about": "About",
     "nav.contact": "Contact",
     "nav.book": "Book Now",
@@ -446,7 +446,7 @@ const translations = {
   am: {
     // Navigation - አሰሳ
     "nav.home": "መነሻ",
-    "nav.services": "አገልግሎቶች",
+    "nav.vehicles": "መኪኖች",
     "nav.about": "ስለ እኛ",
     "nav.contact": "አግኙን",
     "nav.book": "አሁንኑ ይከራዩ",

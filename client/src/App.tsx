@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import MainLayout from "./layouts/MainLayout";
-import Service from "./pages/Service";
+
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import { ThemeProvider } from "./components/ThemeContext";
@@ -10,6 +10,7 @@ import Privacy from "./pages/Privacy";
 import FAQ from "./pages/Faq";
 import Sign from "./(auth)/sign"
 import AuthLayout from "./layouts/AuthLayout";
+import Vehicles from "./pages/Vehicles";
 
 function App() {
   return (
@@ -26,10 +27,10 @@ function App() {
               }
             />
             <Route
-              path="/services"
+              path="/vehicles"
               element={
                 <MainLayout>
-                  <Service />
+                  <Vehicles />
                 </MainLayout>
               }
             />
