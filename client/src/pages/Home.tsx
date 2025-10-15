@@ -7,11 +7,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import {
+  Camera,
+  Car,
+  HandCoins,
+  MapPinCheckInside,
+  Wallet,
+} from "lucide-react";
 
 export default function Home() {
   return (
     <div>
-      <div className="mx-16 h-[480px] bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl grid grid-cols-3 gap-4 ">
+      <div className="mx-16 h-[480px] bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl grid grid-cols-3 gap-4 mt-3 ">
         <div className="col-span-2">
           <h1 className="font-bold text-white text-4xl pt-40 pl-14">
             Experience the road like never before
@@ -59,6 +66,29 @@ export default function Home() {
             </CardContent>
           </Card>
         </div>
+      </div>
+      <div className="grid grid-cols-3">
+        <motion.div
+          whileHover={{ scale: 1.08, x: 3 }}
+          className="col-span-1 ml-[13rem] my-[6rem]"
+        >
+          <MapPinCheckInside size={80} />
+          <p className="my-6 text-4xl font-bold mx-[-42px]">Avaliability</p>
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.08, x: 3 }}
+          className="col-span-1 ml-[13rem] my-[6rem]"
+        >
+          <Car size={80} />
+          <p className="my-6 text-4xl font-bold mx-[-42px]">Comfort</p>
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.08, x: 3 }}
+          className="col-span-1 ml-[13rem] my-[6rem]"
+        >
+          <Wallet size={80} />
+          <p className="my-6 text-4xl font-bold mx-[-42px]">Savings</p>
+        </motion.div>
       </div>
     </div>
   );
