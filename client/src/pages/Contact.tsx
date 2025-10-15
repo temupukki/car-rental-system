@@ -14,54 +14,59 @@ export default function Contact() {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
 
   const contactMethods = [
     {
       icon: "📞",
-      title: t("contact.phone"),
+      title: t("contact.phone") || "Phone",
       details: "+1 (555) 123-4567",
-      description: t("contact.phoneDesc"),
+      description: t("contact.phoneDesc") || "Mon-Sun, 24/7 Support",
       gradient: "from-blue-500 to-cyan-500",
+      bgColor: "bg-blue-500/10",
     },
     {
       icon: "✉️",
-      title: t("contact.email"),
+      title: t("contact.email") || "Email",
       details: "hello@elitedrive.com",
-      description: t("contact.emailDesc"),
+      description: t("contact.emailDesc") || "We reply within 2 hours",
       gradient: "from-purple-500 to-pink-500",
+      bgColor: "bg-purple-500/10",
     },
     {
       icon: "📍",
-      title: t("contact.address"),
+      title: t("contact.address") || "Address",
       details: "123 Drive Street, City",
-      description: t("contact.addressDesc"),
+      description: t("contact.addressDesc") || "Visit our main office",
       gradient: "from-green-500 to-emerald-500",
+      bgColor: "bg-green-500/10",
     },
     {
       icon: "🕒",
-      title: t("contact.hours"),
+      title: t("contact.hours") || "Business Hours",
       details: "24/7 Available",
-      description: t("contact.hoursDesc"),
+      description: t("contact.hoursDesc") || "Always here to help you",
       gradient: "from-orange-500 to-red-500",
+      bgColor: "bg-orange-500/10",
     },
   ];
 
   const faqs = [
     {
-      question: t("contact.faq1q"),
-      answer: t("contact.faq1a"),
+      question: t("contact.faq1q") || "How quickly can I get a response?",
+      answer: t("contact.faq1a") || "We typically respond within 2 hours during business hours and within 12 hours for after-hours inquiries.",
     },
     {
-      question: t("contact.faq2q"),
-      answer: t("contact.faq2a"),
+      question: t("contact.faq2q") || "What's your cancellation policy?",
+      answer: t("contact.faq2a") || "You can cancel your booking up to 24 hours before pickup for a full refund. Late cancellations may incur a small fee.",
     },
     {
-      question: t("contact.faq3q"),
-      answer: t("contact.faq3a"),
+      question: t("contact.faq3q") || "Do you offer long-term rentals?",
+      answer: t("contact.faq3a") || "Yes! We offer special rates for weekly and monthly rentals. Contact us for custom long-term rental packages.",
     },
     {
-      question: t("contact.faq4q"),
-      answer: t("contact.faq4a"),
+      question: t("contact.faq4q") || "What payment methods do you accept?",
+      answer: t("contact.faq4a") || "We accept all major credit cards, PayPal, and bank transfers. Corporate accounts are also available.",
     },
   ];
 
@@ -82,6 +87,10 @@ export default function Contact() {
     }, 2000);
   };
 
+  const toggleFAQ = (index: number) => {
+    setActiveFAQ(activeFAQ === index ? null : index);
+  };
+
   return (
     <div
       className={`
@@ -93,23 +102,37 @@ export default function Contact() {
       }
     `}
     >
+      {/* Enhanced Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-20 w-32 h-32 bg-yellow-500/5 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-20 right-20 w-32 h-32 bg-green-500/5 rounded-full blur-2xl"></div>
       </div>
 
-      <section className="relative py-24 px-6">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/5 to-black/10"></div>
+      {/* Hero Section with Photo */}
+      <section className="relative py-24 px-6 min-h-[60vh] flex items-center">
+        {/* Background with Image and Overlay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/contact-hero.jpg')",
+          }}
+        />
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-purple-900/60 to-cyan-900/80"></div>
+
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6"
+            className="inline-flex items-center px-6 py-3 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 mb-6"
           >
-            <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-              💬 {t("contact.heroBadge")}
+            <span className="text-lg font-semibold text-white">
+              💬 {t("contact.heroBadge") || "Get In Touch"}
             </span>
           </motion.div>
 
@@ -117,34 +140,59 @@ export default function Contact() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className={`
-              text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r bg-clip-text text-transparent
-              ${
-                theme === "light"
-                  ? "from-blue-600 via-purple-600 to-cyan-600"
-                  : "from-blue-400 via-purple-400 to-cyan-400"
-              }
-            `}
+            className="text-5xl md:text-7xl font-bold mb-6 text-white leading-tight"
           >
-            {t("contact.title")}
+            Let's Start a{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-cyan-300">
+              Conversation
+            </span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className={`
-              text-xl md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed
-              ${theme === "light" ? "text-gray-700" : "text-gray-300"}
-            `}
+            className="text-xl md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed text-gray-200"
           >
-            {t("contact.subtitle")}
+            {t("contact.subtitle") || "Have questions? We're here to help. Get in touch with our team and let's discuss how we can assist you."}
           </motion.p>
+
+          {/* Quick Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto"
+          >
+            {[
+              { number: "2h", label: "Avg. Response" },
+              { number: "24/7", label: "Support" },
+              { number: "100%", label: "Satisfaction" },
+              { number: "5.0", label: "Rating" },
+            ].map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8 + index * 0.1 }}
+                className="text-center"
+              >
+                <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                  {stat.number}
+                </div>
+                <div className="text-sm text-gray-300">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      <section className="py-16 px-6">
-        <div className="max-w-6xl mx-auto">
+      {/* Contact Methods & Form Section */}
+      <section className="py-20 px-6 relative -mt-20">
+        <div className="max-w-7xl mx-auto">
+          {/* Contact Methods */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
             {contactMethods.map((method, index) => (
               <motion.div
@@ -152,33 +200,53 @@ export default function Contact() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
-                whileHover={{ y: -5, scale: 1.02 }}
+                whileHover={{ 
+                  y: -8, 
+                  scale: 1.02,
+                  boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)"
+                }}
                 className={`
-                  rounded-3xl p-6 text-center backdrop-blur-sm border-2 transition-all duration-300 relative overflow-hidden group
+                  rounded-3xl p-8 text-center backdrop-blur-sm border-2 transition-all duration-300 relative overflow-hidden group
                   ${
                     theme === "light"
-                      ? "bg-white/80 border-gray-200 shadow-xl"
-                      : "bg-gray-800/80 border-gray-700 shadow-xl"
+                      ? "bg-white/90 border-gray-200 shadow-2xl hover:shadow-3xl"
+                      : "bg-gray-800/90 border-gray-700 shadow-2xl hover:shadow-3xl"
                   }
                 `}
               >
+                {/* Background Gradient on Hover */}
                 <motion.div
                   className={`absolute inset-0 bg-gradient-to-br ${method.gradient} opacity-0`}
                   whileHover={{ opacity: 0.05 }}
                   transition={{ duration: 0.3 }}
                 />
 
+                {/* Icon */}
                 <motion.div
-                  className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${method.gradient} text-white text-2xl mb-4 mx-auto shadow-lg`}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br ${method.gradient} text-white text-3xl mb-6 mx-auto shadow-2xl relative overflow-hidden`}
+                  whileHover={{ 
+                    scale: 1.15, 
+                    rotate: [0, -5, 5, 0],
+                    boxShadow: `0 15px 30px -5px rgba(0,0,0,0.3)`
+                  }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300,
+                    rotate: { duration: 0.5 }
+                  }}
                 >
                   {method.icon}
+                  <motion.div
+                    className="absolute inset-0 bg-white/20"
+                    whileHover={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
                 </motion.div>
 
+                {/* Content */}
                 <h3
                   className={`
-                  text-lg font-bold mb-2
+                  text-xl font-bold mb-3 relative z-10
                   ${theme === "light" ? "text-gray-900" : "text-white"}
                 `}
                 >
@@ -187,7 +255,7 @@ export default function Contact() {
 
                 <p
                   className={`
-                  font-semibold mb-2
+                  font-semibold text-lg mb-3 relative z-10
                   ${theme === "light" ? "text-blue-600" : "text-blue-400"}
                 `}
                 >
@@ -196,229 +264,257 @@ export default function Contact() {
 
                 <p
                   className={`
-                  text-sm
+                  text-sm relative z-10
                   ${theme === "light" ? "text-gray-600" : "text-gray-400"}
                 `}
                 >
                   {method.description}
                 </p>
+
+                {/* Floating Elements */}
+                <motion.div
+                  className={`absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-br ${method.gradient} opacity-20`}
+                  animate={{ 
+                    scale: [1, 1.5, 1],
+                    opacity: [0.2, 0.4, 0.2]
+                  }}
+                  transition={{ 
+                    duration: 3, 
+                    repeat: Infinity,
+                    delay: index * 0.5
+                  }}
+                />
               </motion.div>
             ))}
           </div>
 
+          {/* Form and Additional Info */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               className={`
-                rounded-3xl p-8 backdrop-blur-sm border-2
+                rounded-3xl p-8 backdrop-blur-sm border-2 relative overflow-hidden
                 ${
                   theme === "light"
-                    ? "bg-white/80 border-blue-200 shadow-2xl"
-                    : "bg-gray-800/80 border-blue-700 shadow-2xl"
+                    ? "bg-white/90 border-blue-200 shadow-2xl"
+                    : "bg-gray-800/90 border-blue-700 shadow-2xl"
                 }
               `}
             >
-              <h2
-                className={`
-                text-3xl font-bold mb-6
-                ${theme === "light" ? "text-gray-900" : "text-white"}
-              `}
-              >
-                {t("contact.formTitle")}
-              </h2>
+              {/* Form Background Pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500 rounded-full blur-2xl"></div>
+              </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="relative z-10">
+                <h2
+                  className={`
+                  text-3xl font-bold mb-2
+                  ${theme === "light" ? "text-gray-900" : "text-white"}
+                `}
+                >
+                  {t("contact.formTitle") || "Send us a Message"}
+                </h2>
+                <p className={`mb-8 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
+                  Fill out the form below and we'll get back to you as soon as possible.
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        className={`
+                        block text-sm font-semibold mb-3
+                        ${theme === "light" ? "text-gray-700" : "text-gray-300"}
+                      `}
+                      >
+                        {t("contact.name") || "Full Name"} *
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        className={`
+                          w-full px-4 py-4 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20
+                          ${
+                            theme === "light"
+                              ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500 placeholder-gray-400"
+                              : "bg-gray-700 border-gray-600 text-white focus:border-blue-400 placeholder-gray-500"
+                          }
+                        `}
+                        placeholder={t("contact.namePlaceholder") || "Enter your full name"}
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        className={`
+                        block text-sm font-semibold mb-3
+                        ${theme === "light" ? "text-gray-700" : "text-gray-300"}
+                      `}
+                      >
+                        {t("contact.email") || "Email Address"} *
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className={`
+                          w-full px-4 py-4 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20
+                          ${
+                            theme === "light"
+                              ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500 placeholder-gray-400"
+                              : "bg-gray-700 border-gray-600 text-white focus:border-blue-400 placeholder-gray-500"
+                          }
+                        `}
+                        placeholder={t("contact.emailPlaceholder") || "your@email.com"}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        className={`
+                        block text-sm font-semibold mb-3
+                        ${theme === "light" ? "text-gray-700" : "text-gray-300"}
+                      `}
+                      >
+                        {t("contact.phone") || "Phone Number"}
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className={`
+                          w-full px-4 py-4 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20
+                          ${
+                            theme === "light"
+                              ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500 placeholder-gray-400"
+                              : "bg-gray-700 border-gray-600 text-white focus:border-blue-400 placeholder-gray-500"
+                          }
+                        `}
+                        placeholder={t("contact.phonePlaceholder") || "+1 (555) 000-0000"}
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        className={`
+                        block text-sm font-semibold mb-3
+                        ${theme === "light" ? "text-gray-700" : "text-gray-300"}
+                      `}
+                      >
+                        {t("contact.subject") || "Subject"} *
+                      </label>
+                      <select
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleInputChange}
+                        required
+                        className={`
+                          w-full px-4 py-4 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20
+                          ${
+                            theme === "light"
+                              ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                              : "bg-gray-700 border-gray-600 text-white focus:border-blue-400"
+                          }
+                        `}
+                      >
+                        <option value="">{t("contact.selectSubject") || "Select a subject"}</option>
+                        <option value="general">{t("contact.general") || "General Inquiry"}</option>
+                        <option value="booking">{t("contact.booking") || "Booking Assistance"}</option>
+                        <option value="support">{t("contact.support") || "Technical Support"}</option>
+                        <option value="complaint">
+                          {t("contact.complaint") || "Complaint"}
+                        </option>
+                        <option value="partnership">
+                          {t("contact.partnership") || "Partnership"}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
                     <label
                       className={`
-                      block text-sm font-semibold mb-2
+                      block text-sm font-semibold mb-3
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
-                      {t("contact.name")} *
+                      {t("contact.message") || "Message"} *
                     </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
+                    <textarea
+                      name="message"
+                      value={formData.message}
                       onChange={handleInputChange}
                       required
+                      rows={6}
                       className={`
-                        w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20
+                        w-full px-4 py-4 rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 resize-none
                         ${
                           theme === "light"
-                            ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                            : "bg-gray-700 border-gray-600 text-white focus:border-blue-400"
+                            ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500 placeholder-gray-400"
+                            : "bg-gray-700 border-gray-600 text-white focus:border-blue-400 placeholder-gray-500"
                         }
                       `}
-                      placeholder={t("contact.namePlaceholder")}
-                    />
+                      placeholder={t("contact.messagePlaceholder") || "Tell us how we can help you..."}
+                    ></textarea>
                   </div>
 
-                  <div>
-                    <label
-                      className={`
-                      block text-sm font-semibold mb-2
-                      ${theme === "light" ? "text-gray-700" : "text-gray-300"}
-                    `}
-                    >
-                      {t("contact.email")} *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className={`
-                        w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20
-                        ${
-                          theme === "light"
-                            ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                            : "bg-gray-700 border-gray-600 text-white focus:border-blue-400"
-                        }
-                      `}
-                      placeholder={t("contact.emailPlaceholder")}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label
-                      className={`
-                      block text-sm font-semibold mb-2
-                      ${theme === "light" ? "text-gray-700" : "text-gray-300"}
-                    `}
-                    >
-                      {t("contact.phone")}
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className={`
-                        w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20
-                        ${
-                          theme === "light"
-                            ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                            : "bg-gray-700 border-gray-600 text-white focus:border-blue-400"
-                        }
-                      `}
-                      placeholder={t("contact.phonePlaceholder")}
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      className={`
-                      block text-sm font-semibold mb-2
-                      ${theme === "light" ? "text-gray-700" : "text-gray-300"}
-                    `}
-                    >
-                      {t("contact.subject")} *
-                    </label>
-                    <select
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      required
-                      className={`
-                        w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20
-                        ${
-                          theme === "light"
-                            ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                            : "bg-gray-700 border-gray-600 text-white focus:border-blue-400"
-                        }
-                      `}
-                    >
-                      <option value="">{t("contact.selectSubject")}</option>
-                      <option value="general">{t("contact.general")}</option>
-                      <option value="booking">{t("contact.booking")}</option>
-                      <option value="support">{t("contact.support")}</option>
-                      <option value="complaint">
-                        {t("contact.complaint")}
-                      </option>
-                      <option value="partnership">
-                        {t("contact.partnership")}
-                      </option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    whileHover={{
+                      scale: isSubmitting ? 1 : 1.05,
+                      y: isSubmitting ? 0 : -2,
+                    }}
+                    whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
                     className={`
-                    block text-sm font-semibold mb-2
-                    ${theme === "light" ? "text-gray-700" : "text-gray-300"}
-                  `}
-                  >
-                    {t("contact.message")} *
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                    rows={6}
-                    className={`
-                      w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-500/20 resize-none
+                      w-full py-5 rounded-2xl font-bold text-lg transition-all duration-300 relative overflow-hidden group
                       ${
-                        theme === "light"
-                          ? "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                          : "bg-gray-700 border-gray-600 text-white focus:border-blue-400"
+                        isSubmitting
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl hover:shadow-3xl"
                       }
                     `}
-                    placeholder={t("contact.messagePlaceholder")}
-                  ></textarea>
-                </div>
-
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  whileHover={{
-                    scale: isSubmitting ? 1 : 1.05,
-                    y: isSubmitting ? 0 : -2,
-                  }}
-                  whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
-                  className={`
-                    w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 relative overflow-hidden group
-                    ${
-                      isSubmitting
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : theme === "light"
-                        ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-2xl"
-                        : "bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-2xl"
-                    }
-                  `}
-                >
-                  {isSubmitting ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                      className="w-6 h-6 border-2 border-white border-t-transparent rounded-full mx-auto"
-                    />
-                  ) : (
-                    <>
-                      <span className="relative z-10">
-                        {t("contact.sendMessage")}
-                      </span>
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-blue-700 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        initial={false}
-                      />
-                    </>
-                  )}
-                </motion.button>
-              </form>
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center space-x-3">
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                          className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                        />
+                        <span>Sending...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="relative z-10">
+                          {t("contact.sendMessage") || "Send Message"}
+                        </span>
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          initial={false}
+                        />
+                      </>
+                    )}
+                  </motion.button>
+                </form>
+              </div>
             </motion.div>
 
             {/* Map & FAQ Section */}
@@ -428,27 +524,28 @@ export default function Contact() {
               transition={{ duration: 0.8 }}
               className="space-y-8"
             >
+              {/* Office Location */}
               <div
                 className={`
-                rounded-3xl overflow-hidden backdrop-blur-sm border-2
+                rounded-3xl overflow-hidden backdrop-blur-sm border-2 relative
                 ${
                   theme === "light"
-                    ? "bg-white/80 border-blue-200 shadow-2xl"
-                    : "bg-gray-800/80 border-blue-700 shadow-2xl"
+                    ? "bg-white/90 border-blue-200 shadow-2xl"
+                    : "bg-gray-800/90 border-blue-700 shadow-2xl"
                 }
               `}
               >
-                <div className="h-64 bg-gradient-to-br from-blue-400 to-purple-500 relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-white text-6xl">
-                    🗺️
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <h3 className="text-xl font-bold">
-                      {t("contact.visitUs")}
+                <div className="h-80 bg-cover bg-center relative" style={{ backgroundImage: "url('/office-location.jpg')" }}>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 text-white">
+                    <h3 className="text-2xl font-bold mb-2">
+                      {t("contact.visitUs") || "Visit Our Office"}
                     </h3>
-                    <p className="text-blue-100">
+                    <p className="text-blue-100 text-lg">
                       123 Drive Street, City, State 12345
+                    </p>
+                    <p className="text-gray-300 mt-2">
+                      🕒 Mon - Fri: 9:00 AM - 6:00 PM
                     </p>
                   </div>
                 </div>
@@ -457,22 +554,25 @@ export default function Contact() {
               {/* FAQ Section */}
               <div
                 className={`
-                rounded-3xl p-6 backdrop-blur-sm border-2
+                rounded-3xl p-8 backdrop-blur-sm border-2
                 ${
                   theme === "light"
-                    ? "bg-white/80 border-purple-200 shadow-2xl"
-                    : "bg-gray-800/80 border-purple-700 shadow-2xl"
+                    ? "bg-white/90 border-purple-200 shadow-2xl"
+                    : "bg-gray-800/90 border-purple-700 shadow-2xl"
                 }
               `}
               >
                 <h3
                   className={`
-                  text-2xl font-bold mb-6
+                  text-2xl font-bold mb-2
                   ${theme === "light" ? "text-gray-900" : "text-white"}
                 `}
                 >
-                  {t("contact.faqTitle")}
+                  {t("contact.faqTitle") || "Frequently Asked Questions"}
                 </h3>
+                <p className={`mb-6 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
+                  Quick answers to common questions
+                </p>
 
                 <div className="space-y-4">
                   {faqs.map((faq, index) => (
@@ -482,30 +582,51 @@ export default function Contact() {
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1, duration: 0.5 }}
                       className={`
-                        rounded-xl p-4 border transition-all duration-300
+                        rounded-2xl p-4 border-2 transition-all duration-300 cursor-pointer
                         ${
                           theme === "light"
-                            ? "bg-blue-50 border-blue-200"
-                            : "bg-blue-900/20 border-blue-800"
+                            ? "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:border-blue-300"
+                            : "bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-800 hover:border-blue-600"
                         }
+                        ${activeFAQ === index ? 'ring-2 ring-blue-500/30' : ''}
                       `}
+                      onClick={() => toggleFAQ(index)}
                     >
-                      <h4
-                        className={`
-                        font-semibold mb-2
-                        ${theme === "light" ? "text-gray-900" : "text-white"}
-                      `}
+                      <div className="flex items-center justify-between">
+                        <h4
+                          className={`
+                          font-semibold text-lg
+                          ${theme === "light" ? "text-gray-900" : "text-white"}
+                        `}
+                        >
+                          {faq.question}
+                        </h4>
+                        <motion.span
+                          animate={{ rotate: activeFAQ === index ? 180 : 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="text-blue-500 text-xl"
+                        >
+                          ▼
+                        </motion.span>
+                      </div>
+                      <motion.div
+                        initial={false}
+                        animate={{ 
+                          height: activeFAQ === index ? 'auto' : 0,
+                          opacity: activeFAQ === index ? 1 : 0 
+                        }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
                       >
-                        {faq.question}
-                      </h4>
-                      <p
-                        className={`
-                        text-sm
-                        ${theme === "light" ? "text-gray-600" : "text-gray-400"}
-                      `}
-                      >
-                        {faq.answer}
-                      </p>
+                        <p
+                          className={`
+                          mt-3 text-sm leading-relaxed
+                          ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                        `}
+                        >
+                          {faq.answer}
+                        </p>
+                      </motion.div>
                     </motion.div>
                   ))}
                 </div>
