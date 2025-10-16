@@ -82,10 +82,10 @@ export default function About() {
       }
     `}
     >
-      {/* Hero Section */}
+  
       <div className="relative h-[500px] rounded-b-3xl overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center m-6 rounded-2xl overflow-hidden "
           style={{
             backgroundImage:
               "linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/mud.jpg')",
@@ -141,7 +141,7 @@ export default function About() {
         </div>
       </div>
 
-      {/* Story Section */}
+ 
       <section className="py-20 px-6 relative">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
