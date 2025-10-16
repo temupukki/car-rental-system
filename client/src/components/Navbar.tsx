@@ -6,6 +6,8 @@ import LanguageToggle from "./LanguageToggle";
 import { useTheme } from "./ThemeContext";
 import { useLanguage } from "./LanguageContext";
 
+
+
 interface NavLink {
   id: number;
   name: string;
@@ -116,6 +118,7 @@ export default function Navbar() {
 
             <LanguageToggle />
             <ThemeToggle />
+            <Link to={"/sign"}>
             <motion.button
               whileHover={{ scale: 1.06, y: -1 }}
               whileTap={{ scale: 1.18 }}
@@ -130,6 +133,7 @@ export default function Navbar() {
             >
               {t("nav.book")}
             </motion.button>
+            </Link>
           </motion.div>
 
           <div className="flex items-center space-x-3 lg:hidden">
@@ -209,7 +213,10 @@ export default function Navbar() {
                   whileTap={{ scale: 0.98 }}
                   className="pt-2 px-2"
                 >
+                  <Link
+                  to="/sign">
                   <motion.button
+                 
                     whileHover={{
                       boxShadow: "0 8px 20px -5px rgba(37, 99, 235, 0.4)",
                     }}
@@ -224,6 +231,7 @@ export default function Navbar() {
                   >
                     {t("nav.book")}
                   </motion.button>
+                  </Link>
                 </motion.div>
               </motion.div>
             </motion.div>
