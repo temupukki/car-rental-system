@@ -11,6 +11,8 @@ import FAQ from "./pages/Faq";
 import Sign from "./(auth)/sign"
 import AuthLayout from "./layouts/AuthLayout";
 import Vehicles from "./pages/Vehicles";
+import DashLayout from "./layouts/DashLayout";
+import DashHome from "./dashboard/DashHome";
 
 function App() {
   return (
@@ -72,6 +74,14 @@ function App() {
                 <AuthLayout>
                   <Sign/>
                 </AuthLayout>
+              }
+            />
+                <Route
+              path="/dashboard"
+              element={
+                <DashLayout>
+                  <DashHome />
+                </DashLayout>
               }
             />
           </Routes>
