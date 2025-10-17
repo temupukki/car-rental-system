@@ -44,19 +44,19 @@ export default function Sign() {
   const features = [
     { 
       icon: <Car className="w-6 h-6" />, 
-      text: t('auth.feature1') 
+      text: t('auth.features.vehicles') || "500+ Premium Vehicles" 
     },
     { 
       icon: <MapPin className="w-6 h-6" />, 
-      text: t('auth.feature2') 
+      text: t('auth.features.locations') || "Multiple Pickup Locations" 
     },
     { 
       icon: <Shield className="w-6 h-6" />, 
-      text: t('auth.feature3') 
+      text: t('auth.features.insurance') || "Fully Insured & Safe" 
     },
     { 
       icon: <Clock className="w-6 h-6" />, 
-      text: t('auth.feature4') 
+      text: t('auth.features.support') || "24/7 Customer Support" 
     },
   ];
 
@@ -72,20 +72,20 @@ export default function Sign() {
         });
 
         if (result.error) {
-          toast.error(t('auth.signInFailed') + result.error.message);
+          toast.error(t('auth.errors.signInFailed') || "Sign in failed: " + result.error.message);
         } else {
           if (result.data.user.emailVerified) {
-            toast.success(t('auth.welcomeBack'));
+            toast.success(t('auth.success.welcomeBack') || "Welcome back!");
             navigate("/dashboard");
           } else {
             setVerificationSent(true);
             setPendingEmail(formData.email);
-            toast.warning(t('auth.verifyEmail'));
+            toast.warning(t('auth.info.verifyEmail') || "Please verify your email address");
           }
         }
       } else {
         if (formData.password !== formData.confirmPassword) {
-          toast.error(t('auth.passwordsDontMatch'));
+          toast.error(t('auth.errors.passwordsDontMatch') || "Passwords don't match");
           setLoading(false);
           return;
         }
@@ -97,11 +97,11 @@ export default function Sign() {
         });
 
         if (result.error) {
-          toast.error(t('auth.signUpFailed') + result.error.message);
+          toast.error(t('auth.errors.signUpFailed') || "Sign up failed: " + result.error.message);
         } else {
           setVerificationSent(true);
           setPendingEmail(formData.email);
-          toast.success(t('auth.accountCreated'));
+          toast.success(t('auth.success.accountCreated') || "Account created successfully!");
           
           setFormData({
             email: "",
@@ -113,7 +113,7 @@ export default function Sign() {
         }
       }
     } catch (error: any) {
-      toast.error(t('auth.somethingWentWrong'));
+      toast.error(t('auth.errors.somethingWentWrong') || "Something went wrong");
       console.error("Auth error:", error);
     } finally {
       setLoading(false);
@@ -129,16 +129,16 @@ export default function Sign() {
         callbackURL: `${window.location.origin}/dashboard`,
       });
 
-      toast.success(t('auth.googleSuccess'));
+      toast.success(t('auth.success.googleSuccess') || "Google sign in successful!");
 
       if (result.error) {
         toast.error(result.error.message);
         return;
       }
-      toast.loading(t('auth.processing'));
+      toast.loading(t('auth.loading.processing') || "Processing...");
      
     } catch (error: any) {
-      toast.error(t('auth.googleFailed'));
+      toast.error(t('auth.errors.googleFailed') || "Google sign in failed");
       console.error("Google auth error:", error);
     } finally {
       setLoading(false);
@@ -148,15 +148,15 @@ export default function Sign() {
   const handleResendVerification = async () => {
     setLoading(true);
     try {
-      toast.info(t('auth.checkSpam'));
+      toast.info(t('auth.info.checkSpam') || "Please check your spam folder");
       
       setTimeout(() => {
-        toast.success(t('auth.emailResent'));
+        toast.success(t('auth.success.emailResent') || "Verification email resent!");
         setLoading(false);
       }, 1000);
       
     } catch (error) {
-      toast.error(t('auth.resendFailed'));
+      toast.error(t('auth.errors.resendFailed') || "Failed to resend email");
       setLoading(false);
     }
   };
@@ -172,14 +172,14 @@ export default function Sign() {
       });
 
       if (result.error) {
-        toast.error(t('auth.resetFailed') + result.error.message);
+        toast.error(t('auth.errors.resetFailed') || "Password reset failed: " + result.error.message);
       } else {
-        toast.success(t('auth.resetSent'));
+        toast.success(t('auth.success.resetSent') || "Password reset link sent!");
         setShowForgotPassword(false);
         setResetEmail("");
       }
     } catch (error: any) {
-      toast.error(t('auth.somethingWentWrong'));
+      toast.error(t('auth.errors.somethingWentWrong') || "Something went wrong");
       console.error("Forgot password error:", error);
     } finally {
       setLoading(false);
@@ -240,10 +240,10 @@ export default function Sign() {
               text-2xl font-bold mb-2
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
             `}>
-              {t('auth.resetPassword')}
+              {t('auth.forgotPassword.title') || "Reset Password"}
             </h2>
             <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-300'}>
-              {t('auth.resetInstructions')}
+              {t('auth.forgotPassword.instructions') || "Enter your email address and we'll send you a link to reset your password."}
             </p>
           </div>
 
@@ -253,7 +253,7 @@ export default function Sign() {
                 block text-sm font-medium mb-2
                 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}
               `}>
-                {t('auth.emailAddress')}
+                {t('auth.labels.email') || "Email Address"}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -268,7 +268,7 @@ export default function Sign() {
                       : 'border-gray-600 bg-gray-700 text-white'
                     }
                   `}
-                  placeholder={t('auth.enterEmail')}
+                  placeholder={t('auth.placeholders.email') || "Enter your email"}
                   required
                   autoFocus
                 />
@@ -289,11 +289,11 @@ export default function Sign() {
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {t('auth.sendingLink')}
+                  {t('auth.loading.sendingLink') || "Sending reset link..."}
                 </>
               ) : (
                 <>
-                  {t('auth.sendResetLink')}
+                  {t('auth.buttons.sendResetLink') || "Send Reset Link"}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -311,7 +311,7 @@ export default function Sign() {
                   }
                 `}
               >
-                {t('auth.backToSignIn')}
+                {t('auth.buttons.backToSignIn') || "Back to Sign In"}
               </button>
             </div>
           </form>
@@ -324,15 +324,15 @@ export default function Sign() {
               text-sm font-medium mb-2
               ${theme === 'light' ? 'text-blue-800' : 'text-blue-200'}
             `}>
-              {t('auth.whatHappensNext')}
+              {t('auth.forgotPassword.whatHappensNext') || "What happens next?"}
             </h3>
             <ul className={`
               text-xs space-y-1
               ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}
             `}>
-              <li>• {t('auth.step1')}</li>
-              <li>• {t('auth.step2')}</li>
-              <li>• {t('auth.step3')}</li>
+              <li>• {t('auth.forgotPassword.step1') || "You'll receive an email with a reset link"}</li>
+              <li>• {t('auth.forgotPassword.step2') || "Click the link in the email"}</li>
+              <li>• {t('auth.forgotPassword.step3') || "Create your new password"}</li>
             </ul>
           </div>
         </div>
@@ -395,7 +395,7 @@ export default function Sign() {
             `}
           >
             <ArrowLeft className="w-4 h-4" />
-            {t('auth.backTo')} {isLogin ? t('auth.signIn') : t('auth.signUp')}
+            {t('auth.buttons.backTo') || "Back to"} {isLogin ? t('auth.buttons.signIn') : t('auth.buttons.signUp')}
           </motion.button>
 
           <motion.div
@@ -437,10 +437,10 @@ export default function Sign() {
               text-2xl font-bold mb-2
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
             `}>
-              {t('auth.checkEmail')}
+              {t('auth.verification.checkEmail') || "Check Your Email"}
             </h2>
             <p className={theme === 'light' ? 'text-gray-600' : 'text-gray-300'}>
-              {t('auth.verificationSent')}
+              {t('auth.verification.sent') || "We've sent a verification link to:"}
             </p>
             <p className={`
               text-lg font-semibold mb-6 py-2 px-4 rounded-lg
@@ -465,7 +465,7 @@ export default function Sign() {
                 ${theme === 'light' ? 'text-blue-800' : 'text-blue-200'}
               `}>
                 <CheckCircle className="w-4 h-4" />
-                {t('auth.whatsNext')}
+                {t('auth.verification.whatsNext') || "What's next?"}
               </h3>
               <ul className={`
                 text-sm space-y-2
@@ -476,25 +476,25 @@ export default function Sign() {
                     w-2 h-2 rounded-full
                     ${theme === 'light' ? 'bg-blue-500' : 'bg-blue-400'}
                   `}></div>
-                  {t('auth.step1')}
+                  {t('auth.verification.step1') || "Check your email inbox"}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className={`
                     w-2 h-2 rounded-full
                     ${theme === 'light' ? 'bg-blue-500' : 'bg-blue-400'}
                   `}></div>
-                  {t('auth.step2')}
+                  {t('auth.verification.step2') || "Click the verification link"}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className={`
                     w-2 h-2 rounded-full
                     ${theme === 'light' ? 'bg-blue-500' : 'bg-blue-400'}
                   `}></div>
-                  {t('auth.step3')}
+                  {t('auth.verification.step3') || "Complete your registration"}
                 </li>
                 <li className="flex items-center gap-2 text-orange-600">
                   <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <strong>{t('auth.checkSpam')}</strong> {t('auth.ifNotSee')}
+                  <strong>{t('auth.info.checkSpam') || "Check spam folder"}</strong> {t('auth.verification.ifNotSee') || "if you don't see the email"}
                 </li>
               </ul>
             </div>
@@ -514,12 +514,12 @@ export default function Sign() {
                 {loading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    {t('auth.sending')}
+                    {t('auth.loading.sending') || "Sending..."}
                   </>
                 ) : (
                   <>
                     <Mail className="w-4 h-4" />
-                    {t('auth.resendEmail')}
+                    {t('auth.buttons.resendEmail') || "Resend Email"}
                   </>
                 )}
               </button>
@@ -534,7 +534,7 @@ export default function Sign() {
                 `}
               >
                 <ArrowLeft className="w-4 h-4" />
-                {t('auth.backTo')} {isLogin ? t('auth.signIn') : t('auth.signUp')}
+                {t('auth.buttons.backTo') || "Back to"} {isLogin ? t('auth.buttons.signIn') : t('auth.buttons.signUp')}
               </button>
             </div>
 
@@ -542,7 +542,7 @@ export default function Sign() {
               text-sm py-2 px-3 rounded-lg
               ${theme === 'light' ? 'text-gray-500 bg-gray-50' : 'text-gray-400 bg-gray-700/50'}
             `}>
-              💡 <strong>{t('auth.tip')}:</strong> {t('auth.linkExpires')}
+              💡 <strong>{t('auth.tips.tip') || "Tip"}:</strong> {t('auth.tips.linkExpires') || "The verification link expires in 24 hours"}
             </p>
           </motion.div>
         </motion.div>
@@ -624,7 +624,7 @@ export default function Sign() {
               ${theme === 'light' ? 'text-gray-900' : 'text-white'}
             `}
           >
-            {isLogin ? t('auth.welcomeBack') : t('auth.joinEliteDrive')}
+            {isLogin ? t('auth.titles.welcomeBack') || "Welcome Back" : t('auth.titles.joinEliteDrive') || "Join EliteDrive"}
           </motion.h1>
 
           <motion.p
@@ -637,8 +637,8 @@ export default function Sign() {
             `}
           >
             {isLogin
-              ? t('auth.loginSubtitle')
-              : t('auth.signupSubtitle')}
+              ? t('auth.subtitles.login') || "Sign in to your account to continue your journey with EliteDrive"
+              : t('auth.subtitles.signup') || "Create your account and start your premium car rental experience today"}
           </motion.p>
 
           <motion.div
@@ -685,7 +685,7 @@ export default function Sign() {
                 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}
               `}>10K+</div>
               <div className={theme === 'light' ? 'text-sm text-gray-600' : 'text-sm text-gray-400'}>
-                {t('auth.customers')}
+                {t('auth.stats.customers') || "Customers"}
               </div>
             </div>
             <div className="text-center">
@@ -694,7 +694,7 @@ export default function Sign() {
                 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}
               `}>4.9★</div>
               <div className={theme === 'light' ? 'text-sm text-gray-600' : 'text-sm text-gray-400'}>
-                {t('auth.rating')}
+                {t('auth.stats.rating') || "Rating"}
               </div>
             </div>
             <div className="text-center">
@@ -703,7 +703,7 @@ export default function Sign() {
                 ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}
               `}>50+</div>
               <div className={theme === 'light' ? 'text-sm text-gray-600' : 'text-sm text-gray-400'}>
-                {t('auth.vehicles')}
+                {t('auth.stats.vehicles') || "Vehicles"}
               </div>
             </div>
           </motion.div>
@@ -740,7 +740,7 @@ export default function Sign() {
                   : theme === 'light' ? "text-blue-600 hover:text-blue-700" : "text-blue-400 hover:text-blue-300"
               }`}
             >
-              {t('auth.signIn')}
+              {t('auth.buttons.signIn') || "Sign In"}
             </motion.button>
             <motion.button
               layout
@@ -751,7 +751,7 @@ export default function Sign() {
                   : theme === 'light' ? "text-cyan-600 hover:text-cyan-700" : "text-cyan-400 hover:text-cyan-300"
               }`}
             >
-              {t('auth.signUp')}
+              {t('auth.buttons.signUp') || "Sign Up"}
             </motion.button>
             <motion.div
               layout
@@ -775,7 +775,7 @@ export default function Sign() {
                   block text-sm font-medium mb-2
                   ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}
                 `}>
-                  {t('auth.fullName')}
+                  {t('auth.labels.fullName') || "Full Name"}
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -791,7 +791,7 @@ export default function Sign() {
                         : 'border-gray-600 bg-gray-700/50 text-white'
                       }
                     `}
-                    placeholder={t('auth.enterFullName')}
+                    placeholder={t('auth.placeholders.fullName') || "Enter your full name"}
                     required={!isLogin}
                   />
                 </div>
@@ -803,7 +803,7 @@ export default function Sign() {
                 block text-sm font-medium mb-2
                 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}
               `}>
-                {t('auth.emailAddress')}
+                {t('auth.labels.email') || "Email Address"}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -819,7 +819,7 @@ export default function Sign() {
                       : 'border-gray-600 bg-gray-700/50 text-white'
                     }
                   `}
-                  placeholder={t('auth.enterEmail')}
+                  placeholder={t('auth.placeholders.email') || "Enter your email"}
                   required
                 />
               </div>
@@ -836,7 +836,7 @@ export default function Sign() {
                   block text-sm font-medium mb-2
                   ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}
                 `}>
-                  {t('auth.phoneNumber')}
+                  {t('auth.labels.phone') || "Phone Number"}
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -852,7 +852,7 @@ export default function Sign() {
                         : 'border-gray-600 bg-gray-700/50 text-white'
                       }
                     `}
-                    placeholder={t('auth.enterPhone')}
+                    placeholder={t('auth.placeholders.phone') || "Enter your phone number"}
                     required={!isLogin}
                   />
                 </div>
@@ -864,7 +864,7 @@ export default function Sign() {
                 block text-sm font-medium mb-2
                 ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}
               `}>
-                {t('auth.password')}
+                {t('auth.labels.password') || "Password"}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -880,7 +880,7 @@ export default function Sign() {
                       : 'border-gray-600 bg-gray-700/50 text-white'
                     }
                   `}
-                  placeholder={t('auth.enterPassword')}
+                  placeholder={t('auth.placeholders.password') || "Enter your password"}
                   required
                   minLength={6}
                 />
@@ -910,7 +910,7 @@ export default function Sign() {
                       }
                     `}
                   >
-                    {t('auth.forgotPassword')}
+                    {t('auth.buttons.forgotPassword') || "Forgot your password?"}
                   </button>
                 </div>
               )}
@@ -927,7 +927,7 @@ export default function Sign() {
                   block text-sm font-medium mb-2
                   ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}
                 `}>
-                  {t('auth.confirmPassword')}
+                  {t('auth.labels.confirmPassword') || "Confirm Password"}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -943,7 +943,7 @@ export default function Sign() {
                         : 'border-gray-600 bg-gray-700/50 text-white'
                       }
                     `}
-                    placeholder={t('auth.confirmPassword')}
+                    placeholder={t('auth.placeholders.confirmPassword') || "Confirm your password"}
                     required={!isLogin}
                     minLength={6}
                   />
@@ -967,11 +967,14 @@ export default function Sign() {
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {isLogin ? t('auth.signingIn') : t('auth.creatingAccount')}
+                  {isLogin 
+                    ? t('auth.loading.signingIn') || "Signing in..." 
+                    : t('auth.loading.creatingAccount') || "Creating account..."
+                  }
                 </>
               ) : (
                 <>
-                  {isLogin ? t('auth.signIn') : t('auth.createAccount')}
+                  {isLogin ? t('auth.buttons.signIn') || "Sign In" : t('auth.buttons.signUp') || "Create Account"}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -982,7 +985,7 @@ export default function Sign() {
                 text-center
                 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
               `}>
-                {t('auth.noAccount')}{" "}
+                {t('auth.info.noAccount') || "Don't have an account?"}{" "}
                 <button
                   type="button"
                   onClick={() => setIsLogin(false)}
@@ -994,7 +997,7 @@ export default function Sign() {
                     }
                   `}
                 >
-                  {t('auth.signUp')}
+                  {t('auth.buttons.signUp') || "Sign up"}
                 </button>
               </p>
             ) : (
@@ -1002,7 +1005,7 @@ export default function Sign() {
                 text-center
                 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
               `}>
-                {t('auth.haveAccount')}{" "}
+                {t('auth.info.haveAccount') || "Already have an account?"}{" "}
                 <button
                   type="button"
                   onClick={() => setIsLogin(true)}
@@ -1014,7 +1017,7 @@ export default function Sign() {
                     }
                   `}
                 >
-                  {t('auth.signIn')}
+                  {t('auth.buttons.signIn') || "Sign in"}
                 </button>
               </p>
             )}
@@ -1028,7 +1031,7 @@ export default function Sign() {
                 flex-shrink mx-4 text-sm
                 ${theme === 'light' ? 'text-gray-400' : 'text-gray-500'}
               `}>
-                {t('auth.orContinueWith')}
+                {t('auth.info.orContinueWith') || "Or continue with"}
               </span>
               <div className={`
                 flex-grow border-t
@@ -1068,7 +1071,7 @@ export default function Sign() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              {t('auth.continueWithGoogle')}
+              {t('auth.buttons.continueWithGoogle') || "Continue with Google"}
             </motion.button>
           </form>
         </motion.div>
