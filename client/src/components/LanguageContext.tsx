@@ -22,6 +22,10 @@ const translations = {
     "nav.contact": "Contact",
     "nav.book": "Book Now",
     "company.name": "Elite Drive",
+    "nav.dashboard":"Dashboard",
+    "nav.myBookings":"My Bookings",
+
+
 
     // Home Page
     "home.hero.title.line1": "Experience the road",
@@ -122,6 +126,7 @@ const translations = {
     "home.features.pricesDesc": "The Best Price in the city!",
 
     "home.features.support": "5-Star Support",
+    "home.bookingCard.buttonLoggedIn":"Rent Now!",
    
 
     // Footer
@@ -599,6 +604,8 @@ const translations = {
     "nav.contact": "አግኙን",
     "nav.book": "አሁንኑ ይከራዩ",
     "company.name": "ኤሊት ድራይቭ",
+    "nav.dashboard":"መግቢያ",
+    "nav.myBookings":"የኔ ትዕዛዞች",
 
     // Home Page - ዋና ገጽ
  "home.hero.title.line1": "መንገዱን ያለመታወቅ",
@@ -694,6 +701,8 @@ const translations = {
     "home.features.pricesDesc": "በከተማው አሪፉ ዋጋ!",
  
     "home.cta.button": "ጉዞዎን አሁኑኑ ይጀምሩ ",
+    "home.bookingCard.buttonLoggedIn":"አሁኑ ይከራዩ!",
+
 
     // Footer - መጨረሻ
     "footer.company":

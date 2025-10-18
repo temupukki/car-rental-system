@@ -92,14 +92,16 @@ export default function DNavbar() {
     {
       path: "/vehicles",
       label: t("nav.vehicles"),
-      icon: <CarTaxiFront className="w-4 h-4" />,
     },
     {
       path: "/about",
       label: t("nav.about"),
-      icon: <Users className="w-4 h-4" />,
     },
-    { path: "/contact", label: t("nav.contact"), icon: <Phone className="w-4 h-4" /> },
+    {
+      path: "/contact",
+      label: t("nav.contact"),
+      icon: <Phone className="w-4 h-4" />,
+    },
     { path: "/sign-in", label: t("nav.book"), highlight: true },
   ];
 
@@ -107,17 +109,14 @@ export default function DNavbar() {
     {
       path: "/dashboard",
       label: t("nav.dashboard"),
-      icon: <LayoutDashboard className="w-4 h-4" />,
-    },
-    {
-      path: "/dashboard/bookings",
-      label: t("nav.myBookings"),
-      icon: <ClipboardList className="w-4 h-4" />,
     },
     {
       path: "/dashboard/vehicles",
       label: t("nav.vehicles"),
-      icon: <CarTaxiFront className="w-4 h-4" />,
+    },
+    {
+      path: "/dashboard/bookings",
+      label: t("nav.myBookings"),
     },
   ];
 
@@ -199,12 +198,18 @@ export default function DNavbar() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className={`h-12 w-12 rounded-full border-2 ${
-                theme === "light" ? "border-blue-600 bg-gray-300" : "border-blue-400 bg-gray-600"
-              } animate-pulse`} />
-              <div className={`h-6 w-32 ${
-                theme === "light" ? "bg-gray-300" : "bg-gray-600"
-              } rounded animate-pulse`} />
+              <div
+                className={`h-12 w-12 rounded-full border-2 ${
+                  theme === "light"
+                    ? "border-blue-600 bg-gray-300"
+                    : "border-blue-400 bg-gray-600"
+                } animate-pulse`}
+              />
+              <div
+                className={`h-6 w-32 ${
+                  theme === "light" ? "bg-gray-300" : "bg-gray-600"
+                } rounded animate-pulse`}
+              />
             </div>
             <div className="hidden md:flex gap-2">
               {[1, 2, 3, 4].map((i) => (
@@ -259,10 +264,12 @@ export default function DNavbar() {
                 whileTap={{ scale: 1.18 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
-                <h1 className={`
+                <h1
+                  className={`
                   text-xl font-bold
                   ${theme === "light" ? "text-gray-900" : "text-white"}
-                `}>
+                `}
+                >
                   {t("company.name")}
                 </h1>
               </motion.div>
@@ -291,7 +298,7 @@ export default function DNavbar() {
                       }
                     `}
                   >
-                    {item.icon}
+                
                     {item.label}
                     {location.pathname === item.path && (
                       <motion.div
@@ -343,9 +350,11 @@ export default function DNavbar() {
                         )}
                       </div>
                       <div className="text-left">
-                        <p className={`font-semibold text-sm leading-tight ${
-                          theme === "light" ? "text-gray-900" : "text-white"
-                        }`}>
+                        <p
+                          className={`font-semibold text-sm leading-tight ${
+                            theme === "light" ? "text-gray-900" : "text-white"
+                          }`}
+                        >
                           {getFirstName(
                             session.user?.name || session.user?.email
                           )}
@@ -353,9 +362,13 @@ export default function DNavbar() {
                             <Shield className="w-3 h-3 text-blue-600 inline ml-1" />
                           )}
                         </p>
-                        <p className={`text-xs leading-tight ${
-                          theme === "light" ? "text-gray-600" : "text-gray-400"
-                        }`}>
+                        <p
+                          className={`text-xs leading-tight ${
+                            theme === "light"
+                              ? "text-gray-600"
+                              : "text-gray-400"
+                          }`}
+                        >
                           {getUsername(session.user?.email)}
                           {userRoleDisplay && ` • ${userRoleDisplay}`}
                         </p>
@@ -365,9 +378,11 @@ export default function DNavbar() {
                       animate={{ rotate: isUserDropdownOpen ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <ChevronDown className={`w-4 h-4 ${
-                        theme === "light" ? "text-gray-600" : "text-gray-400"
-                      }`} />
+                      <ChevronDown
+                        className={`w-4 h-4 ${
+                          theme === "light" ? "text-gray-600" : "text-gray-400"
+                        }`}
+                      />
                     </motion.div>
                   </motion.button>
 
@@ -429,21 +444,27 @@ export default function DNavbar() {
                               }
                             `}
                           >
-                            <div className={`
+                            <div
+                              className={`
                               p-2 rounded-lg transition-colors
                               ${
                                 theme === "light"
                                   ? "bg-blue-100 group-hover:bg-blue-200"
                                   : "bg-blue-900/50 group-hover:bg-blue-800"
                               }
-                            `}>
+                            `}
+                            >
                               <User className="w-4 h-4 text-blue-600" />
                             </div>
                             <div>
                               <p className="font-medium">{t("user.profile")}</p>
-                              <p className={`text-xs ${
-                                theme === "light" ? "text-gray-500" : "text-gray-400"
-                              }`}>
+                              <p
+                                className={`text-xs ${
+                                  theme === "light"
+                                    ? "text-gray-500"
+                                    : "text-gray-400"
+                                }`}
+                              >
                                 {t("user.profileDescription")}
                               </p>
                             </div>
@@ -461,21 +482,29 @@ export default function DNavbar() {
                               }
                             `}
                           >
-                            <div className={`
+                            <div
+                              className={`
                               p-2 rounded-lg transition-colors
                               ${
                                 theme === "light"
                                   ? "bg-green-100 group-hover:bg-green-200"
                                   : "bg-green-900/50 group-hover:bg-green-800"
                               }
-                            `}>
+                            `}
+                            >
                               <LayoutDashboard className="w-4 h-4 text-green-600" />
                             </div>
                             <div>
-                              <p className="font-medium">{t("nav.dashboard")}</p>
-                              <p className={`text-xs ${
-                                theme === "light" ? "text-gray-500" : "text-gray-400"
-                              }`}>
+                              <p className="font-medium">
+                                {t("nav.dashboard")}
+                              </p>
+                              <p
+                                className={`text-xs ${
+                                  theme === "light"
+                                    ? "text-gray-500"
+                                    : "text-gray-400"
+                                }`}
+                              >
                                 {t("user.dashboardDescription")}
                               </p>
                             </div>
@@ -607,7 +636,7 @@ export default function DNavbar() {
                         }
                       `}
                     >
-                      {item.icon}
+                      
                       <motion.span
                         whileHover={{ x: 4 }}
                         transition={{ type: "spring", stiffness: 400 }}
@@ -621,31 +650,43 @@ export default function DNavbar() {
                 {/* User info and menu for mobile */}
                 {session ? (
                   <>
-                    <div className={`border-t pt-4 mt-2 ${
-                      theme === "light" ? "border-gray-200" : "border-gray-700"
-                    }`}>
+                    <div
+                      className={`border-t pt-4 mt-2 ${
+                        theme === "light"
+                          ? "border-gray-200"
+                          : "border-gray-700"
+                      }`}
+                    >
                       {/* User info */}
-                      <div className={`
+                      <div
+                        className={`
                         flex items-center gap-3 px-4 py-3 rounded-xl mb-3
                         ${theme === "light" ? "bg-gray-50" : "bg-gray-800"}
-                      `}>
+                      `}
+                      >
                         <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                           {getUserInitials(
                             session.user?.name || session.user?.email
                           )}
                         </div>
                         <div className="flex-1">
-                          <p className={`font-semibold flex items-center gap-2 ${
-                            theme === "light" ? "text-gray-900" : "text-white"
-                          }`}>
+                          <p
+                            className={`font-semibold flex items-center gap-2 ${
+                              theme === "light" ? "text-gray-900" : "text-white"
+                            }`}
+                          >
                             {session.user?.name || t("user.defaultName")}
                             {isAdmin && (
                               <Shield className="w-3 h-3 text-blue-600" />
                             )}
                           </p>
-                          <p className={`text-sm ${
-                            theme === "light" ? "text-gray-600" : "text-gray-400"
-                          }`}>
+                          <p
+                            className={`text-sm ${
+                              theme === "light"
+                                ? "text-gray-600"
+                                : "text-gray-400"
+                            }`}
+                          >
                             {session.user?.email}
                             {userRoleDisplay && (
                               <span className="block text-xs text-blue-600">
