@@ -13,10 +13,29 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-enum Userrole{
+
+enum Userrole {
   USER
   ADMIN
 }
+
+enum VehicleType {
+  SEDAN
+  SUV
+  LUXURY
+  SPORTS
+  COMPACT
+  VAN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id            String    @id
   name          String
@@ -25,9 +44,14 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
-  role          Userrole @default(USER)
+  role          Userrole  @default(USER)
+  phone         String?
+  licenseNumber String?
+  
   sessions      Session[]
   accounts      Account[]
+  orders        Order[]
+ 
 
   @@unique([email])
   @@map("user")
@@ -77,3 +101,81 @@ model Verification {
 
   @@map("verification")
 }
+
+model Vehicle {
+  id          String      @id @default(cuid())
+  name        String
+  type        VehicleType
+  brand       String
+  model       String
+  year        Int
+  pricePerDay Float
+  image       String
+  images      String[]
+  
+
+  seats       Int
+  fuelType    String
+  transmission String
+  mileage     String      @default("Unlimited")
+  
+ 
+  features    String[]
+  
+
+  isAvailable Boolean     @default(true)
+  location    String?
+  
+
+  rating      Float       @default(0.0)
+  reviewCount Int         @default(0)
+  
+
+  orders      Order[]
+
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("vehicle")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  
+  
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  
+  vehicleId   String
+  vehicle     Vehicle     @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  
+ 
+  startDate   DateTime
+  endDate     DateTime
+  totalDays   Int
+  
+
+  dailyRate   Float
+  totalAmount Float
+  
+ 
+  status      OrderStatus @default(PENDING)
+  
+
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  customerLicense String?
+  
+  
+  pickupLocation  String
+  dropoffLocation String
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("order")
+}
+

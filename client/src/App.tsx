@@ -13,6 +13,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import Vehicles from "./pages/Vehicles";
 import DashLayout from "./layouts/DashLayout";
 import DashHome from "./dashboard/DashHome";
+import DVehicles from "./dashboard/DashVehicles";
 
 function App() {
   return (
@@ -81,6 +82,14 @@ function App() {
               element={
                 <DashLayout>
                   <DashHome />
+                </DashLayout>
+              }
+            />
+                 <Route
+              path="/dashboard/vehicles"
+              element={
+                <DashLayout>
+                  <DVehicles />
                 </DashLayout>
               }
             />

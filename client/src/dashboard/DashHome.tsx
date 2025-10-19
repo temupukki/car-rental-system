@@ -22,51 +22,10 @@ import {
 } from "lucide-react";
 import { useTheme } from "../components/ThemeContext";
 import { useLanguage } from "../components/LanguageContext";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
-// Session hook
-const useSession = () => {
-  const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchMe() {
-      try {
-        const res = await fetch("http://localhost:3000/api/me", {
-          credentials: "include",
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch /api/me");
-
-        const data = await res.json();
-        setSession(data);
-      } catch (err) {
-        console.error("Error fetching /api/me:", err);
-        setSession(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchMe();
-  }, []);
-
-  return { session, loading };
-};
-
-export default function DHome() {
+export default function Home() {
   const { theme } = useTheme();
   const { t } = useLanguage();
-  const { session, loading } = useSession();
-  const navigate = useNavigate();
-
-  // Redirect if not logged in (you can remove this if you want public access)
-  useEffect(() => {
-    if (!loading && !session) {
-      navigate("/");
-    }
-  }, [session, loading, navigate]);
 
   const features = [
     {
@@ -164,37 +123,6 @@ export default function DHome() {
     }
   ];
 
-  // Get user's first name for welcome message
-  const getFirstName = (name: string) => {
-    if (!name) return "there";
-    return name.split(" ")[0];
-  };
-
-  if (loading) {
-    return (
-      <div className={`
-        min-h-screen flex items-center justify-center transition-all duration-500
-        ${theme === 'light' 
-          ? 'bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50' 
-          : 'bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900'
-        }
-      `}>
-        <div className="text-center">
-          <div className={`
-            animate-spin rounded-full h-16 w-16 border-b-2 mx-auto
-            ${theme === 'light' ? 'border-blue-600' : 'border-blue-400'}
-          `}></div>
-          <p className={`
-            mt-4 text-lg
-            ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-          `}>
-            Loading...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={`
       min-h-screen transition-all duration-500
@@ -203,36 +131,6 @@ export default function DHome() {
         : 'bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900'
       }
     `}>
-    
-      {/* Welcome Message */}
-      {session && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`
-            mx-8 mt-6 p-6 rounded-2xl backdrop-blur-sm border
-            ${theme === 'light'
-              ? 'bg-white/80 border-gray-200'
-              : 'bg-gray-800/80 border-gray-700'
-            }
-          `}
-        >
-          <div className="max-w-6xl mx-auto text-center">
-            <h1 className={`
-              text-3xl font-bold
-              ${theme === 'light' ? 'text-gray-800' : 'text-white'}
-            `}>
-              Welcome back, {getFirstName(session.user?.name || session.user?.email)}! 👋
-            </h1>
-            <p className={`
-              text-lg mt-2
-              ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-            `}>
-              Ready to find your perfect ride for your next adventure?
-            </p>
-          </div>
-        </motion.div>
-      )}
     
       <div className="relative mx-4 md:mx-16 h-[600px] rounded-3xl mt-6 overflow-hidden">
       
@@ -245,7 +143,6 @@ export default function DHome() {
           }}
         />
         
-    
         <div className={`
           absolute inset-0
           ${theme === 'light' 
@@ -284,6 +181,7 @@ export default function DHome() {
               transition={{ delay: 0.2 }}
               className="flex gap-4 mt-8"
             >
+              <a href="/dashboard/vehicles">
               <Button className={`
                 font-bold rounded-2xl px-8 py-3 text-lg
                 ${theme === 'light'
@@ -292,7 +190,7 @@ export default function DHome() {
                 }
               `}>
                 {t("home.hero.cta.primary") || "View All Cars"}
-              </Button>
+              </Button></a>
               <Button variant="outline" className={`
                 rounded-2xl px-8 py-3 text-lg
                 ${theme === 'light'
@@ -323,12 +221,12 @@ export default function DHome() {
                     font-bold text-2xl
                     ${theme === 'light' ? 'text-gray-800' : 'text-white'}
                   `}>
-                    {session ? t("home.bookingCard.titleLoggedIn") || "Ready to Drive?" : t("home.bookingCard.title") || "Book Your Car"}
+                    {t("home.bookingCard.title") || "Book Your Car"}
                   </CardTitle>
                   <CardDescription className={`
                     ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
                   `}>
-                    {session ? t("home.bookingCard.subtitleLoggedIn") || "Your perfect car is waiting!" : t("home.bookingCard.subtitle") || "Everything you need to hit the road."}
+                    {t("home.bookingCard.subtitle") || "Everything you need to hit the road."}
                   </CardDescription>
                 </CardHeader>
 
@@ -352,13 +250,12 @@ export default function DHome() {
                           `}>
                             {feature.title}
                           </p>
-                     
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <a href={session ? "/vehicles" : "/sign-in"}>
+                  <a href="/dashboard/vehicles">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -370,7 +267,7 @@ export default function DHome() {
                         }
                       `}
                     >
-                      {session ? t("home.bookingCard.buttonLoggedIn") || "Browse Vehicles" : t("home.bookingCard.button") || "Sign Up to Book"}
+                      {t("home.bookingCard.buttonLoggedIn") || "Sign Up to Book"}
                     </motion.button>
                   </a>
                 </CardContent>
@@ -380,7 +277,6 @@ export default function DHome() {
         </div>
       </div>
 
-      {/* Rest of your existing content remains the same */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-8 my-20">
         {mainFeatures.map((feature, index) => (
           <motion.div
@@ -419,13 +315,224 @@ export default function DHome() {
         ))}
       </div>
 
-      {/* ... rest of your existing JSX remains exactly the same ... */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto px-8 my-20">
-        {/* ... existing content ... */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          className="relative"
+        >
+          <img
+            src="/02.jfif"
+            alt="Premium Car"
+            className="w-full h-[500px] object-cover rounded-3xl shadow-2xl"
+          />
+          <div className={`
+            absolute bottom-6 left-6 backdrop-blur-sm rounded-2xl p-6 max-w-xs
+            ${theme === 'light' 
+              ? 'bg-white/90 border border-gray-200' 
+              : 'bg-gray-800/90 border border-gray-700'
+            }
+          `}>
+            <h3 className={`
+              font-bold text-2xl
+              ${theme === 'light' ? 'text-gray-800' : 'text-white'}
+            `}>
+              {t("home.carExperience.title") || "Luxury Experience"}
+            </h3>
+            <p className={`
+              mt-2
+              ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
+            `}>
+              {t("home.carExperience.subtitle") || "Premium vehicles for extraordinary journeys"}
+            </p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          className="flex flex-col justify-center"
+        >
+          <h2 className={`
+            text-4xl font-bold mb-6
+            ${theme === 'light' ? 'text-gray-800' : 'text-white'}
+          `}>
+            {t("home.whyChoose.title") || "Why Choose Our Cars?"}
+          </h2>
+          <p className={`
+            text-lg mb-8
+            ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
+          `}>
+            {t("home.whyChoose.description") || "Our fleet is meticulously maintained and equipped with the latest features to ensure your journey is safe, comfortable, and memorable."}
+          </p>
+          
+          <div className="space-y-4">
+            {carFeatures.map((feature, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ x: 5 }}
+                className={`
+                  flex items-center gap-3 p-3 rounded-lg transition-colors
+                  ${theme === 'light'
+                    ? 'hover:bg-gray-50'
+                    : 'hover:bg-gray-800/50'
+                  }
+                `}
+              >
+                <CheckCircle className={`
+                  w-5 h-5 flex-shrink-0
+                  ${theme === 'light' ? 'text-green-500' : 'text-green-400'}
+                `} />
+                <span className={`
+                  text-lg
+                  ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
+                `}>
+                  {feature}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+
+          <Button className={`
+            mt-8 rounded-2xl px-8 py-3 text-lg w-fit
+            ${theme === 'light'
+              ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+              : 'bg-gradient-to-r from-blue-700 to-purple-700 hover:from-blue-800 hover:to-purple-800 text-white'
+            }
+          `}>
+            {t("home.whyChoose.button") || "Explore Features"}
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+        </motion.div>
       </div>
 
       <div className="max-w-7xl mx-auto px-8 my-20">
-        {/* ... existing content ... */}
+        <div className="text-center mb-12">
+          <h2 className={`
+            text-4xl font-bold mb-4
+            ${theme === 'light' ? 'text-gray-800' : 'text-white'}
+          `}>
+            {t("home.featuredCars.title") || "Featured Vehicles"}
+          </h2>
+          <p className={`
+            text-lg max-w-2xl mx-auto
+            ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
+          `}>
+            {t("home.featuredCars.subtitle") || "Discover our handpicked selection of premium vehicles for every occasion and budget."}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {cars.map((car) => (
+            <motion.div
+              key={car.id}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className={`
+                rounded-3xl shadow-xl overflow-hidden group
+                ${theme === 'light'
+                  ? 'bg-white border border-gray-100'
+                  : 'bg-gray-800 border border-gray-700'
+                }
+              `}
+            >
+              <div className="relative overflow-hidden">
+                <img
+                  src={car.image}
+                  alt={car.name}
+                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className={`
+                  absolute top-4 right-4 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1
+                  ${theme === 'light' ? 'bg-white/90' : 'bg-gray-800/90'}
+                `}>
+                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                  <span className={`
+                    font-semibold text-sm
+                    ${theme === 'light' ? 'text-gray-800' : 'text-white'}
+                  `}>
+                    {car.rating}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className={`
+                      font-bold text-xl
+                      ${theme === 'light' ? 'text-gray-800' : 'text-white'}
+                    `}>
+                      {car.name}
+                    </h3>
+                    <p className={`
+                      text-sm
+                      ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}
+                    `}>
+                      {car.type}
+                    </p>
+                  </div>
+                  <span className={`
+                    text-2xl font-bold
+                    ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}
+                  `}>
+                    {car.price}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {car.features.map((feature, index) => (
+                    <span
+                      key={index}
+                      className={`
+                        px-3 py-1 rounded-full text-sm
+                        ${theme === 'light'
+                          ? 'bg-gray-100 text-gray-700'
+                          : 'bg-gray-700 text-gray-300'
+                        }
+                      `}
+                    >
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex gap-3">
+                  <Button className={`
+                    flex-1 rounded-xl py-3
+                    ${theme === 'light'
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      : 'bg-blue-700 hover:bg-blue-800 text-white'
+                    }
+                  `}>
+                    {t("home.featuredCars.bookButton") || "Book Now"}
+                  </Button>
+                  <Button variant="outline" className={`
+                    flex-1 rounded-xl py-3
+                    ${theme === 'light'
+                      ? 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      : 'border-gray-600 text-gray-300 hover:bg-gray-700'
+                    }
+                  `}>
+                    {t("home.featuredCars.detailsButton") || "Details"}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <Button className={`
+            rounded-2xl px-12 py-3 text-lg
+            ${theme === 'light'
+              ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white'
+              : 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white'
+            }
+          `}>
+            {t("home.featuredCars.viewAllButton") || "View All Vehicles"}
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
       </div>
 
       <div className={`
@@ -452,7 +559,7 @@ export default function DHome() {
             {t("home.cta.subtitle") || "Join thousands of satisfied customers who trust us for their travel needs. Book your perfect car today and hit the road with confidence."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className={`
+            <a href="/dashboard/vehicles"><Button className={`
               font-bold rounded-2xl px-8 py-3 text-lg
               ${theme === 'light'
                 ? 'bg-white text-blue-600 hover:bg-gray-100'
@@ -460,8 +567,8 @@ export default function DHome() {
               }
             `}>
               {t("home.cta.primaryButton") || "Book Your Car Now"}
-            </Button>
-            <Button variant="outline" className={`
+            </Button></a>
+            <a href="/dashboard/contact"><Button variant="outline" className={`
               rounded-2xl px-8 py-3 text-lg
               ${theme === 'light'
                 ? 'border-white text-white hover:bg-white hover:text-blue-600'
@@ -469,7 +576,7 @@ export default function DHome() {
               }
             `}>
               {t("home.cta.secondaryButton") || "Contact Us"}
-            </Button>
+            </Button></a>
           </div>
         </motion.div>
       </div>
