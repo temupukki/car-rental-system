@@ -40,21 +40,19 @@ class ApiService {
 
   // ==================== VEHICLE METHODS ====================
 
-  async getVehicles(filters: VehicleFilters = {}): Promise<Vehicle[]> {
-    const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        params.append(key, value.toString());
-      }
-    });
-    
-    const url = `${API_BASE}/vehicles?${params}`;
-    return this.fetchJson<Vehicle[]>(url);
-  }
+async getVehicles(filters: { type: string | undefined; search: string | undefined; minPrice: number | undefined; maxPrice: number | undefined; }): Promise<Vehicle[]> {
+  const url = `${API_BASE}/vehicles`;
+  const response = await this.fetchJson<{ success: boolean; data: Vehicle[] }>(url);
+  return response.data;
+}
 
-  async getVehicle(id: string): Promise<Vehicle> {
-    return this.fetchJson<Vehicle>(`${API_BASE}/vehicles/${id}`);
-  }
+async getVehicle(id: string): Promise<Vehicle> {
+  const url = `${API_BASE}/vehicles/${id}`;
+  const response = await this.fetchJson<{ success: boolean; data: Vehicle }>(url);
+  return response.data;
+}
+
+
 
   async createVehicle(vehicleData: CreateVehicleInput): Promise<Vehicle> {
     const dataToSend = {
@@ -145,9 +143,6 @@ class ApiService {
     return this.fetchJson<Order[]>(`${API_BASE}/me/${userId}/orders`);
   }
 
-  // ==================== UTILITY METHODS ====================
-
-  
 
   // Check vehicle availability
   async checkVehicleAvailability(vehicleId: string, startDate: string, endDate: string): Promise<boolean> {
