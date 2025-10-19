@@ -5,6 +5,12 @@ import { VehicleFilters, ApiResponse, CreateVehicleInput } from '../types.js';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Add middleware to log requests for debugging
+router.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`, req.body);
+  next();
+});
+
 // Get all vehicles with filters
 router.get('/', async (req: Request<{}, {}, {}, VehicleFilters>, res: Response<ApiResponse>) => {
   try {
@@ -66,17 +72,100 @@ router.get('/:id', async (req: Request, res: Response<ApiResponse>) => {
 });
 
 // Create new vehicle (Admin only)
-router.post('/', async (req: Request<{}, {}, CreateVehicleInput>, res: Response<ApiResponse>) => {
+router.post('/', async (req: Request, res: Response<ApiResponse>) => {
   try {
-    const vehicleData = req.body;
+    console.log('Request body received:', req.body);
+    console.log('Request headers:', req.headers);
+    
+    // Check if body exists
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Request body is empty or missing' 
+      });
+    }
+    
+    const vehicleData: CreateVehicleInput = req.body;
+    
+    console.log('Parsed vehicle data:', vehicleData);
+    
+    // Validate required fields
+    if (!vehicleData.name?.trim()) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Vehicle name is required' 
+      });
+    }
+    
+    if (!vehicleData.brand?.trim()) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Brand is required' 
+      });
+    }
+    
+    if (!vehicleData.model?.trim()) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Model is required' 
+      });
+    }
+    
+    if (!vehicleData.image?.trim()) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Main image URL is required' 
+      });
+    }
+    
+    if (!vehicleData.pricePerDay || vehicleData.pricePerDay <= 0) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Valid price per day is required' 
+      });
+    }
+
+    // Create the vehicle with proper data structure
     const vehicle = await prisma.vehicle.create({
-      data: vehicleData
+      data: {
+        name: vehicleData.name.trim(),
+        type: vehicleData.type || 'SEDAN',
+        brand: vehicleData.brand.trim(),
+        model: vehicleData.model.trim(),
+        year: vehicleData.year || new Date().getFullYear(),
+        pricePerDay: vehicleData.pricePerDay,
+        image: vehicleData.image.trim(),
+        images: vehicleData.images || [],
+        seats: vehicleData.seats || 5,
+        fuelType: vehicleData.fuelType || 'Gasoline',
+        transmission: vehicleData.transmission || 'Automatic',
+        mileage: vehicleData.mileage || 'Unlimited',
+        features: vehicleData.features || [],
+        location: vehicleData.location || null,
+        isAvailable: true,
+        rating: 0.0,
+        reviewCount: 0
+      }
     });
     
+    console.log('Vehicle created successfully:', vehicle);
+    
     res.status(201).json({ success: true, data: vehicle });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating vehicle:', error);
-    res.status(400).json({ success: false, error: 'Error creating vehicle' });
+    
+    // Handle specific Prisma errors
+    if (error.code === 'P2002') {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'A vehicle with similar details already exists' 
+      });
+    }
+    
+    res.status(400).json({ 
+      success: false, 
+      error: error.message || 'Error creating vehicle' 
+    });
   }
 });
 
@@ -84,9 +173,11 @@ router.post('/', async (req: Request<{}, {}, CreateVehicleInput>, res: Response<
 router.put('/:id', async (req: Request, res: Response<ApiResponse>) => {
   try {
     const { id } = req.params;
+    const updateData = req.body;
+    
     const vehicle = await prisma.vehicle.update({
       where: { id },
-      data: req.body
+      data: updateData
     });
     
     res.json({ success: true, data: vehicle });
