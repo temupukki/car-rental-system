@@ -43,6 +43,8 @@ import {
 import { useLanguage } from "../components/LanguageContext";
 import { useTheme } from "../components/ThemeContext";
 import type { Vehicle } from "../types/vehicle";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 interface VehicleType {
   value: string;
@@ -1738,15 +1740,15 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
                 ${totalPrice}
               </span>
             </div>
-            <Button
-              onClick={() =>
-                alert(`Proceeding to checkout with ${cart.length} vehicles`)
-              }
-              className="w-full rounded-2xl py-4 text-lg font-black bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl"
-            >
-              <DollarSign className="w-6 h-6 mr-3" />
-              Proceed to Checkout
-            </Button>
+            <Link to="/dashboard/checkout">
+              <Button onClick={()=>{
+                toast.success("Proced to checkout page")
+              }}
+               className="w-full rounded-2xl py-4 text-lg font-black bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl flex items-center justify-center">
+                <DollarSign className="w-6 h-6 mr-3" />
+                Proceed to Checkout ({cart.length})
+              </Button>
+            </Link>
           </div>
         )}
       </motion.div>

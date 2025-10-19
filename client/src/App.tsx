@@ -15,6 +15,7 @@ import DashLayout from "./layouts/DashLayout";
 import DashHome from "./dashboard/DashHome";
 import DVehicles from "./dashboard/DashVehicles";
 import AdminAddVehicle from "./dashboard/AdminAddVehicle";
+import Checkout from "./dashboard/Checkout";
 
 function App() {
   return (
@@ -99,6 +100,14 @@ function App() {
               element={
                 <DashLayout>
                   <AdminAddVehicle />
+                </DashLayout>
+              }
+            />
+                 <Route
+              path="/dashboard/checkout"
+              element={
+                <DashLayout>
+                  <Checkout />
                 </DashLayout>
               }
             />
