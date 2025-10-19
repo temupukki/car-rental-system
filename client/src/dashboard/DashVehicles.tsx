@@ -1740,15 +1740,15 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
                 ${totalPrice}
               </span>
             </div>
-            <Link to="/dashboard/checkout">
               <Button onClick={()=>{
+                 localStorage.setItem('vehicleRentalCart', JSON.stringify(cart));
+    window.location.href = '/dashboard/checkout';
                 toast.success("Proced to checkout page")
               }}
                className="w-full rounded-2xl py-4 text-lg font-black bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl flex items-center justify-center">
                 <DollarSign className="w-6 h-6 mr-3" />
                 Proceed to Checkout ({cart.length})
               </Button>
-            </Link>
           </div>
         )}
       </motion.div>
