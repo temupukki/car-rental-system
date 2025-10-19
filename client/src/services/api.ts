@@ -1,4 +1,4 @@
-import type { Vehicle, VehicleFilters, ApiResponse } from '../types/vehicle';
+import type { Vehicle, VehicleFilters, ApiResponse, CreateVehicleInput } from '../types/vehicle';
 
 const API_BASE = 'http://localhost:3000/api';
 
@@ -30,7 +30,29 @@ class ApiService {
     return this.fetchJson<Vehicle>(`${API_BASE}/vehicles/${id}`);
   }
 
-  // Orders
+  async createVehicle(vehicleData: CreateVehicleInput): Promise<Vehicle> {
+    return this.fetchJson<Vehicle>(`${API_BASE}/vehicles`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vehicleData)
+    });
+  }
+
+  async updateVehicle(id: string, vehicleData: Partial<Vehicle>): Promise<Vehicle> {
+    return this.fetchJson<Vehicle>(`${API_BASE}/vehicles/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(vehicleData)
+    });
+  }
+
+  async deleteVehicle(id: string): Promise<void> {
+    await this.fetchJson(`${API_BASE}/vehicles/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
+  // Orders (existing methods remain the same)
   async createOrder(orderData: any): Promise<any> {
     return this.fetchJson(`${API_BASE}/orders`, {
       method: 'POST',
@@ -52,7 +74,7 @@ class ApiService {
     });
   }
 
-  // Users
+  // Users (existing methods remain the same)
   async getUser(id: string): Promise<any> {
     return this.fetchJson(`${API_BASE}/me/${id}`);
   }

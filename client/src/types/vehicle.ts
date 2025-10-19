@@ -1,7 +1,9 @@
+export type VehicleType = 'SEDAN' | 'SUV' | 'LUXURY' | 'SPORTS' | 'COMPACT' | 'VAN';
+
 export interface Vehicle {
   id: string;
   name: string;
-  type: 'SEDAN' | 'SUV' | 'LUXURY' | 'SPORTS' | 'COMPACT' | 'VAN';
+  type: VehicleType;
   brand: string;
   model: string;
   year: number;
@@ -19,6 +21,23 @@ export interface Vehicle {
   reviewCount: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateVehicleInput {
+  name: string;
+  type: VehicleType;
+  brand: string;
+  model: string;
+  year: number;
+  pricePerDay: number;
+  image: string;
+  images: string[];
+  seats: number;
+  fuelType: string;
+  transmission: string;
+  mileage?: string;
+  features: string[];
+  location?: string;
 }
 
 export interface VehicleFilters {
