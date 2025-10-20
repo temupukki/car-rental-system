@@ -35,7 +35,10 @@ import {
   X,
   LogIn,
   Info,
+  AlertCircle,
 } from "lucide-react";
+import { toast } from "sonner";
+import { apiService } from "@/services/api";
 
 interface CartItem {
   id: string;
@@ -81,18 +84,6 @@ interface ApiResponse {
   user: UserSession;
 }
 
-interface CheckoutData {
-  userInfo: UserSession;
-  cartItems: CartItem[];
-  paymentMethod: string;
-  totalAmount: number;
-  rentalPeriod: {
-    startDate: string;
-    endDate: string;
-    totalDays: number;
-  };
-}
-
 export default function CheckoutPage() {
   const { theme } = useTheme();
   const { t } = useLanguage();
@@ -105,13 +96,52 @@ export default function CheckoutPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState<UserSession | null>(null);
   const [checkoutStep, setCheckoutStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState("credit_card");
+  const [paymentMethod, setPaymentMethod] = useState("chapa");
   const [rentalDates, setRentalDates] = useState({
     startDate: new Date().toISOString().split("T")[0],
     endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0],
   });
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [processingPayment, setProcessingPayment] = useState(false);
+
+  // Phone number validation function
+  const validatePhoneNumber = (phone: string): boolean => {
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    const phoneRegex = /^(09|07)\d{8}$/;
+    return phoneRegex.test(cleanPhone);
+  };
+
+  const handlePhoneChange = (phone: string) => {
+    setEditedUser((prev) => (prev ? { ...prev, phone } : null));
+    if (phoneError && phone.length > 0) {
+      setPhoneError(null);
+    }
+  };
+
+  const validateForm = (): boolean => {
+    if (!editedUser?.name || !editedUser?.email) {
+      toast.error("Please fill in all required fields (name and email)");
+      return false;
+    }
+
+    // Use editedUser.phone for validation since that's what the user entered in the form
+    const currentPhone = editedUser.phone;
+    if (!currentPhone) {
+      toast.error("Phone number is required");
+      return false;
+    }
+
+    if (!validatePhoneNumber(currentPhone)) {
+      toast.error("Phone number must be in 09xxxxxxxx or 07xxxxxxxx format");
+      return false;
+    }
+
+    setError(null);
+    setPhoneError(null);
+    return true;
+  };
 
   const totalRentalDays = cartItems.reduce(
     (sum, item) => sum + item.rentalDays,
@@ -123,7 +153,6 @@ export default function CheckoutPage() {
       const startDate = new Date(rentalDates.startDate);
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + totalRentalDays);
-
       setRentalDates((prev) => ({
         ...prev,
         endDate: endDate.toISOString().split("T")[0],
@@ -143,7 +172,6 @@ export default function CheckoutPage() {
         const data = await res.json();
         setSession(data);
 
-        // Extract user data from session
         if (data && data.user) {
           const userData: UserSession = {
             id: data.user.id,
@@ -154,8 +182,8 @@ export default function CheckoutPage() {
             role: data.user.role,
             createdAt: data.user.createdAt,
             updatedAt: data.user.updatedAt,
-            phone: "",
-            address: "",
+            phone: data.user.phone || "", // Initialize with empty string if no phone
+            address: data.user.address || "",
           };
           setUserSession(userData);
           setEditedUser(userData);
@@ -181,11 +209,8 @@ export default function CheckoutPage() {
           const cartData = JSON.parse(savedCart);
           setCartItems(cartData);
 
-          // Check if cart is empty
           if (cartData.length === 0) {
-            setError(
-              "Your cart is empty. Please add vehicles before checkout."
-            );
+            setError("Your cart is empty. Please add vehicles before checkout.");
           }
         } else {
           setError("Your cart is empty. Please add vehicles before checkout.");
@@ -201,7 +226,7 @@ export default function CheckoutPage() {
 
   const totals = React.useMemo(() => {
     const subtotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
-    const tax = subtotal * 0.15; // 15% tax
+    const tax = subtotal * 0.15;
     const serviceFee = cartItems.length * 15;
     const total = subtotal + tax + serviceFee;
 
@@ -241,53 +266,112 @@ export default function CheckoutPage() {
     if (!editedUser) return;
 
     try {
-      console.log("Saving user info:", editedUser);
-
-      setUserSession(editedUser);
-      setIsEditing(false);
-
-      setError(null);
-      console.log("Profile updated successfully!");
-    } catch (err) {
-      setError("Failed to update profile");
-    }
-  };
-
-  const handleCheckout = async () => {
-    try {
-      if (!userSession) {
-        setError("Please complete your profile information");
+      // Validate phone number before saving
+      if (!editedUser.phone) {
+        toast.error("Phone number is required");
         return;
       }
 
-      const checkoutData: CheckoutData = {
-        userInfo: userSession,
+      if (!validatePhoneNumber(editedUser.phone)) {
+        toast.error("Phone number must be in 09xxxxxxxx or 07xxxxxxxx format");
+        return;
+      }
+
+      console.log("💾 Saving user info with phone:", editedUser.phone);
+
+      // Update userSession with the edited data including phone
+      const updatedUserSession = {
+        ...userSession,
+        ...editedUser,
+        phone: editedUser.phone
+      };
+
+      setUserSession(updatedUserSession);
+      setIsEditing(false);
+      setError(null);
+      setPhoneError(null);
+      toast.success("Profile updated successfully!");
+      
+    } catch (err) {
+      console.error("❌ Failed to update profile:", err);
+      toast.error("Failed to update profile");
+    }
+  };
+
+  // FIXED: Handle checkout with phone number directly from editedUser
+  const handleCheckout = async (): Promise<void> => {
+    try {
+      if (!userSession || !editedUser) {
+        toast.error("Please complete your profile information");
+        return;
+      }
+
+      // Final validation before checkout - use editedUser for validation
+      if (!validateForm()) {
+        return;
+      }
+
+      console.log("🔄 User session phone:", userSession.phone);
+      console.log("🔄 Edited user phone:", editedUser.phone);
+
+      // Use the phone from editedUser (what user just entered in the form)
+      const finalPhone = editedUser.phone;
+      
+      if (!finalPhone) {
+        toast.error("Phone number is required. Please enter your phone number.");
+        return;
+      }
+
+      // Validate the phone number
+      if (!validatePhoneNumber(finalPhone)) {
+        toast.error("Phone number must be in 09xxxxxxxx or 07xxxxxxxx format");
+        return;
+      }
+
+      setProcessingPayment(true);
+      
+      // Create user data with phone number from editedUser (the form)
+      const userData: any = {
+        id: userSession.id,
+        name: editedUser.name,
+        email: editedUser.email,
+        emailVerified: userSession.emailVerified,
+        image: userSession.image,
+        phone: finalPhone, // Use the phone number from the form (editedUser)
+        address: editedUser.address,
+        role: userSession.role,
+        createdAt: userSession.createdAt,
+        updatedAt: userSession.updatedAt
+      };
+
+      console.log("📤 Final user data being sent:", userData);
+      console.log("📤 Phone number being sent:", userData.phone);
+
+      // Use the new processCheckoutWithChapa method
+      const paymentResponse = await apiService.processCheckoutWithChapa({
+        userInfo: userData,
         cartItems,
-        paymentMethod,
         totalAmount: totals.total,
         rentalPeriod: {
           startDate: rentalDates.startDate,
           endDate: rentalDates.endDate,
-          totalDays: totals.totalDays,
-        },
-      };
+          totalDays: totals.totalDays
+        }
+      });
+      
+      if (paymentResponse.success && paymentResponse.paymentUrl) {
+        console.log("✅ Redirecting to Chapa payment page...");
+        toast.success("Redirecting to payment page...");
+        window.location.href = paymentResponse.paymentUrl;
+      } else {
+        throw new Error(paymentResponse.message || 'Failed to initialize payment');
+      }
 
-      console.log("Processing checkout:", checkoutData);
-
-      setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      localStorage.removeItem("vehicleRentalCart");
-
-      alert("🎉 Booking confirmed! Thank you for your reservation.");
-
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 2000);
-    } catch (err) {
-      setError("Checkout failed. Please try again.");
+    } catch (err: any) {
+      console.error("❌ Checkout error:", err);
+      toast.error(err.message || "Checkout failed. Please try again.");
     } finally {
-      setLoading(false);
+      setProcessingPayment(false);
     }
   };
 
@@ -302,12 +386,6 @@ export default function CheckoutPage() {
       month: "long",
       day: "numeric",
     });
-  };
-
-  const calculateEndDate = (startDate: string, days: number) => {
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + days);
-    return date.toISOString().split("T")[0];
   };
 
   if (loading) {
@@ -412,7 +490,8 @@ export default function CheckoutPage() {
           </div>
         </motion.div>
 
-        {error && (
+        {/* Error Banner */}
+        {(error || phoneError) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -427,13 +506,16 @@ export default function CheckoutPage() {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Info className="w-4 h-4" />
-                <span>{error}</span>
+                <AlertCircle className="w-4 h-4" />
+                <span>{error || phoneError}</span>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setError(null)}
+                onClick={() => {
+                  setError(null);
+                  setPhoneError(null);
+                }}
                 className="text-current hover:bg-current/10"
               >
                 <X className="w-4 h-4" />
@@ -444,58 +526,6 @@ export default function CheckoutPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className={`
-                rounded-2xl p-6
-                ${
-                  theme === "light"
-                    ? "bg-white border border-gray-200"
-                    : "bg-gray-800 border border-gray-700"
-                }
-              `}
-            >
-              <div className="flex items-center justify-between mb-6">
-                {[1, 2, 3].map((step) => (
-                  <div key={step} className="flex items-center">
-                    <div
-                      className={`
-                      w-10 h-10 rounded-full flex items-center justify-center font-bold
-                      ${
-                        checkoutStep >= step
-                          ? "bg-blue-500 text-white"
-                          : theme === "light"
-                          ? "bg-gray-200 text-gray-600"
-                          : "bg-gray-700 text-gray-400"
-                      }
-                    `}
-                    >
-                      {checkoutStep > step ? (
-                        <CheckCircle className="w-5 h-5" />
-                      ) : (
-                        step
-                      )}
-                    </div>
-                    {step < 3 && (
-                      <div
-                        className={`
-                        w-20 h-1 mx-4
-                        ${
-                          checkoutStep > step
-                            ? "bg-blue-500"
-                            : theme === "light"
-                            ? "bg-gray-200"
-                            : "bg-gray-700"
-                        }
-                      `}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
             {checkoutStep === 1 && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -536,6 +566,7 @@ export default function CheckoutPage() {
                           setIsEditing(false);
                           setEditedUser(userSession);
                           setError(null);
+                          setPhoneError(null);
                         }}
                         variant="outline"
                         className="rounded-2xl"
@@ -578,10 +609,9 @@ export default function CheckoutPage() {
                         ${theme === "light" ? "text-blue-700" : "text-blue-300"}
                       `}
                       >
-                        Your profile information is loaded from your account.{" "}
-                        {isEditing
-                          ? "You're currently editing your information. Changes will be saved for this booking."
-                          : "Click 'Edit Information' to update your details for this booking."}
+                        {isEditing 
+                          ? "Enter your information below. Phone number is required for payment."
+                          : "Your information will be used for this booking. Click 'Edit Information' to update."}
                       </p>
                     </div>
                   </div>
@@ -675,16 +705,12 @@ export default function CheckoutPage() {
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
-                      Phone Number
+                      Phone Number *
                     </Label>
                     <Input
                       type="tel"
                       value={editedUser?.phone || ""}
-                      onChange={(e) =>
-                        setEditedUser((prev) =>
-                          prev ? { ...prev, phone: e.target.value } : null
-                        )
-                      }
+                      onChange={(e) => handlePhoneChange(e.target.value)}
                       disabled={!isEditing}
                       className={`
                         rounded-xl
@@ -694,17 +720,32 @@ export default function CheckoutPage() {
                             : "bg-gray-700 border-gray-600"
                         }
                         ${!isEditing ? "opacity-80" : ""}
+                        ${
+                          phoneError
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                            : ""
+                        }
                       `}
-                      placeholder="Enter your phone number "
+                      placeholder="09XXXXXXXX or 07XXXXXXXX"
                     />
-                    {!isEditing && !editedUser?.phone && (
+                    {!isEditing && !editedUser?.phone ? (
+                      <p
+                        className={`
+                        text-xs mt-1 text-red-500
+                      `}
+                      >
+                        ⚠ Phone number is required for booking confirmation
+                      </p>
+                    ) : (
                       <p
                         className={`
                         text-xs mt-1
-                        ${theme === "light" ? "text-gray-500" : "text-gray-400"}
+                        ${
+                          theme === "light" ? "text-gray-500" : "text-gray-400"
+                        }
                       `}
                       >
-                        Add your phone number for updates
+                        Format: 09XXXXXXXX or 07XXXXXXXX (10 digits)
                       </p>
                     )}
                   </div>
@@ -949,7 +990,7 @@ export default function CheckoutPage() {
                                   : "text-white"
                               }
                             `}
-                            >
+                              >
                               {item.name}
                             </h4>
                             <p
@@ -1023,14 +1064,9 @@ export default function CheckoutPage() {
 
                 <Button
                   onClick={() => {
-                    if (!editedUser?.name || !editedUser?.email) {
-                      setError(
-                        "Please fill in all required fields (name and email)"
-                      );
-                      return;
+                    if (validateForm()) {
+                      setCheckoutStep(2);
                     }
-                    setCheckoutStep(2);
-                    setError(null);
                   }}
                   className="w-full mt-6 rounded-2xl py-3 text-lg font-bold bg-blue-500 hover:bg-blue-600 text-white"
                 >
@@ -1038,8 +1074,221 @@ export default function CheckoutPage() {
                 </Button>
               </motion.div>
             )}
+
+            {/* Payment Step */}
+            {checkoutStep === 2 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className={`
+                  rounded-2xl p-6
+                  ${
+                    theme === "light"
+                      ? "bg-white border border-gray-200"
+                      : "bg-gray-800 border border-gray-700"
+                  }
+                `}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2
+                    className={`
+                    text-2xl font-bold flex items-center gap-3
+                    ${theme === "light" ? "text-gray-800" : "text-white"}
+                  `}
+                  >
+                    <CreditCard className="w-6 h-6 text-blue-500" />
+                    Payment Method
+                  </h2>
+
+                  <Button
+                    onClick={() => setCheckoutStep(1)}
+                    variant="outline"
+                    className="rounded-2xl"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Information
+                  </Button>
+                </div>
+
+                {/* Payment Methods */}
+                <div className="space-y-4 mb-6">
+                  {/* Chapa Payment Option */}
+                  <div
+                    className={`
+                    p-4 rounded-2xl border-2 cursor-pointer transition-all
+                    ${
+                      paymentMethod === "chapa"
+                        ? theme === "light"
+                          ? "border-green-500 bg-green-50"
+                          : "border-green-500 bg-green-900/20"
+                        : theme === "light"
+                        ? "border-gray-200 bg-gray-50 hover:border-gray-300"
+                        : "border-gray-600 bg-gray-700 hover:border-gray-500"
+                    }
+                  `}
+                    onClick={() => setPaymentMethod("chapa")}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`
+                          w-6 h-6 rounded-full border-2 flex items-center justify-center
+                          ${
+                            paymentMethod === "chapa"
+                              ? "border-green-500 bg-green-500"
+                              : theme === "light"
+                              ? "border-gray-400"
+                              : "border-gray-500"
+                          }
+                        `}
+                        >
+                          {paymentMethod === "chapa" && (
+                            <div className="w-2 h-2 rounded-full bg-white"></div>
+                          )}
+                        </div>
+                        <div>
+                          <h4
+                            className={`
+                            font-bold
+                            ${theme === "light" ? "text-gray-800" : "text-white"}
+                          `}
+                          >
+                            Chapa Payment
+                          </h4>
+                          <p
+                            className={`
+                            text-sm
+                            ${
+                              theme === "light"
+                                ? "text-gray-600"
+                                : "text-gray-400"
+                            }
+                          `}
+                          >
+                            Secure payment via Chapa - Supports mobile banking & cards
+                          </p>
+                        </div>
+                      </div>
+                      <div className="w-12 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded flex items-center justify-center text-white text-xs font-bold">
+                        CHAPA
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Chapa Security Notice */}
+                <div
+                  className={`
+                  mb-6 p-4 rounded-2xl
+                  ${
+                    theme === "light"
+                      ? "bg-green-50 border border-green-200"
+                      : "bg-green-900/20 border border-green-800"
+                  }
+                `}
+                >
+                  <div className="flex items-start gap-3">
+                    <Shield className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p
+                        className={`
+                        text-sm font-semibold
+                        ${theme === "light" ? "text-green-800" : "text-green-400"}
+                      `}
+                      >
+                        Secure Payment with Chapa
+                      </p>
+                      <p
+                        className={`
+                        text-sm mt-1
+                        ${theme === "light" ? "text-green-700" : "text-green-300"}
+                      `}
+                      >
+                        Your payment is processed securely through Chapa. We support all major Ethiopian banks and mobile banking services. Your financial information is never stored on our servers.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Summary */}
+                <div
+                  className={`
+                  mb-6 p-4 rounded-2xl
+                  ${
+                    theme === "light"
+                      ? "bg-blue-50 border border-blue-200"
+                      : "bg-blue-900/20 border border-blue-800"
+                  }
+                `}
+                >
+                  <h4
+                    className={`
+                    font-bold mb-3 flex items-center gap-2
+                    ${theme === "light" ? "text-blue-800" : "text-blue-400"}
+                  `}
+                  >
+                    <Info className="w-4 h-4" />
+                    Payment Summary
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                        Amount:
+                      </span>
+                      <span className={theme === "light" ? "text-blue-800" : "text-blue-200"}>
+                        ETB {totals.total.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                        Payment Method:
+                      </span>
+                      <span className={theme === "light" ? "text-blue-800" : "text-blue-200"}>
+                        Chapa
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                        Currency:
+                      </span>
+                      <span className={theme === "light" ? "text-blue-800" : "text-blue-200"}>
+                        ETB
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button
+                    onClick={() => setCheckoutStep(1)}
+                    variant="outline"
+                    className="flex-1 rounded-2xl py-3"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    onClick={handleCheckout}
+                    disabled={processingPayment}
+                    className="flex-1 rounded-2xl py-3 text-lg font-bold bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    {processingPayment ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Processing...
+                      </div>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        Pay with Chapa
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </motion.div>
+            )}
           </div>
 
+          {/* Order Summary */}
           <div className="space-y-6">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -1250,7 +1499,7 @@ export default function CheckoutPage() {
 
               <div
                 className={`
-                mt-6 p-4 rounded-2xl text-center
+                mt-6 p-4 rounded-2xl
                 ${
                   theme === "light"
                     ? "bg-green-50 border border-green-200"
@@ -1258,23 +1507,27 @@ export default function CheckoutPage() {
                 }
               `}
               >
-                <Shield className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                <p
-                  className={`
-                  text-sm font-semibold
-                  ${theme === "light" ? "text-green-800" : "text-green-400"}
-                `}
-                >
-                  Secure Checkout
-                </p>
-                <p
-                  className={`
-                  text-xs
-                  ${theme === "light" ? "text-green-600" : "text-green-500"}
-                `}
-                >
-                  Your payment information is encrypted and secure
-                </p>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p
+                      className={`
+                      text-sm font-semibold
+                      ${theme === "light" ? "text-green-800" : "text-green-400"}
+                    `}
+                    >
+                      Best Price Guarantee
+                    </p>
+                    <p
+                      className={`
+                      text-sm mt-1
+                      ${theme === "light" ? "text-green-700" : "text-green-300"}
+                    `}
+                    >
+                      Found a better price? We'll match it and give you 10% off the difference.
+                    </p>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -1284,39 +1537,29 @@ export default function CheckoutPage() {
   );
 }
 
-const CheckoutLoading: React.FC<{ theme: string }> = ({ theme }) => (
-  <div
-    className={`
-    min-h-screen flex items-center justify-center
-    ${
-      theme === "light"
-        ? "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50"
-        : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900"
-    }
-  `}
-  >
-    <div className="text-center">
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="flex flex-col items-center"
-      >
-        <div className="relative">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full"
-          />
-          <Car className="w-10 h-10 text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-        </div>
-        <h3
+// Loading Component
+function CheckoutLoading({ theme }: { theme: string }) {
+  return (
+    <div
+      className={`
+      min-h-screen flex items-center justify-center
+      ${
+        theme === "light"
+          ? "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50"
+          : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900"
+      }
+    `}
+    >
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <h2
           className={`
-          text-2xl font-bold mt-6
+          text-2xl font-bold
           ${theme === "light" ? "text-gray-800" : "text-white"}
         `}
         >
           Loading Checkout...
-        </h3>
+        </h2>
         <p
           className={`
           mt-2
@@ -1325,48 +1568,58 @@ const CheckoutLoading: React.FC<{ theme: string }> = ({ theme }) => (
         >
           Preparing your booking details
         </p>
-      </motion.div>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
-const CheckoutError: React.FC<{
+// Error Component
+function CheckoutError({
+  error,
+  theme,
+  onLogin,
+  onRetry,
+}: {
   error: string;
   theme: string;
-  onLogin?: () => void;
-  onRetry?: () => void;
-}> = ({ error, theme, onLogin, onRetry }) => (
-  <div
-    className={`
-    min-h-screen flex items-center justify-center
-    ${
-      theme === "light"
-        ? "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50"
-        : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900"
-    }
-  `}
-  >
-    <div className="text-center max-w-md mx-auto p-8">
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+  onLogin: () => void;
+  onRetry: () => void;
+}) {
+  return (
+    <div
+      className={`
+      min-h-screen flex items-center justify-center
+      ${
+        theme === "light"
+          ? "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50"
+          : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900"
+      }
+    `}
+    >
+      <div
+        className={`
+        max-w-md w-full p-8 rounded-2xl text-center
+        ${
+          theme === "light"
+            ? "bg-white border border-gray-200"
+            : "bg-gray-800 border border-gray-700"
+        }
+      `}
       >
-        <div
+        <AlertCircle
           className={`
-          w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6
-          ${theme === "light" ? "bg-red-100" : "bg-red-900/20"}
+          w-16 h-16 mx-auto mb-4
+          ${theme === "light" ? "text-red-500" : "text-red-400"}
         `}
-        >
-          <Car className="w-12 h-12 text-red-500" />
-        </div>
-        <h3
+        />
+        <h2
           className={`
-          text-2xl font-bold mb-3
+          text-2xl font-bold mb-2
           ${theme === "light" ? "text-gray-800" : "text-white"}
         `}
         >
           Checkout Error
-        </h3>
+        </h2>
         <p
           className={`
           mb-6
@@ -1375,75 +1628,74 @@ const CheckoutError: React.FC<{
         >
           {error}
         </p>
-        <div className="flex gap-4 justify-center">
-          {onLogin && (
-            <Button onClick={onLogin} className="rounded-2xl px-6 py-3">
+        <div className="space-y-3">
+          {error.includes("log in") && (
+            <Button onClick={onLogin} className="w-full rounded-2xl">
               <LogIn className="w-4 h-4 mr-2" />
-              Login
+              Log In
             </Button>
           )}
-          {onRetry && (
-            <Button
-              onClick={onRetry}
-              variant="outline"
-              className="rounded-2xl px-6 py-3"
-            >
-              Try Again
-            </Button>
-          )}
+          <Button onClick={onRetry} variant="outline" className="w-full rounded-2xl">
+            Try Again
+          </Button>
         </div>
-      </motion.div>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
-const EmptyCart: React.FC<{ theme: string }> = ({ theme }) => (
-  <div
-    className={`
-    min-h-screen flex items-center justify-center
-    ${
-      theme === "light"
-        ? "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50"
-        : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900"
-    }
-  `}
-  >
-    <div className="text-center max-w-md mx-auto p-8">
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+// Empty Cart Component
+function EmptyCart({ theme }: { theme: string }) {
+  return (
+    <div
+      className={`
+      min-h-screen flex items-center justify-center
+      ${
+        theme === "light"
+          ? "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50"
+          : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900"
+      }
+    `}
+    >
+      <div
+        className={`
+        max-w-md w-full p-8 rounded-2xl text-center
+        ${
+          theme === "light"
+            ? "bg-white border border-gray-200"
+            : "bg-gray-800 border border-gray-700"
+        }
+      `}
       >
-        <div
+        <Car
           className={`
-          w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6
-          ${theme === "light" ? "bg-yellow-100" : "bg-yellow-900/20"}
+          w-16 h-16 mx-auto mb-4
+          ${theme === "light" ? "text-gray-400" : "text-gray-500"}
         `}
-        >
-          <Car className="w-12 h-12 text-yellow-500" />
-        </div>
-        <h3
+        />
+        <h2
           className={`
-          text-2xl font-bold mb-3
+          text-2xl font-bold mb-2
           ${theme === "light" ? "text-gray-800" : "text-white"}
         `}
         >
           Your Cart is Empty
-        </h3>
+        </h2>
         <p
           className={`
           mb-6
           ${theme === "light" ? "text-gray-600" : "text-gray-400"}
         `}
         >
-          Please add some vehicles to your cart before proceeding to checkout.
+          Add some vehicles to your cart before proceeding to checkout.
         </p>
         <Button
-          onClick={() => (window.location.href = "/vehicles")}
-          className="rounded-2xl px-8 py-3"
+          onClick={() => (window.location.href = "/")}
+          className="rounded-2xl"
         >
           Browse Vehicles
         </Button>
-      </motion.div>
+      </div>
     </div>
-  </div>
-);
+  );
+}

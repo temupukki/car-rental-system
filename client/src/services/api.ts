@@ -1,6 +1,19 @@
-import type { Vehicle, VehicleFilters, ApiResponse, CreateVehicleInput, Order, CreateOrderInput, User, UpdateUserInput } from '../types/vehicle';
+import type { 
+  Vehicle, 
+  VehicleFilters, 
+  ApiResponse, 
+  CreateVehicleInput, 
+  Order, 
+  CreateOrderInput, 
+  User, 
+  UpdateUserInput,
+  CheckoutData,
+  PaymentInitiationData,
+  PaymentInitiationResponse,
+ 
+  CartItem
+} from '../types/vehicle';
 
-// Update this to match your actual backend port
 const API_BASE = 'http://localhost:3000/api';
 
 class ApiService {
@@ -24,35 +37,142 @@ class ApiService {
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
       
-      const data: ApiResponse<T> = await response.json();
+      const data = await response.json();
       
-      if (!data.success) {
-        throw new Error(data.error || 'API request failed');
+      if (!data.success && data.success !== undefined) {
+        throw new Error(data.error || data.message || 'API request failed');
       }
       
       console.log('✅ API request successful');
-      return data.data as T;
+      return data;
     } catch (error) {
       console.error('💥 Fetch error:', error);
       throw error;
     }
   }
 
+  // ==================== PAYMENT METHODS ====================
+
+  async initiateChapaPayment(paymentData: PaymentInitiationData): Promise<PaymentInitiationResponse> {
+    try {
+      console.log('💰 Initiating Chapa payment:', paymentData);
+      
+      const response = await fetch(`${API_BASE}/payment/initialize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || result.error || 'Payment initialization failed');
+      }
+
+      return result;
+    } catch (error) {
+      console.error('💥 Payment initiation error:', error);
+      throw error;
+    }
+  }
+
+  async verifyChapaPayment(txRef: string): Promise<PaymentInitiationResponse> {
+    try {
+      console.log('🔍 Verifying payment:', txRef);
+      
+      const response = await fetch(`${API_BASE}/payment/verify/${txRef}`);
+      
+      if (!response.ok) {
+        throw new Error('Payment verification failed');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('💥 Payment verification error:', error);
+      throw error;
+    }
+  }
+
+  // Convert UserSession to User type
+  private convertUserSessionToUser(userSession: any): User {
+    return {
+      id: userSession.id,
+      name: userSession.name,
+      email: userSession.email,
+      emailVerified: userSession.emailVerified,
+      image: userSession.image,
+      phone: userSession.phone,
+    
+      role: userSession.role as any,
+      createdAt: userSession.createdAt,
+      updatedAt: userSession.updatedAt
+    };
+  }
+
+  // New method to handle complete checkout process with Chapa
+  async processCheckoutWithChapa(checkoutData: {
+    userInfo: any;
+    cartItems: CartItem[];
+    totalAmount: number;
+    rentalPeriod: {
+      startDate: string;
+      endDate: string;
+      totalDays: number;
+    };
+  }): Promise<PaymentInitiationResponse> {
+    try {
+      const { userInfo, cartItems, totalAmount, rentalPeriod } = checkoutData;
+
+      console.log('🔄 Processing checkout with user info:', userInfo);
+
+      // Convert UserSession to User type
+      const user: User = this.convertUserSessionToUser(userInfo);
+
+      // Validate phone number
+      if (!user.phone) {
+        throw new Error('Phone number is required for payment');
+      }
+
+      // Prepare payment data for Chapa
+      const paymentData: PaymentInitiationData = {
+        amount: totalAmount,
+        email: user.email,
+        firstName: user.name.split(' ')[0],
+        lastName: user.name.split(' ').slice(1).join(' ') || user.name,
+        phoneNumber: user.phone,
+        checkoutData: {
+          userInfo: user,
+          cartItems,
+          totalAmount,
+          rentalPeriod
+        }
+      };
+
+      console.log('📤 Sending payment data to backend:', paymentData);
+
+      // Initiate Chapa payment
+      return await this.initiateChapaPayment(paymentData);
+    } catch (error) {
+      console.error('💥 Checkout process error:', error);
+      throw error;
+    }
+  }
+
   // ==================== VEHICLE METHODS ====================
 
-async getVehicles(filters: { type: string | undefined; search: string | undefined; minPrice: number | undefined; maxPrice: number | undefined; }): Promise<Vehicle[]> {
-  const url = `${API_BASE}/vehicles`;
-  const response = await this.fetchJson<{ success: boolean; data: Vehicle[] }>(url);
-  return response.data;
-}
+  async getVehicles(filters: { type: string | undefined; search: string | undefined; minPrice: number | undefined; maxPrice: number | undefined; }): Promise<Vehicle[]> {
+    const url = `${API_BASE}/vehicles`;
+    const response = await this.fetchJson<{ success: boolean; data: Vehicle[] }>(url);
+    return response.data;
+  }
 
-async getVehicle(id: string): Promise<Vehicle> {
-  const url = `${API_BASE}/vehicles/${id}`;
-  const response = await this.fetchJson<{ success: boolean; data: Vehicle }>(url);
-  return response.data;
-}
-
-
+  async getVehicle(id: string): Promise<Vehicle> {
+    const url = `${API_BASE}/vehicles/${id}`;
+    const response = await this.fetchJson<{ success: boolean; data: Vehicle }>(url);
+    return response.data;
+  }
 
   async createVehicle(vehicleData: CreateVehicleInput): Promise<Vehicle> {
     const dataToSend = {
@@ -143,11 +263,9 @@ async getVehicle(id: string): Promise<Vehicle> {
     return this.fetchJson<Order[]>(`${API_BASE}/me/${userId}/orders`);
   }
 
-
   // Check vehicle availability
   async checkVehicleAvailability(vehicleId: string, startDate: string, endDate: string): Promise<boolean> {
     try {
-      // Get all active orders for this vehicle
       const orders = await this.getOrders();
       const conflictingOrders = orders.filter(order => 
         order.vehicleId === vehicleId && 
@@ -162,13 +280,12 @@ async getVehicle(id: string): Promise<Vehicle> {
         const orderStart = new Date(order.startDate);
         const orderEnd = new Date(order.endDate);
         
-        // Check for date overlap
         if (start < orderEnd && end > orderStart) {
-          return false; // Vehicle is not available
+          return false;
         }
       }
       
-      return true; // Vehicle is available
+      return true;
     } catch (error) {
       console.error('Error checking vehicle availability:', error);
       return false;

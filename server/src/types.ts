@@ -112,3 +112,90 @@ export interface VehicleFilters {
   maxPrice?: number;
   location?: string;
 }
+
+export interface ChapaInitiateRequest {
+  amount: string;
+  currency: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  tx_ref: string;
+  callback_url: string;
+  return_url: string;
+  customization: {
+    title: string;
+    description: string;
+  };
+}
+
+export interface ChapaInitiateResponse {
+  message: string;
+  status: string;
+  data: {
+    checkout_url: string;
+  };
+}
+
+export interface ChapaCallbackPayload {
+  trx_ref: string;
+  ref_id: string;
+  status: string;
+}
+
+export interface ChapaVerifyResponse {
+  status: string;
+  data: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    currency: string;
+    amount: number;
+    charge: number;
+    mode: string;
+    method: string;
+    type: string;
+    status: string;
+    reference: string;
+    tx_ref: string;
+    customization: any;
+    created_at: string;
+    updated_at: string;
+  };
+}
+
+export interface CheckoutData {
+  userInfo: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address?: string;
+  };
+  cartItems: Array<{
+    id: string;
+    name: string;
+    brand: string;
+    model: string;
+    pricePerDay: number;
+    rentalDays: number;
+    totalPrice: number;
+    image: string;
+  }>;
+  paymentMethod: string;
+  totalAmount: number;
+  rentalPeriod: {
+    startDate: string;
+    endDate: string;
+    totalDays: number;
+  };
+}
+
+export interface PaymentInitiateRequest {
+  amount: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  checkoutData: CheckoutData;
+}

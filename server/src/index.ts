@@ -4,6 +4,7 @@ import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import vehicleRoutes from './routes/vehicles';
 import orderRoutes from './routes/orders';
+import paymentRoutes from './routes/payment';
 
 const app = express();
 const PORT = 3000;
@@ -41,6 +42,7 @@ app.get("/api/me", async (req: Request, res: Response) => {
 
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payment', paymentRoutes);
 
 app.get("/api/health", (req: Request, res: Response) => {
   res.json({ 
