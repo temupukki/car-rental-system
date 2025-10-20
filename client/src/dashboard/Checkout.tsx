@@ -84,6 +84,38 @@ interface ApiResponse {
   user: UserSession;
 }
 
+// Add order interface
+interface Order {
+  id: string;
+  userId: string;
+  vehicleId: string;
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  dailyRate: number;
+  totalAmount: number;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  customerLicense: string;
+  pickupLocation: string;
+  dropoffLocation: string;
+  status: 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  createdAt: string;
+  updatedAt: string;
+  vehicle: {
+    id: string;
+    name: string;
+    brand: string;
+    model: string;
+    image: string;
+    type: string;
+    seats: number;
+    fuelType: string;
+    transmission: string;
+  };
+}
+
 export default function CheckoutPage() {
   const { theme } = useTheme();
   const { t } = useLanguage();
@@ -126,7 +158,6 @@ export default function CheckoutPage() {
       return false;
     }
 
-    // Use editedUser.phone for validation since that's what the user entered in the form
     const currentPhone = editedUser.phone;
     if (!currentPhone) {
       toast.error("Phone number is required");
@@ -182,7 +213,7 @@ export default function CheckoutPage() {
             role: data.user.role,
             createdAt: data.user.createdAt,
             updatedAt: data.user.updatedAt,
-            phone: data.user.phone || "", // Initialize with empty string if no phone
+            phone: data.user.phone || "",
             address: data.user.address || "",
           };
           setUserSession(userData);
@@ -266,7 +297,6 @@ export default function CheckoutPage() {
     if (!editedUser) return;
 
     try {
-      // Validate phone number before saving
       if (!editedUser.phone) {
         toast.error("Phone number is required");
         return;
@@ -279,7 +309,6 @@ export default function CheckoutPage() {
 
       console.log("💾 Saving user info with phone:", editedUser.phone);
 
-      // Update userSession with the edited data including phone
       const updatedUserSession = {
         ...userSession,
         ...editedUser,
@@ -298,7 +327,7 @@ export default function CheckoutPage() {
     }
   };
 
-  // FIXED: Handle checkout with phone number directly from editedUser
+  // Enhanced handleCheckout function
   const handleCheckout = async (): Promise<void> => {
     try {
       if (!userSession || !editedUser) {
@@ -306,15 +335,12 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Final validation before checkout - use editedUser for validation
       if (!validateForm()) {
         return;
       }
 
-      console.log("🔄 User session phone:", userSession.phone);
-      console.log("🔄 Edited user phone:", editedUser.phone);
+      console.log("🔄 Starting checkout process...");
 
-      // Use the phone from editedUser (what user just entered in the form)
       const finalPhone = editedUser.phone;
       
       if (!finalPhone) {
@@ -322,7 +348,6 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Validate the phone number
       if (!validatePhoneNumber(finalPhone)) {
         toast.error("Phone number must be in 09xxxxxxxx or 07xxxxxxxx format");
         return;
@@ -330,24 +355,23 @@ export default function CheckoutPage() {
 
       setProcessingPayment(true);
       
-      // Create user data with phone number from editedUser (the form)
+      // Prepare user data
       const userData: any = {
         id: userSession.id,
         name: editedUser.name,
         email: editedUser.email,
         emailVerified: userSession.emailVerified,
         image: userSession.image,
-        phone: finalPhone, // Use the phone number from the form (editedUser)
+        phone: finalPhone,
         address: editedUser.address,
         role: userSession.role,
         createdAt: userSession.createdAt,
         updatedAt: userSession.updatedAt
       };
 
-      console.log("📤 Final user data being sent:", userData);
-      console.log("📤 Phone number being sent:", userData.phone);
+      console.log("📤 Processing checkout with Chapa...");
 
-      // Use the new processCheckoutWithChapa method
+      // Process checkout with Chapa
       const paymentResponse = await apiService.processCheckoutWithChapa({
         userInfo: userData,
         cartItems,
@@ -362,6 +386,11 @@ export default function CheckoutPage() {
       if (paymentResponse.success && paymentResponse.paymentUrl) {
         console.log("✅ Redirecting to Chapa payment page...");
         toast.success("Redirecting to payment page...");
+        
+        // Clear cart before redirecting
+        localStorage.removeItem("vehicleRentalCart");
+        
+        // Redirect to Chapa payment page
         window.location.href = paymentResponse.paymentUrl;
       } else {
         throw new Error(paymentResponse.message || 'Failed to initialize payment');

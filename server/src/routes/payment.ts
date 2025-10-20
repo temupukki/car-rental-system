@@ -84,7 +84,7 @@ router.post('/initialize', async (req: express.Request, res: express.Response) =
       phone_number: phoneNumber,
       tx_ref: txRef,
       callback_url: `${process.env.BASE_URL || 'http://localhost:3001'}/api/payment/callback`,
-      return_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment-success?tx_ref=${txRef}`,
+      return_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}dashboard/bookings`,
       customization: {
         title: 'Vehicle Rental', // Fixed: 13 characters (under 16)
         description: 'Vehicle rental payment'
@@ -208,12 +208,7 @@ async function createOrder(txRef: string, paymentData: any): Promise<void> {
     console.log('📦 Creating order for transaction:', txRef);
     console.log('💰 Payment data:', paymentData);
     
-    // Order creation logic would go here:
-    // 1. Save order to database
-    // 2. Update vehicle availability
-    // 3. Send confirmation email
-    // 4. Clear user's cart
-    
+
     console.log('✅ Order created successfully for:', txRef);
     
   } catch (error) {
