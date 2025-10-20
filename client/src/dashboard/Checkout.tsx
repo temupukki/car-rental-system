@@ -100,7 +100,7 @@ interface Order {
   customerLicense: string;
   pickupLocation: string;
   dropoffLocation: string;
-  status: 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  status: "PENDING" | "CONFIRMED" | "ACTIVE" | "COMPLETED" | "CANCELLED";
   createdAt: string;
   updatedAt: string;
   vehicle: {
@@ -115,6 +115,83 @@ interface Order {
     transmission: string;
   };
 }
+
+// Enhanced API Service with order creation
+const enhancedApiService = {
+  // Create order function
+  async createOrder(orderData: any): Promise<any> {
+    try {
+      const response = await fetch("http://localhost:3000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create order");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error creating order:", error);
+      throw error;
+    }
+  },
+
+  // Your existing processCheckoutWithChapa function - KEEPING IT AS IS
+  async processCheckoutWithChapa(checkoutData: any): Promise<any> {
+    try {
+      // First create the order before payment
+      const orderData = {
+        userId: checkoutData.userInfo.id,
+        vehicleId: checkoutData.cartItems[0].id,
+        startDate: checkoutData.rentalPeriod.startDate,
+        endDate: checkoutData.rentalPeriod.endDate,
+        totalDays: checkoutData.rentalPeriod.totalDays,
+        dailyRate: checkoutData.cartItems[0].pricePerDay,
+        totalAmount: checkoutData.totalAmount,
+        customerName: checkoutData.userInfo.name,
+        customerEmail: checkoutData.userInfo.email,
+        customerPhone: checkoutData.userInfo.phone,
+        customerLicense: "TO_BE_PROVIDED",
+        pickupLocation: checkoutData.userInfo.address || "Main Office",
+        dropoffLocation: checkoutData.userInfo.address || "Main Office",
+        status: "PENDING",
+      };
+
+      console.log("📝 Creating order before payment:", orderData);
+
+      const orderResponse = await this.createOrder(orderData);
+
+      if (!orderResponse.success) {
+        throw new Error(orderResponse.error || "Failed to create order");
+      }
+
+      console.log("✅ Order created successfully:", orderResponse.data);
+
+      // Then proceed with your existing payment logic
+      console.log("💰 Proceeding with Chapa payment...");
+
+      // Use your existing apiService for payment
+      const paymentResponse = await apiService.processCheckoutWithChapa({
+        ...checkoutData,
+        orderId: orderResponse.data.id, // Pass order ID to payment
+      });
+
+      return {
+        ...paymentResponse,
+        order: orderResponse.data, // Include order data in response
+      };
+    } catch (error) {
+      console.error("❌ Checkout error:", error);
+      throw error;
+    }
+  },
+};
 
 export default function CheckoutPage() {
   const { theme } = useTheme();
@@ -140,7 +217,7 @@ export default function CheckoutPage() {
 
   // Phone number validation function
   const validatePhoneNumber = (phone: string): boolean => {
-    const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
     const phoneRegex = /^(09|07)\d{8}$/;
     return phoneRegex.test(cleanPhone);
   };
@@ -190,6 +267,20 @@ export default function CheckoutPage() {
       }));
     }
   }, [rentalDates.startDate, totalRentalDays]);
+
+  // Check for payment success on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get("payment");
+    const orderId = urlParams.get("orderId");
+
+    if (paymentStatus === "success" && orderId) {
+      toast.success("Payment completed successfully! Redirecting to orders...");
+      setTimeout(() => {
+        window.location.href = `/orders?payment=success&orderId=${orderId}`;
+      }, 2000);
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchMe() {
@@ -241,7 +332,9 @@ export default function CheckoutPage() {
           setCartItems(cartData);
 
           if (cartData.length === 0) {
-            setError("Your cart is empty. Please add vehicles before checkout.");
+            setError(
+              "Your cart is empty. Please add vehicles before checkout."
+            );
           }
         } else {
           setError("Your cart is empty. Please add vehicles before checkout.");
@@ -312,7 +405,7 @@ export default function CheckoutPage() {
       const updatedUserSession = {
         ...userSession,
         ...editedUser,
-        phone: editedUser.phone
+        phone: editedUser.phone,
       };
 
       setUserSession(updatedUserSession);
@@ -320,14 +413,13 @@ export default function CheckoutPage() {
       setError(null);
       setPhoneError(null);
       toast.success("Profile updated successfully!");
-      
     } catch (err) {
       console.error("❌ Failed to update profile:", err);
       toast.error("Failed to update profile");
     }
   };
 
-  // Enhanced handleCheckout function
+  // Enhanced handleCheckout function - creates order first, then processes payment
   const handleCheckout = async (): Promise<void> => {
     try {
       if (!userSession || !editedUser) {
@@ -339,12 +431,14 @@ export default function CheckoutPage() {
         return;
       }
 
-      console.log("🔄 Starting checkout process...");
+      console.log("🔄 Starting checkout process with order creation...");
 
       const finalPhone = editedUser.phone;
-      
+
       if (!finalPhone) {
-        toast.error("Phone number is required. Please enter your phone number.");
+        toast.error(
+          "Phone number is required. Please enter your phone number."
+        );
         return;
       }
 
@@ -354,7 +448,7 @@ export default function CheckoutPage() {
       }
 
       setProcessingPayment(true);
-      
+
       // Prepare user data
       const userData: any = {
         id: userSession.id,
@@ -366,39 +460,98 @@ export default function CheckoutPage() {
         address: editedUser.address,
         role: userSession.role,
         createdAt: userSession.createdAt,
-        updatedAt: userSession.updatedAt
+        updatedAt: userSession.updatedAt,
       };
 
-      console.log("📤 Processing checkout with Chapa...");
+      console.log("📤 Creating order and processing payment...");
 
-      // Process checkout with Chapa
-      const paymentResponse = await apiService.processCheckoutWithChapa({
-        userInfo: userData,
-        cartItems,
-        totalAmount: totals.total,
-        rentalPeriod: {
-          startDate: rentalDates.startDate,
-          endDate: rentalDates.endDate,
-          totalDays: totals.totalDays
+      // Use enhanced service that creates order first, then processes payment
+      const paymentResponse = await enhancedApiService.processCheckoutWithChapa(
+        {
+          userInfo: userData,
+          cartItems,
+          totalAmount: totals.total,
+          rentalPeriod: {
+            startDate: rentalDates.startDate,
+            endDate: rentalDates.endDate,
+            totalDays: totals.totalDays,
+          },
         }
-      });
-      
+      );
+
       if (paymentResponse.success && paymentResponse.paymentUrl) {
-        console.log("✅ Redirecting to Chapa payment page...");
-        toast.success("Redirecting to payment page...");
-        
+        console.log("✅ Order created, redirecting to payment page...");
+        toast.success("Order created! Redirecting to payment...");
+
         // Clear cart before redirecting
         localStorage.removeItem("vehicleRentalCart");
-        
-        // Redirect to Chapa payment page
+
+        // Redirect to payment page (your existing logic)
         window.location.href = paymentResponse.paymentUrl;
       } else {
-        throw new Error(paymentResponse.message || 'Failed to initialize payment');
+        throw new Error(
+          paymentResponse.message || "Failed to initialize payment"
+        );
       }
-
     } catch (err: any) {
       console.error("❌ Checkout error:", err);
       toast.error(err.message || "Checkout failed. Please try again.");
+    } finally {
+      setProcessingPayment(false);
+    }
+  };
+
+  // Direct order creation for testing (without payment)
+  const handleDirectOrder = async (): Promise<void> => {
+    try {
+      if (!userSession || !editedUser) {
+        toast.error("Please complete your profile information");
+        return;
+      }
+
+      if (!validateForm()) {
+        return;
+      }
+
+      setProcessingPayment(true);
+
+      // Create order directly without payment
+      const orderData = {
+        userId: userSession.id,
+        vehicleId: cartItems[0].id,
+        startDate: rentalDates.startDate,
+        endDate: rentalDates.endDate,
+        totalDays: totals.totalDays,
+        dailyRate: cartItems[0].pricePerDay,
+        totalAmount: totals.total,
+        customerName: editedUser.name,
+        customerEmail: editedUser.email,
+        customerPhone: editedUser.phone,
+        customerLicense: "TO_BE_PROVIDED",
+        pickupLocation: editedUser.address || "Main Office",
+        dropoffLocation: editedUser.address || "Main Office",
+        status: "CONFIRMED", // Direct confirmation for testing
+      };
+
+      console.log("📝 Creating direct order:", orderData);
+
+      const orderResponse = await enhancedApiService.createOrder(orderData);
+
+      if (orderResponse.success) {
+        console.log("✅ Order created successfully:", orderResponse.data);
+        toast.success("Order created successfully!");
+
+        // Clear cart
+        localStorage.removeItem("vehicleRentalCart");
+
+        // Redirect to orders page
+        window.location.href = `/orders?orderId=${orderResponse.data.id}`;
+      } else {
+        throw new Error(orderResponse.error || "Failed to create order");
+      }
+    } catch (err: any) {
+      console.error("❌ Order creation error:", err);
+      toast.error(err.message || "Order creation failed. Please try again.");
     } finally {
       setProcessingPayment(false);
     }
@@ -638,7 +791,7 @@ export default function CheckoutPage() {
                         ${theme === "light" ? "text-blue-700" : "text-blue-300"}
                       `}
                       >
-                        {isEditing 
+                        {isEditing
                           ? "Enter your information below. Phone number is required for payment."
                           : "Your information will be used for this booking. Click 'Edit Information' to update."}
                       </p>
@@ -769,9 +922,7 @@ export default function CheckoutPage() {
                       <p
                         className={`
                         text-xs mt-1
-                        ${
-                          theme === "light" ? "text-gray-500" : "text-gray-400"
-                        }
+                        ${theme === "light" ? "text-gray-500" : "text-gray-400"}
                       `}
                       >
                         Format: 09XXXXXXXX or 07XXXXXXXX (10 digits)
@@ -1019,7 +1170,7 @@ export default function CheckoutPage() {
                                   : "text-white"
                               }
                             `}
-                              >
+                            >
                               {item.name}
                             </h4>
                             <p
@@ -1179,7 +1330,9 @@ export default function CheckoutPage() {
                           <h4
                             className={`
                             font-bold
-                            ${theme === "light" ? "text-gray-800" : "text-white"}
+                            ${
+                              theme === "light" ? "text-gray-800" : "text-white"
+                            }
                           `}
                           >
                             Chapa Payment
@@ -1194,7 +1347,8 @@ export default function CheckoutPage() {
                             }
                           `}
                           >
-                            Secure payment via Chapa - Supports mobile banking & cards
+                            Secure payment via Chapa - Supports mobile banking &
+                            cards
                           </p>
                         </div>
                       </div>
@@ -1222,7 +1376,11 @@ export default function CheckoutPage() {
                       <p
                         className={`
                         text-sm font-semibold
-                        ${theme === "light" ? "text-green-800" : "text-green-400"}
+                        ${
+                          theme === "light"
+                            ? "text-green-800"
+                            : "text-green-400"
+                        }
                       `}
                       >
                         Secure Payment with Chapa
@@ -1230,10 +1388,17 @@ export default function CheckoutPage() {
                       <p
                         className={`
                         text-sm mt-1
-                        ${theme === "light" ? "text-green-700" : "text-green-300"}
+                        ${
+                          theme === "light"
+                            ? "text-green-700"
+                            : "text-green-300"
+                        }
                       `}
                       >
-                        Your payment is processed securely through Chapa. We support all major Ethiopian banks and mobile banking services. Your financial information is never stored on our servers.
+                        Your payment is processed securely through Chapa. We
+                        support all major Ethiopian banks and mobile banking
+                        services. Your financial information is never stored on
+                        our servers.
                       </p>
                     </div>
                   </div>
@@ -1261,26 +1426,50 @@ export default function CheckoutPage() {
                   </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                      <span
+                        className={
+                          theme === "light" ? "text-blue-700" : "text-blue-300"
+                        }
+                      >
                         Amount:
                       </span>
-                      <span className={theme === "light" ? "text-blue-800" : "text-blue-200"}>
+                      <span
+                        className={
+                          theme === "light" ? "text-blue-800" : "text-blue-200"
+                        }
+                      >
                         ETB {totals.total.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                      <span
+                        className={
+                          theme === "light" ? "text-blue-700" : "text-blue-300"
+                        }
+                      >
                         Payment Method:
                       </span>
-                      <span className={theme === "light" ? "text-blue-800" : "text-blue-200"}>
+                      <span
+                        className={
+                          theme === "light" ? "text-blue-800" : "text-blue-200"
+                        }
+                      >
                         Chapa
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                      <span
+                        className={
+                          theme === "light" ? "text-blue-700" : "text-blue-300"
+                        }
+                      >
                         Currency:
                       </span>
-                      <span className={theme === "light" ? "text-blue-800" : "text-blue-200"}>
+                      <span
+                        className={
+                          theme === "light" ? "text-blue-800" : "text-blue-200"
+                        }
+                      >
                         ETB
                       </span>
                     </div>
@@ -1553,7 +1742,8 @@ export default function CheckoutPage() {
                       ${theme === "light" ? "text-green-700" : "text-green-300"}
                     `}
                     >
-                      Found a better price? We'll match it and give you 10% off the difference.
+                      Found a better price? We'll match it and give you 10% off
+                      the difference.
                     </p>
                   </div>
                 </div>
@@ -1664,7 +1854,11 @@ function CheckoutError({
               Log In
             </Button>
           )}
-          <Button onClick={onRetry} variant="outline" className="w-full rounded-2xl">
+          <Button
+            onClick={onRetry}
+            variant="outline"
+            className="w-full rounded-2xl"
+          >
             Try Again
           </Button>
         </div>
