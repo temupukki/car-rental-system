@@ -80,7 +80,7 @@ router.post('/', async (req: Request<{}, {}, CreateOrderInput>, res: Response<Ap
         customerLicense,
         pickupLocation,
         dropoffLocation,
-        status: 'PENDING'
+        status: 'COMPLETED'
       },
       include: {
         vehicle: true,

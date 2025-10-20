@@ -161,7 +161,7 @@ model Order {
   totalAmount Float
   
  
-  status      OrderStatus @default(COMPLETED)
+  status      OrderStatus @default(PENDING)
   
 
   customerName    String
