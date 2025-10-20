@@ -83,8 +83,8 @@ router.post('/initialize', async (req: express.Request, res: express.Response) =
       last_name: lastName,
       phone_number: phoneNumber,
       tx_ref: txRef,
-      callback_url: `${process.env.BASE_URL || 'http://localhost:3001'}/api/payment/callback`,
-      return_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}dashboard/bookings`,
+      callback_url: `${process.env.BASE_URL || 'http://localhost:3000'}/api/payment/callback`,
+      return_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard/bookings`,
       customization: {
         title: 'Vehicle Rental', // Fixed: 13 characters (under 16)
         description: 'Vehicle rental payment'
