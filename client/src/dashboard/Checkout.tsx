@@ -113,7 +113,24 @@ export default function CheckoutPage() {
       .split("T")[0],
   });
 
-  // Fetch session data using your exact implementation
+  const totalRentalDays = cartItems.reduce(
+    (sum, item) => sum + item.rentalDays,
+    0
+  );
+
+  useEffect(() => {
+    if (rentalDates.startDate) {
+      const startDate = new Date(rentalDates.startDate);
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + totalRentalDays);
+
+      setRentalDates((prev) => ({
+        ...prev,
+        endDate: endDate.toISOString().split("T")[0],
+      }));
+    }
+  }, [rentalDates.startDate, totalRentalDays]);
+
   useEffect(() => {
     async function fetchMe() {
       try {
@@ -156,7 +173,6 @@ export default function CheckoutPage() {
     fetchMe();
   }, []);
 
-  // Fetch cart data from localStorage
   useEffect(() => {
     const getCartItems = () => {
       try {
@@ -183,10 +199,9 @@ export default function CheckoutPage() {
     getCartItems();
   }, []);
 
-  // Calculate totals
   const totals = React.useMemo(() => {
     const subtotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
-    const tax = subtotal * 0.15; // 10% tax
+    const tax = subtotal * 0.15; // 15% tax
     const serviceFee = cartItems.length * 15;
     const total = subtotal + tax + serviceFee;
 
@@ -199,7 +214,6 @@ export default function CheckoutPage() {
     };
   }, [cartItems]);
 
-  // Update rental days for a vehicle
   const updateRentalDays = (vehicleId: string, newDays: number) => {
     if (newDays < 1 || newDays > 30) return;
 
@@ -217,26 +231,21 @@ export default function CheckoutPage() {
     localStorage.setItem("vehicleRentalCart", JSON.stringify(updatedCart));
   };
 
-  // Remove vehicle from cart
   const removeFromCart = (vehicleId: string) => {
     const updatedCart = cartItems.filter((item) => item.id !== vehicleId);
     setCartItems(updatedCart);
     localStorage.setItem("vehicleRentalCart", JSON.stringify(updatedCart));
   };
 
-  // Save user info edits
   const saveUserInfo = async () => {
     if (!editedUser) return;
 
     try {
-      // Here you would typically send the updated user info to your API
       console.log("Saving user info:", editedUser);
 
-      // For now, just update local state
       setUserSession(editedUser);
       setIsEditing(false);
 
-      // Show success message
       setError(null);
       console.log("Profile updated successfully!");
     } catch (err) {
@@ -244,7 +253,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // Handle checkout submission
   const handleCheckout = async () => {
     try {
       if (!userSession) {
@@ -271,10 +279,8 @@ export default function CheckoutPage() {
 
       localStorage.removeItem("vehicleRentalCart");
 
-      // Show success message
       alert("🎉 Booking confirmed! Thank you for your reservation.");
 
-      // Redirect to home or confirmation page
       setTimeout(() => {
         window.location.href = "/";
       }, 2000);
@@ -287,6 +293,21 @@ export default function CheckoutPage() {
 
   const handleLogin = () => {
     window.location.href = "/login";
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const calculateEndDate = (startDate: string, days: number) => {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + days);
+    return date.toISOString().split("T")[0];
   };
 
   if (loading) {
@@ -391,7 +412,6 @@ export default function CheckoutPage() {
           </div>
         </motion.div>
 
-        {/* Error Banner */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -423,9 +443,7 @@ export default function CheckoutPage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Checkout Steps */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Progress Steps */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -476,33 +494,8 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
-
-              <div className="flex justify-between text-sm font-medium">
-                <span
-                  className={
-                    checkoutStep >= 1 ? "text-blue-500" : "text-gray-500"
-                  }
-                >
-                  Personal Info
-                </span>
-                <span
-                  className={
-                    checkoutStep >= 2 ? "text-blue-500" : "text-gray-500"
-                  }
-                >
-                  Payment
-                </span>
-                <span
-                  className={
-                    checkoutStep >= 3 ? "text-blue-500" : "text-gray-500"
-                  }
-                >
-                  Confirmation
-                </span>
-              </div>
             </motion.div>
 
-            {/* Step 1: Personal Information */}
             {checkoutStep === 1 && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -558,7 +551,6 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                {/* Session Info Banner */}
                 <div
                   className={`
                   mb-6 p-4 rounded-2xl
@@ -758,16 +750,98 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                {/* Rental Period Section */}
                 <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <h3
+                  <div className="flex items-center justify-between mb-4">
+                    <h3
+                      className={`
+                      text-lg font-bold flex items-center gap-2
+                      ${theme === "light" ? "text-gray-800" : "text-white"}
+                    `}
+                    >
+                      <Calendar className="w-5 h-5 text-blue-500" />
+                      Rental Period
+                    </h3>
+                    <Badge
+                      className={`
+                      px-3 py-1
+                      ${
+                        theme === "light"
+                          ? "bg-blue-500 text-white"
+                          : "bg-blue-600 text-white"
+                      }
+                    `}
+                    >
+                      {totalRentalDays} day{totalRentalDays !== 1 ? "s" : ""}{" "}
+                      total
+                    </Badge>
+                  </div>
+
+                  {/* Rental Summary */}
+                  <div
                     className={`
-                    text-lg font-bold mb-4 flex items-center gap-2
-                    ${theme === "light" ? "text-gray-800" : "text-white"}
+                    mb-4 p-4 rounded-2xl
+                    ${
+                      theme === "light"
+                        ? "bg-gray-50 border border-gray-200"
+                        : "bg-gray-700 border border-gray-600"
+                    }
                   `}
                   >
-                    <Calendar className="w-5 h-5 text-blue-500" />
-                    Rental Period
-                  </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span
+                          className={`
+                          block font-semibold
+                          ${
+                            theme === "light"
+                              ? "text-gray-700"
+                              : "text-gray-300"
+                          }
+                        `}
+                        >
+                          Start Date
+                        </span>
+                        <span
+                          className={`
+                          ${theme === "light" ? "text-gray-800" : "text-white"}
+                        `}
+                        >
+                          {formatDate(rentalDates.startDate)}
+                        </span>
+                      </div>
+                      <div>
+                        <span
+                          className={`
+                          block font-semibold
+                          ${
+                            theme === "light"
+                              ? "text-gray-700"
+                              : "text-gray-300"
+                          }
+                        `}
+                        >
+                          End Date
+                        </span>
+                        <span
+                          className={`
+                          ${theme === "light" ? "text-gray-800" : "text-white"}
+                        `}
+                        >
+                          {formatDate(rentalDates.endDate)}
+                        </span>
+                      </div>
+                    </div>
+                    <p
+                      className={`
+                      text-xs mt-2 text-center
+                      ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                    `}
+                    >
+                      The end date is automatically calculated based on your{" "}
+                      {totalRentalDays}-day rental period
+                    </p>
+                  </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -807,28 +881,143 @@ export default function CheckoutPage() {
                         ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                       `}
                       >
-                        End Date *
+                        End Date
                       </Label>
                       <Input
                         type="date"
                         value={rentalDates.endDate}
-                        onChange={(e) =>
-                          setRentalDates((prev) => ({
-                            ...prev,
-                            endDate: e.target.value,
-                          }))
-                        }
-                        min={rentalDates.startDate}
+                        disabled
                         className={`
-                          rounded-xl
+                          rounded-xl opacity-70
                           ${
                             theme === "light"
-                              ? "bg-white border-gray-300"
-                              : "bg-gray-700 border-gray-600"
+                              ? "bg-gray-100 border-gray-300"
+                              : "bg-gray-600 border-gray-500"
                           }
                         `}
                       />
+                      <p
+                        className={`
+                        text-xs mt-1
+                        ${theme === "light" ? "text-gray-500" : "text-gray-400"}
+                      `}
+                      >
+                        Auto-calculated based on start date
+                      </p>
                     </div>
+                  </div>
+                </div>
+
+                {/* Vehicle Days Adjustment */}
+                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <h3
+                    className={`
+                    text-lg font-bold mb-4 flex items-center gap-2
+                    ${theme === "light" ? "text-gray-800" : "text-white"}
+                  `}
+                  >
+                    <Clock className="w-5 h-5 text-blue-500" />
+                    Adjust Rental Days
+                  </h3>
+
+                  <div className="space-y-4">
+                    {cartItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className={`
+                        flex items-center justify-between p-4 rounded-2xl
+                        ${
+                          theme === "light"
+                            ? "bg-gray-50 border border-gray-200"
+                            : "bg-gray-700 border border-gray-600"
+                        }
+                      `}
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-12 h-12 rounded-lg object-cover"
+                          />
+                          <div>
+                            <h4
+                              className={`
+                              font-bold
+                              ${
+                                theme === "light"
+                                  ? "text-gray-800"
+                                  : "text-white"
+                              }
+                            `}
+                            >
+                              {item.name}
+                            </h4>
+                            <p
+                              className={`
+                              text-sm
+                              ${
+                                theme === "light"
+                                  ? "text-gray-600"
+                                  : "text-gray-400"
+                              }
+                            `}
+                            >
+                              ${item.pricePerDay}/day
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              updateRentalDays(item.id, item.rentalDays - 1)
+                            }
+                            disabled={item.rentalDays <= 1}
+                            className="w-8 h-8 rounded-full p-0"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </Button>
+
+                          <span
+                            className={`
+                            w-12 text-center font-bold
+                            ${
+                              theme === "light" ? "text-gray-800" : "text-white"
+                            }
+                          `}
+                          >
+                            {item.rentalDays}
+                          </span>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              updateRentalDays(item.id, item.rentalDays + 1)
+                            }
+                            disabled={item.rentalDays >= 30}
+                            className="w-8 h-8 rounded-full p-0"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+
+                          <span
+                            className={`
+                            text-sm min-w-[60px] text-right
+                            ${
+                              theme === "light"
+                                ? "text-gray-600"
+                                : "text-gray-400"
+                            }
+                          `}
+                          >
+                            day{item.rentalDays !== 1 ? "s" : ""}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -917,6 +1106,79 @@ export default function CheckoutPage() {
                   ))}
                 </div>
               </ScrollArea>
+
+              {/* Rental Period Summary */}
+              <div
+                className={`
+                mb-4 p-4 rounded-2xl
+                ${
+                  theme === "light"
+                    ? "bg-blue-50 border border-blue-200"
+                    : "bg-blue-900/20 border border-blue-800"
+                }
+              `}
+              >
+                <h4
+                  className={`
+                  font-bold mb-2 flex items-center gap-2
+                  ${theme === "light" ? "text-blue-800" : "text-blue-400"}
+                `}
+                >
+                  <Calendar className="w-4 h-4" />
+                  Rental Period
+                </h4>
+                <div className="text-sm">
+                  <div className="flex justify-between">
+                    <span
+                      className={
+                        theme === "light" ? "text-blue-700" : "text-blue-300"
+                      }
+                    >
+                      Start:
+                    </span>
+                    <span
+                      className={
+                        theme === "light" ? "text-blue-800" : "text-blue-200"
+                      }
+                    >
+                      {new Date(rentalDates.startDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span
+                      className={
+                        theme === "light" ? "text-blue-700" : "text-blue-300"
+                      }
+                    >
+                      End:
+                    </span>
+                    <span
+                      className={
+                        theme === "light" ? "text-blue-800" : "text-blue-200"
+                      }
+                    >
+                      {new Date(rentalDates.endDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between mt-1 pt-1 border-t border-blue-200 dark:border-blue-700">
+                    <span
+                      className={
+                        theme === "light" ? "text-blue-700" : "text-blue-300"
+                      }
+                    >
+                      Total Days:
+                    </span>
+                    <span
+                      className={`
+                      font-bold
+                      ${theme === "light" ? "text-blue-800" : "text-blue-200"}
+                    `}
+                    >
+                      {totalRentalDays}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between">
