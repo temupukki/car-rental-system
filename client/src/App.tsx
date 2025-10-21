@@ -18,6 +18,7 @@ import AdminAddVehicle from "./dashboard/AdminAddVehicle";
 import Checkout from "./dashboard/Checkout";
 import Bookings from "./dashboard/Bookings";
 import Admin from "./dashboard/Admin";
+import AdminManageCars from "./dashboard/AdminManageCars";
 
 function App() {
   return (
@@ -126,6 +127,14 @@ function App() {
               element={
                 <DashLayout>
                   < Admin/>
+                </DashLayout>
+              }
+            />
+                 <Route
+              path="/dashboard/admin/manage"
+              element={
+                <DashLayout>
+                  < AdminManageCars/>
                 </DashLayout>
               }
             />
