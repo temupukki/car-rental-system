@@ -17,6 +17,7 @@ import DVehicles from "./dashboard/DashVehicles";
 import AdminAddVehicle from "./dashboard/AdminAddVehicle";
 import Checkout from "./dashboard/Checkout";
 import Bookings from "./dashboard/Bookings";
+import Admin from "./dashboard/Admin";
 
 function App() {
   return (
@@ -97,7 +98,7 @@ function App() {
               }
             />
                 <Route
-              path="/dashboard/vehicles/add"
+              path="/dashboard/admin/add"
               element={
                 <DashLayout>
                   <AdminAddVehicle />
@@ -117,6 +118,14 @@ function App() {
               element={
                 <DashLayout>
                   < Bookings/>
+                </DashLayout>
+              }
+            />
+                 <Route
+              path="/dashboard/admin"
+              element={
+                <DashLayout>
+                  < Admin/>
                 </DashLayout>
               }
             />
