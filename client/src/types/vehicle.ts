@@ -40,6 +40,7 @@ export interface CreateVehicleInput {
   mileage?: string;
   features?: string[];
   location?: string;
+  isAvailable: boolean; 
 }
 
 export interface VehicleFilters {
