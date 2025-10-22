@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,22 @@ import {
   Users,
   Fuel,
   Gauge,
+  Star,
+  Shield,
+  FileText,
+  CreditCard as CreditCardIcon,
+  Car as CarIcon,
+  Navigation,
+  Mail as MailIcon,
+  Phone as PhoneIcon,
+  User as UserIcon,
+  X,
+  Printer,
+  Share2,
+  MessageCircle,
+  Truck,
+  Wrench,
+  ClipboardCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -45,12 +61,19 @@ interface Vehicle {
   fuelType: string;
   transmission: string;
   pricePerDay: number;
+  features: string[];
+  mileage: string;
+  location: string;
+  rating: number;
+  reviewCount: number;
 }
 
 interface OrderUser {
   name: string;
   email: string;
   phone: string;
+  address?: string;
+  licenseNumber?: string;
 }
 
 interface Order {
@@ -73,6 +96,11 @@ interface Order {
   updatedAt: string;
   vehicle: Vehicle;
   user?: OrderUser;
+  paymentStatus: 'PENDING' | 'PAID' | 'REFUNDED' | 'FAILED';
+  paymentMethod?: string;
+  insuranceIncluded: boolean;
+  additionalDriver: boolean;
+  specialRequests?: string;
 }
 
 interface UserSession {
@@ -120,6 +148,468 @@ const apiService = {
   },
 };
 
+// Order Details Modal Component
+const OrderDetailsModal: React.FC<{
+  order: Order;
+  isOpen: boolean;
+  onClose: () => void;
+  theme: string;
+}> = ({ order, isOpen, onClose, theme }) => {
+  if (!isOpen) return null;
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long",
+    });
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-ET", {
+      style: "currency",
+      currency: "ETB",
+    }).format(amount);
+  };
+
+  const getStatusConfig = (status: string) => {
+    const config = {
+      PENDING: { color: "bg-yellow-500", text: "Pending", icon: Clock },
+      CONFIRMED: { color: "bg-blue-500", text: "Confirmed", icon: CheckCircle },
+      ACTIVE: { color: "bg-green-500", text: "Active", icon: Car },
+      COMPLETED: { color: "bg-gray-500", text: "Completed", icon: CheckCircle },
+      CANCELLED: { color: "bg-red-500", text: "Cancelled", icon: XCircle },
+    };
+    return config[status as keyof typeof config] || config.PENDING;
+  };
+
+  const getPaymentStatusConfig = (status: string) => {
+    const config = {
+      PENDING: { color: "bg-yellow-500", text: "Pending" },
+      PAID: { color: "bg-green-500", text: "Paid" },
+      REFUNDED: { color: "bg-blue-500", text: "Refunded" },
+      FAILED: { color: "bg-red-500", text: "Failed" },
+    };
+    return config[status as keyof typeof config] || config.PENDING;
+  };
+
+  const statusConfig = getStatusConfig(order.status);
+  const paymentStatusConfig = getPaymentStatusConfig(order.paymentStatus);
+  const StatusIcon = statusConfig.icon;
+
+  const handlePrint = () => {
+    toast.success("Printing order details...");
+    // In a real app, this would generate a PDF
+    setTimeout(() => {
+      window.print();
+    }, 1000);
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Order ${order.id} - ${order.vehicle.name}`,
+        text: `Check out my order for ${order.vehicle.name}`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Order link copied to clipboard!");
+    }
+  };
+
+  const handleContactSupport = () => {
+    toast.info("Connecting you with our support team...");
+    // In a real app, this would open a chat or phone
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className={`
+          w-full max-w-6xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col
+          ${
+            theme === "light"
+              ? "bg-white text-gray-900"
+              : "bg-gray-800 text-white"
+          }
+        `}
+      >
+        {/* Header */}
+        <div
+          className={`
+          flex items-center justify-between p-6 border-b
+          ${theme === "light" ? "border-gray-200" : "border-gray-700"}
+        `}
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-500 rounded-2xl">
+              <FileText className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black">Order Details</h2>
+              <p className="text-sm opacity-70">Order #{order.id}</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handlePrint}
+              className="rounded-2xl"
+            >
+              <Printer className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleShare}
+              className="rounded-2xl"
+            >
+              <Share2 className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="rounded-2xl"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+
+        <ScrollArea className="flex-1 p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Order & Vehicle Info */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Order Status & Summary */}
+              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+                <CardContent className="p-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-full ${statusConfig.color}`}>
+                        <StatusIcon className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-lg">Order Status</h3>
+                        <Badge className={`${statusConfig.color} text-white mt-1`}>
+                          {statusConfig.text}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-black text-green-600">
+                        {formatCurrency(order.totalAmount)}
+                      </p>
+                      <p className="text-sm opacity-70">
+                        {order.totalDays} day{order.totalDays !== 1 ? 's' : ''} • {formatCurrency(order.dailyRate)}/day
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="font-semibold opacity-70">Order Date</p>
+                      <p>{formatDate(order.createdAt)}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold opacity-70">Payment Status</p>
+                      <Badge className={`${paymentStatusConfig.color} text-white`}>
+                        {paymentStatusConfig.text}
+                      </Badge>
+                    </div>
+                    <div>
+                      <p className="font-semibold opacity-70">Payment Method</p>
+                      <p>{order.paymentMethod || "Credit Card"}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold opacity-70">Insurance</p>
+                      <p>{order.insuranceIncluded ? "Included ✓" : "Not Included"}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Vehicle Details */}
+              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                    <CarIcon className="w-5 h-5 text-blue-500" />
+                    Vehicle Information
+                  </h3>
+                  
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <img
+                      src={order.vehicle.image}
+                      alt={order.vehicle.name}
+                      className="w-48 h-32 rounded-xl object-cover flex-shrink-0"
+                    />
+                    
+                    <div className="flex-1">
+                      <h4 className="text-xl font-black mb-2">{order.vehicle.name}</h4>
+                      <p className="text-sm opacity-70 mb-3">
+                        {order.vehicle.brand} • {order.vehicle.model} • {order.vehicle.type}
+                      </p>
+                      
+                      <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-blue-500" />
+                          <span>{order.vehicle.seats} seats</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Fuel className="w-4 h-4 text-green-500" />
+                          <span>{order.vehicle.fuelType}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Gauge className="w-4 h-4 text-purple-500" />
+                          <span>{order.vehicle.transmission}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Navigation className="w-4 h-4 text-orange-500" />
+                          <span>{order.vehicle.mileage}</span>
+                        </div>
+                      </div>
+
+                      {order.vehicle.features && order.vehicle.features.length > 0 && (
+                        <div>
+                          <p className="font-semibold text-sm mb-2">Features:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {order.vehicle.features.slice(0, 6).map((feature, index) => (
+                              <Badge key={index} variant="outline" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                            {order.vehicle.features.length > 6 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{order.vehicle.features.length - 6} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Rental Period & Locations */}
+              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-green-500" />
+                    Rental Schedule
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold mb-3 text-blue-500">Pickup</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span className="font-medium">{formatDate(order.startDate)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          <span>{order.pickupLocation}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-3 text-green-500">Drop-off</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span className="font-medium">{formatDate(order.endDate)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          <span>{order.dropoffLocation}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                    <div className="flex items-center justify-between text-sm">
+                      <span>Total Rental Period:</span>
+                      <span className="font-bold">{order.totalDays} day{order.totalDays !== 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Customer & Actions */}
+            <div className="space-y-6">
+              {/* Customer Information */}
+              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                    <UserIcon className="w-5 h-5 text-purple-500" />
+                    Customer Information
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <div>
+                        <p className="font-semibold">{order.customerName}</p>
+                        <p className="text-sm opacity-70">Primary Driver</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <MailIcon className="w-4 h-4" />
+                      <span className="text-sm">{order.customerEmail}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <PhoneIcon className="w-4 h-4" />
+                      <span className="text-sm">{order.customerPhone}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <CreditCardIcon className="w-4 h-4" />
+                      <span className="text-sm">License: {order.customerLicense}</span>
+                    </div>
+                  </div>
+
+                  {order.additionalDriver && (
+                    <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Users className="w-4 h-4 text-yellow-500" />
+                        <span className="font-semibold">Additional Driver Included</span>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Price Breakdown */}
+              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg mb-4">Price Breakdown</h3>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Daily Rate ({order.totalDays} days)</span>
+                      <span>{formatCurrency(order.dailyRate * order.totalDays)}</span>
+                    </div>
+                    
+                    {order.insuranceIncluded && (
+                      <div className="flex justify-between">
+                        <span>Insurance Coverage</span>
+                        <span className="text-green-500">Included</span>
+                      </div>
+                    )}
+                    
+                    {order.additionalDriver && (
+                      <div className="flex justify-between">
+                        <span>Additional Driver</span>
+                        <span>{formatCurrency(500)}</span>
+                      </div>
+                    )}
+                    
+                    <div className="flex justify-between border-t pt-2 font-bold">
+                      <span>Total Amount</span>
+                      <span className="text-green-600">{formatCurrency(order.totalAmount)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
+                  
+                  <div className="space-y-3">
+                    <Button
+                      onClick={handleContactSupport}
+                      className="w-full rounded-xl bg-blue-500 hover:bg-blue-600"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Contact Support
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={handlePrint}
+                      className="w-full rounded-xl"
+                    >
+                      <Printer className="w-4 h-4 mr-2" />
+                      Print Receipt
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={handleShare}
+                      className="w-full rounded-xl"
+                    >
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Share Order
+                    </Button>
+
+                    {(order.status === 'ACTIVE' || order.status === 'CONFIRMED') && (
+                      <Button
+                        variant="outline"
+                        className="w-full rounded-xl text-red-500 border-red-200 hover:bg-red-50"
+                        onClick={() => toast.info("Cancellation process started")}
+                      >
+                        <XCircle className="w-4 h-4 mr-2" />
+                        Cancel Order
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Support Information */}
+              <Card className={theme === "light" ? "bg-blue-50 border-blue-200" : "bg-blue-900/20 border-blue-800"}>
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-blue-500" />
+                    24/7 Support
+                  </h3>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      <span>+1 (555) 123-4567</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      <span>support@rentalcars.com</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      <span>Available 24/7</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </ScrollArea>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export default function Bookings() {
   const { theme } = useTheme();
   const { t } = useLanguage();
@@ -129,6 +619,8 @@ export default function Bookings() {
   const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchUserAndOrders() {
@@ -184,6 +676,11 @@ export default function Bookings() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setIsDetailsModalOpen(true);
   };
 
   const filteredOrders = orders.filter(order => {
@@ -605,13 +1102,10 @@ export default function Bookings() {
                               variant="outline"
                               size="sm"
                               className="rounded-xl"
-                              onClick={() => {
-                                // View order details
-                                toast.info("Viewing order details for " + order.vehicle.name);
-                              }}
+                              onClick={() => handleViewDetails(order)}
                             >
                               <Eye className="w-4 h-4 mr-1" />
-                              Details
+                              View Details
                             </Button>
                             
                             {(order.status === 'CONFIRMED' || order.status === 'ACTIVE') && (
@@ -619,7 +1113,6 @@ export default function Bookings() {
                                 size="sm"
                                 className="rounded-xl bg-blue-500 hover:bg-blue-600"
                                 onClick={() => {
-                                  // Contact support or modify booking
                                   toast.info("Contacting support for " + order.vehicle.name);
                                 }}
                               >
@@ -717,6 +1210,21 @@ export default function Bookings() {
           </motion.div>
         )}
       </div>
+
+      {/* Order Details Modal */}
+      <AnimatePresence>
+        {selectedOrder && (
+          <OrderDetailsModal
+            order={selectedOrder}
+            isOpen={isDetailsModalOpen}
+            onClose={() => {
+              setIsDetailsModalOpen(false);
+              setTimeout(() => setSelectedOrder(null), 300);
+            }}
+            theme={theme}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

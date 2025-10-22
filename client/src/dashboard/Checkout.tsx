@@ -81,7 +81,6 @@ interface ApiResponse {
   user: UserSession;
 }
 
-// Add order interface
 interface Order {
   id: string;
   userId: string;
@@ -113,9 +112,7 @@ interface Order {
   };
 }
 
-// Enhanced API Service with order creation
 const enhancedApiService = {
-  // Create order function
   async createOrder(orderData: any): Promise<any> {
     try {
       const response = await fetch("http://localhost:3000/api/orders", {
@@ -139,10 +136,8 @@ const enhancedApiService = {
     }
   },
 
-  // Your existing processCheckoutWithChapa function - KEEPING IT AS IS
   async processCheckoutWithChapa(checkoutData: any): Promise<any> {
     try {
-      // First create the order before payment
       const orderData = {
         userId: checkoutData.userInfo.id,
         vehicleId: checkoutData.cartItems[0].id,
@@ -158,9 +153,10 @@ const enhancedApiService = {
         pickupLocation: checkoutData.userInfo.address || "Main Office",
         dropoffLocation: checkoutData.userInfo.address || "Main Office",
         status: "PENDING",
+        vehicle: checkoutData.cartItems[0] 
       };
 
-      console.log("📝 Creating order before payment:", orderData);
+      console.log("📝 Creating order for payment:", orderData);
 
       const orderResponse = await this.createOrder(orderData);
 
@@ -170,18 +166,16 @@ const enhancedApiService = {
 
       console.log("✅ Order created successfully:", orderResponse.data);
 
-      // Then proceed with your existing payment logic
       console.log("💰 Proceeding with Chapa payment...");
 
-      // Use your existing apiService for payment
       const paymentResponse = await apiService.processCheckoutWithChapa({
         ...checkoutData,
-        orderId: orderResponse.data.id, // Pass order ID to payment
+        orderId: orderResponse.data.id,
       });
 
       return {
         ...paymentResponse,
-        order: orderResponse.data, // Include order data in response
+        order: orderResponse.data,
       };
     } catch (error) {
       console.error("❌ Checkout error:", error);
@@ -199,7 +193,6 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState<UserSession | null>(null);
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("chapa");
@@ -212,7 +205,6 @@ export default function CheckoutPage() {
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
 
-  // Phone number validation function
   const validatePhoneNumber = (phone: string): boolean => {
     const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
     const phoneRegex = /^(09|07)\d{8}$/;
@@ -265,7 +257,6 @@ export default function CheckoutPage() {
     }
   }, [rentalDates.startDate, totalRentalDays]);
 
-  // Check for payment success on component mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get("payment");
@@ -406,7 +397,6 @@ export default function CheckoutPage() {
       };
 
       setUserSession(updatedUserSession);
-      setIsEditing(false);
       setError(null);
       setPhoneError(null);
       toast.success("Profile updated successfully!");
@@ -416,7 +406,7 @@ export default function CheckoutPage() {
     }
   };
 
-  // Enhanced handleCheckout function - creates order first, then processes payment
+  // Simplified handleCheckout function - no vehicle checks, just process payment
   const handleCheckout = async (): Promise<void> => {
     try {
       if (!userSession || !editedUser) {
@@ -428,7 +418,7 @@ export default function CheckoutPage() {
         return;
       }
 
-      console.log("🔄 Starting checkout process with order creation...");
+      console.log("🔄 Starting direct payment process...");
 
       const finalPhone = editedUser.phone;
 
@@ -460,9 +450,9 @@ export default function CheckoutPage() {
         updatedAt: userSession.updatedAt,
       };
 
-      console.log("📤 Creating order and processing payment...");
+      console.log("💰 Processing payment directly...");
 
-      // Use enhanced service that creates order first, then processes payment
+      // Use enhanced service that creates order and processes payment
       const paymentResponse = await enhancedApiService.processCheckoutWithChapa(
         {
           userInfo: userData,
@@ -477,13 +467,13 @@ export default function CheckoutPage() {
       );
 
       if (paymentResponse.success && paymentResponse.paymentUrl) {
-        console.log("✅ Order created, redirecting to payment page...");
-        toast.success("Order created! Redirecting to payment...");
+        console.log("✅ Payment initialized, redirecting...");
+        toast.success("Redirecting to payment...");
 
         // Clear cart before redirecting
         localStorage.removeItem("vehicleRentalCart");
 
-        // Redirect to payment page (your existing logic)
+        // Redirect to payment page
         window.location.href = paymentResponse.paymentUrl;
       } else {
         throw new Error(
@@ -491,64 +481,8 @@ export default function CheckoutPage() {
         );
       }
     } catch (err: any) {
-      console.error("❌ Checkout error:", err);
-      toast.error(err.message || "Checkout failed. Please try again.");
-    } finally {
-      setProcessingPayment(false);
-    }
-  };
-
-  // Direct order creation for testing (without payment)
-  const handleDirectOrder = async (): Promise<void> => {
-    try {
-      if (!userSession || !editedUser) {
-        toast.error("Please complete your profile information");
-        return;
-      }
-
-      if (!validateForm()) {
-        return;
-      }
-
-      setProcessingPayment(true);
-
-      // Create order directly without payment
-      const orderData = {
-        userId: userSession.id,
-        vehicleId: cartItems[0].id,
-        startDate: rentalDates.startDate,
-        endDate: rentalDates.endDate,
-        totalDays: totals.totalDays,
-        dailyRate: cartItems[0].pricePerDay,
-        totalAmount: totals.total,
-        customerName: editedUser.name,
-        customerEmail: editedUser.email,
-        customerPhone: editedUser.phone,
-        customerLicense: "TO_BE_PROVIDED",
-        pickupLocation: editedUser.address || "Main Office",
-        dropoffLocation: editedUser.address || "Main Office",
-        status: "CONFIRMED", // Direct confirmation for testing
-      };
-
-      console.log("📝 Creating direct order:", orderData);
-
-      const orderResponse = await enhancedApiService.createOrder(orderData);
-
-      if (orderResponse.success) {
-        console.log("✅ Order created successfully:", orderResponse.data);
-        toast.success("Order created successfully!");
-
-        // Clear cart
-        localStorage.removeItem("vehicleRentalCart");
-
-        // Redirect to orders page
-        window.location.href = `/orders?orderId=${orderResponse.data.id}`;
-      } else {
-        throw new Error(orderResponse.error || "Failed to create order");
-      }
-    } catch (err: any) {
-      console.error("❌ Order creation error:", err);
-      toast.error(err.message || "Order creation failed. Please try again.");
+      console.error("❌ Payment error:", err);
+      toast.error(err.message || "Payment failed. Please try again.");
     } finally {
       setProcessingPayment(false);
     }
@@ -729,36 +663,13 @@ export default function CheckoutPage() {
                     Personal Information
                   </h2>
 
-                  {!isEditing ? (
-                    <Button
-                      onClick={() => setIsEditing(true)}
-                      variant="outline"
-                      className="rounded-2xl"
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit Information
-                    </Button>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={() => {
-                          setIsEditing(false);
-                          setEditedUser(userSession);
-                          setError(null);
-                          setPhoneError(null);
-                        }}
-                        variant="outline"
-                        className="rounded-2xl"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Cancel
-                      </Button>
-                      <Button onClick={saveUserInfo} className="rounded-2xl">
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Changes
-                      </Button>
-                    </div>
-                  )}
+                  <Button
+                    onClick={saveUserInfo}
+                    className="rounded-2xl bg-green-500 hover:bg-green-600"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Information
+                  </Button>
                 </div>
 
                 <div
@@ -788,137 +699,125 @@ export default function CheckoutPage() {
                         ${theme === "light" ? "text-blue-700" : "text-blue-300"}
                       `}
                       >
-                        {isEditing
-                          ? "Enter your information below. Phone number is required for payment."
-                          : "Your information will be used for this booking. Click 'Edit Information' to update."}
+                        Update your information below. Phone number is required for booking confirmation.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+                  {/* Name Field */}
+                  <div className="space-y-2">
                     <Label
                       className={`
-                      block mb-2 font-semibold
+                      block font-semibold
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
                       Full Name *
                     </Label>
-                    <Input
-                      value={editedUser?.name || ""}
-                      onChange={(e) =>
-                        setEditedUser((prev) =>
-                          prev ? { ...prev, name: e.target.value } : null
-                        )
-                      }
-                      disabled={!isEditing}
-                      className={`
-                        rounded-xl
-                        ${
-                          theme === "light"
-                            ? "bg-white border-gray-300"
-                            : "bg-gray-700 border-gray-600"
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                      <Input
+                        value={editedUser?.name || ""}
+                        onChange={(e) =>
+                          setEditedUser((prev) =>
+                            prev ? { ...prev, name: e.target.value } : null
+                          )
                         }
-                        ${!isEditing ? "opacity-80" : ""}
-                      `}
-                      placeholder="Enter your full name"
-                    />
-                    {!isEditing && (
-                      <p
                         className={`
-                        text-xs mt-1
-                        ${theme === "light" ? "text-gray-500" : "text-gray-400"}
-                      `}
-                      >
-                        From your account profile
-                      </p>
-                    )}
+                          pl-10 rounded-xl transition-all duration-200
+                          ${
+                            theme === "light"
+                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
+                          }
+                        `}
+                        placeholder="Enter your full name"
+                      />
+                    </div>
                   </div>
 
-                  <div>
+                  {/* Email Field */}
+                  <div className="space-y-2">
                     <Label
                       className={`
-                      block mb-2 font-semibold
+                      block font-semibold
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
                       Email Address *
                     </Label>
-                    <Input
-                      type="email"
-                      value={editedUser?.email || ""}
-                      onChange={(e) =>
-                        setEditedUser((prev) =>
-                          prev ? { ...prev, email: e.target.value } : null
-                        )
-                      }
-                      disabled={!isEditing}
-                      className={`
-                        rounded-xl
-                        ${
-                          theme === "light"
-                            ? "bg-white border-gray-300"
-                            : "bg-gray-700 border-gray-600"
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                      <Input
+                        type="email"
+                        value={editedUser?.email || ""}
+                        onChange={(e) =>
+                          setEditedUser((prev) =>
+                            prev ? { ...prev, email: e.target.value } : null
+                          )
                         }
-                        ${!isEditing ? "opacity-80" : ""}
-                      `}
-                      placeholder="your.email@example.com"
-                    />
-                    {!isEditing && editedUser?.emailVerified && (
-                      <p
                         className={`
-                        text-xs mt-1 text-green-600
-                      `}
-                      >
-                        ✓ Email verified
+                          pl-10 rounded-xl transition-all duration-200
+                          ${
+                            theme === "light"
+                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
+                          }
+                        `}
+                        placeholder="your.email@example.com"
+                      />
+                    </div>
+                    {editedUser?.emailVerified && (
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        Email verified
                       </p>
                     )}
                   </div>
 
-                  <div>
+                  {/* Phone Field - Always Editable */}
+                  <div className="space-y-2">
                     <Label
                       className={`
-                      block mb-2 font-semibold
+                      block font-semibold
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
                       Phone Number *
                     </Label>
-                    <Input
-                      type="tel"
-                      value={editedUser?.phone || ""}
-                      onChange={(e) => handlePhoneChange(e.target.value)}
-                      disabled={!isEditing}
-                      className={`
-                        rounded-xl
-                        ${
-                          theme === "light"
-                            ? "bg-white border-gray-300"
-                            : "bg-gray-700 border-gray-600"
-                        }
-                        ${!isEditing ? "opacity-80" : ""}
-                        ${
-                          phoneError
-                            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                            : ""
-                        }
-                      `}
-                      placeholder="09XXXXXXXX or 07XXXXXXXX"
-                    />
-                    {!isEditing && !editedUser?.phone ? (
-                      <p
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                      <Input
+                        type="tel"
+                        value={editedUser?.phone || ""}
+                        onChange={(e) => handlePhoneChange(e.target.value)}
                         className={`
-                        text-xs mt-1 text-red-500
-                      `}
-                      >
-                        ⚠ Phone number is required for booking confirmation
+                          pl-10 rounded-xl transition-all duration-200
+                          ${
+                            theme === "light"
+                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
+                          }
+                          ${
+                            phoneError
+                              ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                              : ""
+                          }
+                        `}
+                        placeholder="09XXXXXXXX or 07XXXXXXXX"
+                      />
+                    </div>
+                    {!editedUser?.phone ? (
+                      <p className="text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        Phone number is required for booking confirmation
                       </p>
                     ) : (
                       <p
                         className={`
-                        text-xs mt-1
+                        text-xs
                         ${theme === "light" ? "text-gray-500" : "text-gray-400"}
                       `}
                       >
@@ -927,49 +826,51 @@ export default function CheckoutPage() {
                     )}
                   </div>
 
-                  <div>
+                  {/* Address Field */}
+                  <div className="space-y-2">
                     <Label
                       className={`
-                      block mb-2 font-semibold
+                      block font-semibold
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
                       Delivery Address
                     </Label>
-                    <Input
-                      value={editedUser?.address || ""}
-                      onChange={(e) =>
-                        setEditedUser((prev) =>
-                          prev ? { ...prev, address: e.target.value } : null
-                        )
-                      }
-                      disabled={!isEditing}
-                      className={`
-                        rounded-xl
-                        ${
-                          theme === "light"
-                            ? "bg-white border-gray-300"
-                            : "bg-gray-700 border-gray-600"
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                      <Input
+                        value={editedUser?.address || ""}
+                        onChange={(e) =>
+                          setEditedUser((prev) =>
+                            prev ? { ...prev, address: e.target.value } : null
+                          )
                         }
-                        ${!isEditing ? "opacity-80" : ""}
-                      `}
-                      placeholder="123 Main St, City, State 12345"
-                    />
-                    {!isEditing && !editedUser?.address && (
+                        className={`
+                          pl-10 rounded-xl transition-all duration-200
+                          ${
+                            theme === "light"
+                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
+                          }
+                        `}
+                        placeholder="123 Main St, City, State 12345"
+                      />
+                    </div>
+                    {!editedUser?.address && (
                       <p
                         className={`
-                        text-xs mt-1
+                        text-xs
                         ${theme === "light" ? "text-gray-500" : "text-gray-400"}
                       `}
                       >
-                        Add address for vehicle delivery
+                        Add address for vehicle delivery (optional)
                       </p>
                     )}
                   </div>
                 </div>
 
                 {/* Rental Period Section */}
-                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between mb-4">
                     <h3
                       className={`
@@ -1062,10 +963,10 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                    <div className="space-y-2">
                       <Label
                         className={`
-                        block mb-2 font-semibold
+                        block font-semibold
                         ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                       `}
                       >
@@ -1082,20 +983,20 @@ export default function CheckoutPage() {
                         }
                         min={new Date().toISOString().split("T")[0]}
                         className={`
-                          rounded-xl
+                          rounded-xl transition-all duration-200
                           ${
                             theme === "light"
-                              ? "bg-white border-gray-300"
-                              : "bg-gray-700 border-gray-600"
+                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
                           }
                         `}
                       />
                     </div>
 
-                    <div>
+                    <div className="space-y-2">
                       <Label
                         className={`
-                        block mb-2 font-semibold
+                        block font-semibold
                         ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                       `}
                       >
@@ -1116,7 +1017,7 @@ export default function CheckoutPage() {
                       />
                       <p
                         className={`
-                        text-xs mt-1
+                        text-xs
                         ${theme === "light" ? "text-gray-500" : "text-gray-400"}
                       `}
                       >
@@ -1127,7 +1028,7 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Vehicle Days Adjustment */}
-                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <h3
                     className={`
                     text-lg font-bold mb-4 flex items-center gap-2
@@ -1864,7 +1765,7 @@ function CheckoutError({
   );
 }
 
-// Empty Cart Component
+
 function EmptyCart({ theme }: { theme: string }) {
   return (
     <div
