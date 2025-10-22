@@ -3,6 +3,7 @@ export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED' | 'CA
 export type UserRole = 'USER' | 'ADMIN';
 
 export interface Vehicle {
+  stock: number;
   id: string;
   name: string;
   type: VehicleType;
@@ -41,6 +42,7 @@ export interface CreateVehicleInput {
   features?: string[];
   location?: string;
   isAvailable: boolean; 
+  stock:number;
 }
 
 export interface VehicleFilters {

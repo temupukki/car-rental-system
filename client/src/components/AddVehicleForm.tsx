@@ -21,19 +21,96 @@ import {
   Image as ImageIcon,
   Sparkles,
   Shield,
-  Zap
+  Zap,
+  Package,
+  TrendingUp,
+  AlertTriangle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { apiService } from '../services/api';
-import type { CreateVehicleInput, VehicleType } from '../types/vehicle';
-import { useTheme } from './ThemeContext';
 import { toast } from 'sonner';
 
-interface AddVehicleFormProps {
-  onVehicleAdded?: (vehicle: any) => void;
+interface Vehicle {
+  id: string;
+  name: string;
+  type: VehicleType;
+  brand: string;
+  model: string;
+  year: number;
+  pricePerDay: number;
+  image: string;
+  images: string[];
+  seats: number;
+  fuelType: string;
+  transmission: string;
+  mileage: string;
+  features: string[];
+  location: string;
+  stock: number;
+  isAvailable: boolean;
+  rating: number;
+  reviewCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-const fuelTypes = [
+type VehicleType = 'SEDAN' | 'SUV' | 'LUXURY' | 'SPORTS' | 'COMPACT' | 'VAN';
+
+interface CreateVehicleInput {
+  name: string;
+  type: VehicleType;
+  brand: string;
+  model: string;
+  year: number;
+  pricePerDay: number;
+  image: string;
+  images: string[];
+  seats: number;
+  fuelType: string;
+  transmission: string;
+  mileage: string;
+  features: string[];
+  location: string;
+  stock: number;
+  isAvailable?: boolean;
+}
+
+interface AddVehicleFormProps {
+  onVehicleAdded?: (vehicle: Vehicle) => void;
+}
+
+interface ThemeContextType {
+  theme: 'light' | 'dark';
+}
+
+interface ApiService {
+  createVehicle: (data: CreateVehicleInput) => Promise<Vehicle>;
+}
+
+const apiService: ApiService = {
+  createVehicle: async (data: CreateVehicleInput): Promise<Vehicle> => {
+    const response = await fetch('http://localhost:3000/api/vehicles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to create vehicle');
+    }
+    
+    return response.json();
+  }
+};
+
+const ThemeContext = React.createContext<ThemeContextType>({ theme: 'light' });
+
+const useTheme = (): ThemeContextType => {
+  return React.useContext(ThemeContext);
+};
+
+const fuelTypes: string[] = [
   "Gasoline",
   "Diesel", 
   "Electric",
@@ -41,13 +118,13 @@ const fuelTypes = [
   "Plug-in Hybrid"
 ];
 
-const transmissionTypes = [
+const transmissionTypes: string[] = [
   "Automatic",
   "Manual",
   "CVT"
 ];
 
-const commonFeatures = [
+const commonFeatures: string[] = [
   "Air Conditioning",
   "GPS Navigation",
   "Bluetooth",
@@ -70,6 +147,13 @@ const commonFeatures = [
   "Third Row Seating"
 ];
 
+interface StockStatus {
+  status: 'out-of-stock' | 'low-stock' | 'in-stock';
+  color: string;
+  bg: string;
+  text: string;
+}
+
 export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }) => {
   const { theme } = useTheme();
   const [loading, setLoading] = useState<boolean>(false);
@@ -90,25 +174,26 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     mileage: 'Unlimited',
     features: [],
     location: '',
+    stock: 1,
   });
 
   const [customFeature, setCustomFeature] = useState<string>('');
 
-  const handleInputChange = (field: keyof CreateVehicleInput, value: any) => {
+  const handleInputChange = (field: keyof CreateVehicleInput, value: any): void => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleAddFeature = (feature: string) => {
+  const handleAddFeature = (feature: string): void => {
     if (!feature.trim()) {
       toast.warning('Please enter a feature name');
       return;
     }
 
     if (formData.features.includes(feature)) {
-      return; // Silent fail for duplicates
+      return;
     }
 
     setFormData(prev => ({
@@ -119,14 +204,14 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     setCustomFeature('');
   };
 
-  const handleRemoveFeature = (featureToRemove: string) => {
+  const handleRemoveFeature = (featureToRemove: string): void => {
     setFormData(prev => ({
       ...prev,
       features: prev.features.filter(feature => feature !== featureToRemove)
     }));
   };
 
-  const handleAddCommonFeature = (feature: string) => {
+  const handleAddCommonFeature = (feature: string): void => {
     if (formData.features.includes(feature)) {
       handleRemoveFeature(feature);
     } else {
@@ -138,9 +223,8 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
   };
 
   const validateForm = (): boolean => {
-    // Required fields validation
-    const requiredFields = ['name', 'brand', 'model', 'image'];
-    const missingFields = requiredFields.filter(field => !formData[field as keyof CreateVehicleInput]);
+    const requiredFields: (keyof CreateVehicleInput)[] = ['name', 'brand', 'model', 'image'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
     
     if (missingFields.length > 0) {
       toast.error('Missing required fields', {
@@ -149,7 +233,6 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
       return false;
     }
 
-    // Price validation
     if (formData.pricePerDay <= 0) {
       toast.error('Invalid price', {
         description: 'Price per day must be greater than 0'
@@ -157,7 +240,6 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
       return false;
     }
 
-    // Year validation
     if (formData.year < 2000 || formData.year > new Date().getFullYear() + 1) {
       toast.error('Invalid year', {
         description: `Year must be between 2000 and ${new Date().getFullYear() + 1}`
@@ -165,10 +247,17 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
       return false;
     }
 
+    if (formData.stock === undefined || formData.stock < 0) {
+      toast.error('Invalid stock quantity', {
+        description: 'Stock must be 0 or greater'
+      });
+      return false;
+    }
+
     return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     
     if (!validateForm()) return;
@@ -180,24 +269,24 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     setLoading(true);
     
     try {
-      // Ensure we have at least one image
       const images = formData.images.length > 0 ? formData.images : [formData.image];
 
       const vehicleData: CreateVehicleInput = {
         ...formData,
         images,
-        mileage: formData.mileage || 'Unlimited'
+        mileage: formData.mileage || 'Unlimited',
+        stock: formData.stock || 1,
+        isAvailable: (formData.stock || 0) > 0
       };
 
       const result = await apiService.createVehicle(vehicleData);
       
       toast.dismiss(submitToast);
       toast.success('Vehicle Added Successfully! 🎉', {
-        description: `${result.name} is now available for rental.`,
+        description: `${result.name} is now available for rental. Stock: ${result.stock} units`,
         duration: 5000,
       });
 
-      // Reset form
       setFormData({
         name: '',
         type: 'SEDAN',
@@ -213,6 +302,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
         mileage: 'Unlimited',
         features: [],
         location: '',
+        stock: 1,
       });
 
       if (onVehicleAdded) {
@@ -232,7 +322,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     }
   };
 
-  const handleClearForm = () => {
+  const handleClearForm = (): void => {
     setFormData({
       name: '',
       type: 'SEDAN',
@@ -248,6 +338,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
       mileage: 'Unlimited',
       features: [],
       location: '',
+      stock: 1,
     });
     setCustomFeature('');
     
@@ -257,7 +348,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     });
   };
 
-  const handlePasteImageUrl = async (field: 'image' | 'images') => {
+  const handlePasteImageUrl = async (field: 'image' | 'images'): Promise<void> => {
     try {
       const text = await navigator.clipboard.readText();
       if (field === 'image') {
@@ -272,7 +363,32 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     }
   };
 
-  const SectionIndicator = () => (
+  const getStockStatus = (stock: number): StockStatus => {
+    if (stock === 0) {
+      return { 
+        status: 'out-of-stock', 
+        color: 'text-red-500', 
+        bg: 'bg-red-100', 
+        text: 'Out of Stock' 
+      };
+    } else if (stock <= 3) {
+      return { 
+        status: 'low-stock', 
+        color: 'text-orange-500', 
+        bg: 'bg-orange-100', 
+        text: 'Low Stock' 
+      };
+    } else {
+      return { 
+        status: 'in-stock', 
+        color: 'text-green-500', 
+        bg: 'bg-green-100', 
+        text: 'In Stock' 
+      };
+    }
+  };
+
+  const SectionIndicator: React.FC = () => (
     <div className="flex justify-center mb-8">
       <div className={`
         flex items-center gap-2 px-6 py-3 rounded-2xl backdrop-blur-sm
@@ -281,7 +397,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
           : 'bg-gray-800/80 border border-gray-700'
         }
       `}>
-        {['basic', 'specs', 'media', 'features'].map((section, index) => (
+        {['basic', 'specs', 'media', 'features', 'inventory'].map((section, index) => (
           <React.Fragment key={section}>
             <button
               onClick={() => setActiveSection(section)}
@@ -299,7 +415,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
             >
               {section.charAt(0).toUpperCase() + section.slice(1)}
             </button>
-            {index < 3 && (
+            {index < 4 && (
               <div className={`
                 w-1 h-1 rounded-full
                 ${theme === 'light' ? 'bg-gray-300' : 'bg-gray-600'}
@@ -310,6 +426,8 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
       </div>
     </div>
   );
+
+  const stockStatus: StockStatus = getStockStatus(formData.stock);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -325,7 +443,6 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
             : 'bg-gradient-to-br from-gray-800 to-blue-900/20 border-blue-900/30'
           }
         `}>
-          {/* Header with Gradient */}
           <CardHeader className="text-center pb-6 relative overflow-hidden">
             <div className={`
               absolute inset-0 bg-gradient-to-r
@@ -487,7 +604,6 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                   </motion.div>
                 )}
 
-                {/* Specifications */}
                 {(activeSection === 'specs') && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -639,7 +755,6 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                   </motion.div>
                 )}
 
-                {/* Media */}
                 {(activeSection === 'media') && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -709,7 +824,6 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                   </motion.div>
                 )}
 
-                {/* Features */}
                 {(activeSection === 'features') && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -754,7 +868,6 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                           </Button>
                         </div>
 
-                        {/* Common Features */}
                         <div>
                           <Label className="text-sm font-medium mb-3 block">
                             Quick Add Features:
@@ -784,7 +897,6 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                           </div>
                         </div>
 
-                        {/* Selected Features */}
                         {formData.features.length > 0 && (
                           <div className="space-y-3">
                             <Label className="text-sm font-medium">
@@ -826,9 +938,165 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                     </div>
                   </motion.div>
                 )}
+
+                {(activeSection === 'inventory') && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    className="space-y-6"
+                  >
+                    <div className="space-y-4">
+                      <Label className="font-semibold flex items-center gap-2 text-lg">
+                        <Package className="w-5 h-5 text-orange-500" />
+                        Inventory Management
+                      </Label>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <div className="space-y-3">
+                            <Label htmlFor="stock" className="font-semibold flex items-center gap-2">
+                              <TrendingUp className="w-4 h-4 text-blue-500" />
+                              Stock Quantity *
+                            </Label>
+                            <Input
+                              id="stock"
+                              type="number"
+                              min="0"
+                              value={formData.stock}
+                              onChange={(e) => handleInputChange('stock', parseInt(e.target.value))}
+                              placeholder="Enter number of units"
+                              className={`
+                                rounded-xl border-2 text-lg font-semibold
+                                ${theme === 'light' 
+                                  ? 'bg-white border-gray-200 focus:border-blue-500' 
+                                  : 'bg-gray-700 border-gray-600 focus:border-blue-500'
+                                }
+                              `}
+                              required
+                            />
+                            <p className={`
+                              text-sm
+                              ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
+                            `}>
+                              Number of available units for this vehicle model
+                            </p>
+                          </div>
+
+                          <div className={`
+                            p-4 rounded-xl border-2 transition-all
+                            ${theme === 'light' 
+                              ? stockStatus.bg + ' border-gray-200' 
+                              : 'bg-gray-800 border-gray-700'
+                            }
+                          `}>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className={`
+                                  p-2 rounded-lg
+                                  ${theme === 'light' ? stockStatus.bg : 'bg-gray-700'}
+                                `}>
+                                  {stockStatus.status === 'out-of-stock' && (
+                                    <AlertTriangle className={`w-5 h-5 ${stockStatus.color}`} />
+                                  )}
+                                  {stockStatus.status === 'low-stock' && (
+                                    <AlertCircle className={`w-5 h-5 ${stockStatus.color}`} />
+                                  )}
+                                  {stockStatus.status === 'in-stock' && (
+                                    <CheckCircle className={`w-5 h-5 ${stockStatus.color}`} />
+                                  )}
+                                </div>
+                                <div>
+                                  <p className={`font-semibold ${stockStatus.color}`}>
+                                    {stockStatus.text}
+                                  </p>
+                                  <p className={`
+                                    text-sm
+                                    ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
+                                  `}>
+                                    {formData.stock} unit{formData.stock !== 1 ? 's' : ''} available
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className={`
+                                  text-2xl font-bold
+                                  ${stockStatus.color}
+                                `}>
+                                  {formData.stock}
+                                </p>
+                                <p className={`
+                                  text-xs
+                                  ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}
+                                `}>
+                                  units
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className={`
+                            p-4 rounded-xl border-2
+                            ${theme === 'light' 
+                              ? 'bg-blue-50 border-blue-200' 
+                              : 'bg-blue-900/20 border-blue-700/30'
+                            }
+                          `}>
+                            <h4 className="font-semibold flex items-center gap-2 mb-3">
+                              <Sparkles className="w-4 h-4 text-blue-500" />
+                              Stock Guidelines
+                            </h4>
+                            <ul className={`
+                              space-y-2 text-sm
+                              ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
+                            `}>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                <span><strong>0 units:</strong> Vehicle will be marked as unavailable</span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                <span><strong>1-3 units:</strong> Low stock warning</span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span><strong>4+ units:</strong> Healthy stock level</span>
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div className="space-y-3">
+                            <Label className="text-sm font-medium">
+                              Quick Stock Actions:
+                            </Label>
+                            <div className="flex flex-wrap gap-2">
+                              {[1, 3, 5, 10].map(quantity => (
+                                <Button
+                                  key={quantity}
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleInputChange('stock', quantity)}
+                                  className={`
+                                    text-xs
+                                    ${formData.stock === quantity ? 'bg-blue-500 text-white' : ''}
+                                  `}
+                                >
+                                  Set to {quantity}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </AnimatePresence>
 
-              {/* Navigation & Action Buttons */}
+              
               <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
                 <Button
                   type="button"
@@ -842,7 +1110,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                 
                 <div className="flex items-center gap-4">
                   <div className="flex gap-2">
-                    {['basic', 'specs', 'media', 'features'].map((section, index) => (
+                    {['basic', 'specs', 'media', 'features', 'inventory'].map((section, index) => (
                       <button
                         key={section}
                         type="button"

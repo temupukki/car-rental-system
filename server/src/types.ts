@@ -24,6 +24,7 @@ export interface Vehicle {
 }
 
 export interface CreateVehicleInput {
+  stock: any;
   name: string;
   type: VehicleType;
   brand: string;
