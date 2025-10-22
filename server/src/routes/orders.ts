@@ -5,7 +5,7 @@ import { ApiResponse, CreateOrderInput } from '../types.js';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Get all orders
+
 router.get('/', async (req: Request, res: Response<ApiResponse>) => {
   try {
     const { userId } = req.query;
@@ -93,11 +93,6 @@ router.post('/', async (req: Request<{}, {}, CreateOrderInput>, res: Response<Ap
       }
     });
     
-    // Mark vehicle as unavailable
-    await prisma.vehicle.update({
-      where: { id: vehicleId },
-      data: { isAvailable: false }
-    });
     
     res.status(201).json({ success: true, data: order });
   } catch (error) {
@@ -106,7 +101,6 @@ router.post('/', async (req: Request<{}, {}, CreateOrderInput>, res: Response<Ap
   }
 });
 
-// Update order status
 router.patch('/:id/status', async (req: Request, res: Response<ApiResponse>) => {
   try {
     const { id } = req.params;
@@ -119,8 +113,7 @@ router.patch('/:id/status', async (req: Request, res: Response<ApiResponse>) => 
         vehicle: true
       }
     });
-    
-    // If order is completed or cancelled, make vehicle available again
+ 
     if (status === 'COMPLETED' || status === 'CANCELLED') {
       await prisma.vehicle.update({
         where: { id: order.vehicleId },
@@ -135,7 +128,7 @@ router.patch('/:id/status', async (req: Request, res: Response<ApiResponse>) => 
   }
 });
 
-// Get order by ID
+
 router.get('/:id', async (req: Request, res: Response<ApiResponse>) => {
   try {
     const { id } = req.params;
