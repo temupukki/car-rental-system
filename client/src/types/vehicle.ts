@@ -3,6 +3,8 @@ export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED' | 'CA
 export type UserRole = 'USER' | 'ADMIN';
 
 export interface Vehicle {
+  description: string;
+  doors: string;
   stock: number;
   id: string;
   name: string;

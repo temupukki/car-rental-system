@@ -19,9 +19,38 @@ import {
   AlertTriangle,
   CheckCircle,
   X,
-  BarChart3
+  BarChart3,
+  Camera,
+  Upload,
+  Save,
+  Image as ImageIcon
 } from 'lucide-react';
 import type { Vehicle, VehicleType, CreateVehicleInput, ApiResponse } from '../types/vehicle';
+
+const fuelTypes: string[] = [
+  "Gasoline",
+  "Diesel", 
+  "Electric",
+  "Hybrid",
+  "Plug-in Hybrid"
+];
+
+const transmissionTypes: string[] = [
+  "Automatic",
+  "Manual",
+  "CVT"
+];
+
+const vehicleTypes: VehicleType[] = [
+  "SEDAN", "SUV", "LUXURY", "SPORTS", "COMPACT", "VAN"
+];
+
+interface StockStatus {
+  status: 'out-of-stock' | 'low-stock' | 'in-stock';
+  color: string;
+  bg: string;
+  text: string;
+}
 
 const AdminManageCars: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -36,7 +65,10 @@ const AdminManageCars: React.FC = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [bulkActions, setBulkActions] = useState<string[]>([]);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [additionalImages, setAdditionalImages] = useState<string[]>([]);
+  const [newFeature, setNewFeature] = useState<string>('');
+  const [newImageUrl, setNewImageUrl] = useState<string>('');
   const [stats, setStats] = useState({
     total: 0,
     available: 0,
@@ -82,7 +114,7 @@ const AdminManageCars: React.FC = () => {
     }
   };
 
-  const calculateStats = (vehiclesData: Vehicle[]) => {
+  const calculateStats = (vehiclesData: Vehicle[]): void => {
     const total = vehiclesData.length;
     const available = vehiclesData.filter(v => v.isAvailable).length;
     const unavailable = vehiclesData.filter(v => !v.isAvailable).length;
@@ -103,6 +135,7 @@ const AdminManageCars: React.FC = () => {
   useEffect(() => {
     fetchVehicles();
   }, []);
+
   const filteredVehicles: Vehicle[] = vehicles
     .filter(vehicle => {
       const matchesSearch = 
@@ -146,7 +179,7 @@ const AdminManageCars: React.FC = () => {
       }
     });
 
-  const handleQuickAction = async (vehicleId: string, action: string, value?: any) => {
+  const handleQuickAction = async (vehicleId: string, action: string, value?: any): Promise<void> => {
     try {
       setError('');
       let endpoint = '';
@@ -235,13 +268,18 @@ const AdminManageCars: React.FC = () => {
     try {
       setError('');
       
+      const updatedVehicle = {
+        ...selectedVehicle,
+        images: additionalImages
+      };
+
       const response = await fetch(`${API_BASE_URL}/vehicles/${selectedVehicle.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(selectedVehicle),
+        body: JSON.stringify(updatedVehicle),
       });
 
       if (!response.ok) {
@@ -253,6 +291,10 @@ const AdminManageCars: React.FC = () => {
       if (result.success) {
         setShowEditModal(false);
         setSelectedVehicle(null);
+        setImagePreview('');
+        setAdditionalImages([]);
+        setNewFeature('');
+        setNewImageUrl('');
         fetchVehicles();
       } else {
         setError(result.error || 'Failed to update vehicle');
@@ -266,6 +308,8 @@ const AdminManageCars: React.FC = () => {
 
   const openEditModal = (vehicle: Vehicle): void => {
     setSelectedVehicle({ ...vehicle });
+    setImagePreview(vehicle.image);
+    setAdditionalImages(vehicle.images || []);
     setShowEditModal(true);
   };
 
@@ -278,14 +322,56 @@ const AdminManageCars: React.FC = () => {
     }
   };
 
+  const handleImageChange = (value: string): void => {
+    if (selectedVehicle) {
+      setSelectedVehicle(prev => prev ? { ...prev, image: value } : null);
+      setImagePreview(value);
+    }
+  };
+  const handleAddAdditionalImage = (): void => {
+    if (newImageUrl.trim()) {
+      setAdditionalImages(prev => [...prev, newImageUrl.trim()]);
+      setNewImageUrl('');
+    }
+  };
+
+  const handleRemoveAdditionalImage = (index: number): void => {
+    setAdditionalImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddFeature = (): void => {
+    if (newFeature.trim() && selectedVehicle) {
+      const updatedFeatures = [...(selectedVehicle.features || []), newFeature.trim()];
+      setSelectedVehicle(prev => prev ? { ...prev, features: updatedFeatures } : null);
+      setNewFeature('');
+    }
+  };
+
+  const handleRemoveFeature = (index: number): void => {
+    if (selectedVehicle) {
+      const updatedFeatures = (selectedVehicle.features || []).filter((_, i) => i !== index);
+      setSelectedVehicle(prev => prev ? { ...prev, features: updatedFeatures } : null);
+    }
+  };
+
   const clearError = (): void => {
     setError('');
   };
 
-  const getStockStatus = (stock: number) => {
-    if (stock === 0) return { status: 'out-of-stock', color: 'text-red-500', bg: 'bg-red-100' };
-    if (stock <= 3) return { status: 'low-stock', color: 'text-orange-500', bg: 'bg-orange-100' };
-    return { status: 'in-stock', color: 'text-green-500', bg: 'bg-green-100' };
+  const getStockStatus = (stock: number): StockStatus => {
+    if (stock === 0) return { status: 'out-of-stock', color: 'text-red-500', bg: 'bg-red-100', text: 'Out of Stock' };
+    if (stock <= 3) return { status: 'low-stock', color: 'text-orange-500', bg: 'bg-orange-100', text: 'Low Stock' };
+    return { status: 'in-stock', color: 'text-green-500', bg: 'bg-green-100', text: 'In Stock' };
+  };
+
+  // Close modal and reset states
+  const closeModal = (): void => {
+    setShowEditModal(false);
+    setSelectedVehicle(null);
+    setImagePreview('');
+    setAdditionalImages([]);
+    setNewFeature('');
+    setNewImageUrl('');
   };
 
   if (loading) {
@@ -321,7 +407,6 @@ const AdminManageCars: React.FC = () => {
           </Link>
         </div>
 
-        {/* Statistics Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div className="flex items-center gap-3">
@@ -396,7 +481,6 @@ const AdminManageCars: React.FC = () => {
           </div>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
             <div className="flex items-center gap-2 flex-1">
@@ -412,10 +496,9 @@ const AdminManageCars: React.FC = () => {
           </div>
         )}
 
-        {/* Filters and Controls */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            {/* Search */}
+            
             <div className="lg:col-span-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -423,33 +506,29 @@ const AdminManageCars: React.FC = () => {
                   type="text"
                   placeholder="Search vehicles..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
 
-            {/* Filters */}
             <div>
               <select 
                 value={filterType} 
-                onChange={(e) => setFilterType(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterType(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Types</option>
-                <option value="SEDAN">Sedan</option>
-                <option value="SUV">SUV</option>
-                <option value="LUXURY">Luxury</option>
-                <option value="SPORTS">Sports</option>
-                <option value="COMPACT">Compact</option>
-                <option value="VAN">Van</option>
+                {vehicleTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
               </select>
             </div>
 
             <div>
               <select 
                 value={availabilityFilter} 
-                onChange={(e) => setAvailabilityFilter(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setAvailabilityFilter(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Status</option>
@@ -461,7 +540,7 @@ const AdminManageCars: React.FC = () => {
             <div>
               <select 
                 value={stockFilter} 
-                onChange={(e) => setStockFilter(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStockFilter(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Stock</option>
@@ -483,7 +562,7 @@ const AdminManageCars: React.FC = () => {
                 max="1000"
                 step="10"
                 value={priceRange[1]}
-                onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPriceRange([0, parseInt(e.target.value)])}
                 className="w-full"
               />
             </div>
@@ -492,7 +571,7 @@ const AdminManageCars: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
               <select 
                 value={sortBy} 
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="name">Name</option>
@@ -507,7 +586,7 @@ const AdminManageCars: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
               <select 
                 value={sortOrder} 
-                onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortOrder(e.target.value as 'asc' | 'desc')}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="asc">Ascending</option>
@@ -681,11 +760,11 @@ const AdminManageCars: React.FC = () => {
 
         {showEditModal && selectedVehicle && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900">Edit Vehicle</h2>
+            <div className="bg-white rounded-xl max-w-6xl w-full max-h-[95vh] overflow-y-auto">
+              <div className="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+                <h2 className="text-2xl font-bold text-gray-900">Edit Vehicle - {selectedVehicle.name}</h2>
                 <button 
-                  onClick={() => setShowEditModal(false)}
+                  onClick={closeModal}
                   className="text-gray-400 hover:text-gray-600 text-2xl"
                 >
                   ×
@@ -693,191 +772,354 @@ const AdminManageCars: React.FC = () => {
               </div>
               
               <form onSubmit={handleUpdateVehicle} className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div className="md:col-span-2">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">Main Image</label>
+                      <div className="space-y-3">
+                        <div className="relative h-64 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300">
+                          {imagePreview ? (
+                            <img 
+                              src={imagePreview} 
+                              alt="Vehicle preview"
+                              className="w-full h-full object-cover rounded-lg"
+                              onError={() => setImagePreview('https://via.placeholder.com/400x300?text=Invalid+Image')}
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                              <Camera className="w-12 h-12 mb-2" />
+                              <p>No image selected</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="url"
+                            value={selectedVehicle.image}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleImageChange(e.target.value)}
+                            placeholder="Enter image URL"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => navigator.clipboard.readText().then(text => handleImageChange(text))}
+                            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                          >
+                            Paste
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">Additional Images</label>
+                      <div className="space-y-3">
+                        <div className="flex gap-2">
+                          <input
+                            type="url"
+                            value={newImageUrl}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewImageUrl(e.target.value)}
+                            placeholder="Enter image URL"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAddAdditionalImage}
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                          >
+                            Add
+                          </button>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-3">
+                          {additionalImages.map((url, index) => (
+                            <div key={index} className="relative group">
+                              <img 
+                                src={url} 
+                                alt={`Additional ${index + 1}`}
+                                className="w-full h-24 object-cover rounded-lg"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = 'https://via.placeholder.com/150x100?text=Invalid+Image';
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveAdditionalImage(index)}
+                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs font-bold hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">Features</label>
+                      <div className="space-y-3">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newFeature}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewFeature(e.target.value)}
+                            placeholder="Add a feature"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            onKeyPress={(e: React.KeyboardEvent) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddFeature();
+                              }
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAddFeature}
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                          >
+                            Add
+                          </button>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          {(selectedVehicle.features || []).map((feature, index) => (
+                            <span 
+                              key={index} 
+                              className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
+                            >
+                              {feature}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveFeature(index)}
+                                className="text-blue-600 hover:text-blue-800 font-bold text-lg leading-none"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-                    <input
-                      type="text"
-                      value={selectedVehicle.name}
-                      onChange={(e) => handleEditVehicleChange('name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Name *</label>
+                        <input
+                          type="text"
+                          value={selectedVehicle.name}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('name', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Type *</label>
+                        <select
+                          value={selectedVehicle.type}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleEditVehicleChange('type', e.target.value as VehicleType)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        >
+                          <option value="">Select Type</option>
+                          {vehicleTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Brand *</label>
+                        <input
+                          type="text"
+                          value={selectedVehicle.brand}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('brand', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Model *</label>
+                        <input
+                          type="text"
+                          value={selectedVehicle.model}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('model', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Type *</label>
-                    <select
-                      value={selectedVehicle.type}
-                      onChange={(e) => handleEditVehicleChange('type', e.target.value as VehicleType)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="SEDAN">Sedan</option>
-                      <option value="SUV">SUV</option>
-                      <option value="LUXURY">Luxury</option>
-                      <option value="SPORTS">Sports</option>
-                      <option value="COMPACT">Compact</option>
-                      <option value="VAN">Van</option>
-                    </select>
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Day ($) *</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={selectedVehicle.pricePerDay}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('pricePerDay', parseFloat(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity *</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={selectedVehicle.stock}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('stock', parseInt(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Brand *</label>
-                    <input
-                      type="text"
-                      value={selectedVehicle.brand}
-                      onChange={(e) => handleEditVehicleChange('brand', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Year *</label>
+                        <input
+                          type="number"
+                          min="1900"
+                          max="2030"
+                          value={selectedVehicle.year}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('year', parseInt(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Seats *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={selectedVehicle.seats}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('seats', parseInt(e.target.value))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Doors</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={selectedVehicle.doors || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('doors', parseInt(e.target.value) || 0)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Model *</label>
-                    <input
-                      type="text"
-                      value={selectedVehicle.model}
-                      onChange={(e) => handleEditVehicleChange('model', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
+                        <select
+                          value={selectedVehicle.fuelType}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleEditVehicleChange('fuelType', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select Fuel Type</option>
+                          {fuelTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
+                        <select
+                          value={selectedVehicle.transmission}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleEditVehicleChange('transmission', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select Transmission</option>
+                          {transmissionTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-                  <div className="md:col-span-2">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Pricing & Inventory</h3>
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Mileage (MPG)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={selectedVehicle.mileage || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('mileage', parseFloat(e.target.value) || 0)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input
+                          type="text"
+                          value={selectedVehicle.location || ''}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('location', e.target.value)}
+                          placeholder="Enter vehicle location"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Day *</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={selectedVehicle.pricePerDay}
-                      onChange={(e) => handleEditVehicleChange('pricePerDay', parseFloat(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                      <textarea
+                        value={selectedVehicle.description || ''}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleEditVehicleChange('description', e.target.value)}
+                        rows={4}
+                        placeholder="Enter vehicle description..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity *</label>
-                    <input
-                      type="number"
-                      value={selectedVehicle.stock}
-                      onChange={(e) => handleEditVehicleChange('stock', parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
+                    {/* Availability */}
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        id="isAvailable"
+                        checked={selectedVehicle.isAvailable}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('isAvailable', e.target.checked)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <label htmlFor="isAvailable" className="text-sm font-medium text-gray-700">
+                        Available for rental
+                      </label>
+                    </div>
 
-                  <div className="md:col-span-2">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Specifications</h3>
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                      <button
+                        type="submit"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center gap-2"
+                      >
+                        <Save className="w-5 h-5" />
+                        Update Vehicle
+                      </button>
+                      <button
+                        type="button"
+                        onClick={closeModal}
+                        className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors duration-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Year *</label>
-                    <input
-                      type="number"
-                      value={selectedVehicle.year}
-                      onChange={(e) => handleEditVehicleChange('year', parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Seats *</label>
-                    <input
-                      type="number"
-                      value={selectedVehicle.seats}
-                      onChange={(e) => handleEditVehicleChange('seats', parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
-                    <select
-                      value={selectedVehicle.fuelType}
-                      onChange={(e) => handleEditVehicleChange('fuelType', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      {fuelTypes.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
-                    <select
-                      value={selectedVehicle.transmission}
-                      onChange={(e) => handleEditVehicleChange('transmission', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      {transmissionTypes.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Location & Status</h3>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                    <input
-                      type="text"
-                      value={selectedVehicle.location || ''}
-                      onChange={(e) => handleEditVehicleChange('location', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
-                    <select
-                      value={selectedVehicle.isAvailable.toString()}
-                      onChange={(e) => handleEditVehicleChange('isAvailable', e.target.value === 'true')}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="true">Available</option>
-                      <option value="false">Unavailable</option>
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Main Image URL *</label>
-                    <input
-                      type="url"
-                      value={selectedVehicle.image}
-                      onChange={(e) => handleEditVehicleChange('image', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3 justify-end pt-6 border-t border-gray-200">
-                  <button 
-                    type="button" 
-                    onClick={() => setShowEditModal(false)}
-                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit"
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                  >
-                    Update Vehicle
-                  </button>
                 </div>
               </form>
             </div>
