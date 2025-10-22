@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -38,6 +37,9 @@ import {
   Truck,
   Plus,
   Minus,
+  Package,
+  AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 
 import { useLanguage } from "../components/LanguageContext";
@@ -335,9 +337,102 @@ export default function DVehicles() {
     console.log("Toggle favorite:", id);
   };
 
-  const handleAddToCart = (vehicle: Vehicle): void => {
-    const days = rentalDays[vehicle.id] || 1;
-    addToCart(vehicle, days);
+  const handleAddToCart = async (vehicle: Vehicle): Promise<void> => {
+    try {
+      const days = rentalDays[vehicle.id] || 1;
+
+      if (vehicle.stock === 0) {
+        toast.error("This vehicle is out of stock");
+        return;
+      }
+
+      if (!vehicle.isAvailable) {
+        toast.error("This vehicle is currently unavailable");
+        return;
+      }
+
+      const existingCartItem = cart.find((item) => item.id === vehicle.id);
+      if (existingCartItem) {
+        toast.error("Vehicle is already in your cart");
+        return;
+      }
+
+      const stockResponse = await fetch(
+        `${API_BASE}/vehicles/${vehicle.id}/stock`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            stock: 1,
+            operation: "decrement",
+          }),
+        }
+      );
+
+      const stockResult = await stockResponse.json();
+
+      if (stockResult.success) {
+        addToCart(vehicle, days);
+
+        setVehicles((prev) =>
+          prev.map((v) =>
+            v.id === vehicle.id ? { ...v, stock: Math.max(0, v.stock - 1) } : v
+          )
+        );
+
+        toast.success("Vehicle added to cart!");
+      } else {
+        toast.error(stockResult.error || "Failed to add to cart");
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add to cart");
+    }
+  };
+
+  const handleRemoveFromCart = async (vehicleId: string): Promise<void> => {
+    try {
+      const stockResponse = await fetch(
+        `${API_BASE}/vehicles/${vehicleId}/stock`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            stock: 1,
+            operation: "increment",
+          }),
+        }
+      );
+
+      const stockResult = await stockResponse.json();
+
+      if (stockResult.success) {
+        const removedItem = cart.find((item) => item.id === vehicleId);
+
+        removeFromCart(vehicleId);
+
+        if (removedItem) {
+          setVehicles((prev) =>
+            prev.map((v) =>
+              v.id === vehicleId ? { ...v, stock: v.stock + 1 } : v
+            )
+          );
+        }
+
+        toast.success("Vehicle removed from cart");
+      } else {
+        toast.error(stockResult.error || "Failed to remove from cart");
+      }
+    } catch (error) {
+      console.error("Error removing from cart:", error);
+      toast.error("Failed to remove from cart");
+    }
   };
 
   const updateVehicleRentalDays = (vehicleId: string, newDays: number) => {
@@ -457,7 +552,7 @@ export default function DVehicles() {
         onClose={() => setIsCartOpen(false)}
         cart={cart}
         updateRentalDays={updateRentalDays}
-        removeFromCart={removeFromCart}
+        removeFromCart={handleRemoveFromCart}
         theme={theme}
         t={t}
       />
@@ -1140,6 +1235,8 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
     location: vehicle.location || "Location not specified",
     features: vehicle.features || [],
     image: vehicle.image || "/cars/placeholder-car.jpg",
+    stock: vehicle.stock || 0,
+    isAvailable: vehicle.isAvailable || false,
   };
 
   const vehicleType = vehicleTypes.find((t) => t.value === safeVehicle.type);
@@ -1158,6 +1255,36 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
   const decrementDays = () => {
     handleDaysChange(rentalDays - 1);
   };
+
+  const getStockStatus = () => {
+    if (safeVehicle.stock === 0) {
+      return {
+        text: "Out of Stock",
+        color: "text-red-500",
+        bg: "bg-red-100",
+        border: "border-red-200",
+        available: false,
+      };
+    } else if (safeVehicle.stock <= 3) {
+      return {
+        text: `Low Stock (${safeVehicle.stock} left)`,
+        color: "text-orange-500",
+        bg: "bg-orange-100",
+        border: "border-orange-200",
+        available: true,
+      };
+    } else {
+      return {
+        text: `In Stock (${safeVehicle.stock})`,
+        color: "text-green-500",
+        bg: "bg-green-100",
+        border: "border-green-200",
+        available: true,
+      };
+    }
+  };
+
+  const stockStatus = getStockStatus();
 
   return (
     <motion.div
@@ -1249,6 +1376,23 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
       </div>
 
       <div className="p-6">
+        {/* Stock Status */}
+        <div
+          className={`mb-4 p-3 rounded-xl border ${stockStatus.border} ${stockStatus.bg}`}
+        >
+          <div className="flex items-center gap-2">
+            <Package className={`w-4 h-4 ${stockStatus.color}`} />
+            <span className={`text-sm font-semibold ${stockStatus.color}`}>
+              {stockStatus.text}
+            </span>
+          </div>
+          {!stockStatus.available && (
+            <p className="text-xs text-red-600 mt-1">
+              This vehicle is currently unavailable for rental
+            </p>
+          )}
+        </div>
+
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
             <h3
@@ -1304,11 +1448,11 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={decrementDays}
-                disabled={rentalDays <= 1}
+                disabled={rentalDays <= 1 || !stockStatus.available}
                 className={`
                   w-8 h-8 rounded-full flex items-center justify-center transition-all
                   ${
-                    rentalDays <= 1
+                    rentalDays <= 1 || !stockStatus.available
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                       : theme === "light"
                       ? "bg-blue-500 text-white hover:bg-blue-600"
@@ -1335,11 +1479,11 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={incrementDays}
-                disabled={rentalDays >= 30}
+                disabled={rentalDays >= 30 || !stockStatus.available}
                 className={`
                   w-8 h-8 rounded-full flex items-center justify-center transition-all
                   ${
-                    rentalDays >= 30
+                    rentalDays >= 30 || !stockStatus.available
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                       : theme === "light"
                       ? "bg-blue-500 text-white hover:bg-blue-600"
@@ -1457,13 +1601,17 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
         <div>
           <Button
             onClick={() => onAddToCart(vehicle)}
-            disabled={isAddedToCart}
+            disabled={
+              isAddedToCart || !stockStatus.available || safeVehicle.stock === 0
+            }
             variant={isAddedToCart ? "default" : "outline"}
             className={`
               rounded-xl py-3 px-4 transition-all w-full
               ${
                 isAddedToCart
                   ? "bg-green-500 hover:bg-green-600 text-white"
+                  : !stockStatus.available || safeVehicle.stock === 0
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : theme === "light"
                   ? "border-gray-300 text-gray-700 hover:bg-gray-50"
                   : "border-gray-600 text-gray-300 hover:bg-gray-700"
@@ -1474,6 +1622,11 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
               <>
                 <CheckCircle className="w-4 h-4 mr-2" />
                 Added
+              </>
+            ) : !stockStatus.available || safeVehicle.stock === 0 ? (
+              <>
+                <AlertTriangle className="w-4 h-4 mr-2" />
+                Out of Stock
               </>
             ) : (
               <>
@@ -1621,6 +1774,15 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
                           >
                             ${item.pricePerDay}/day
                           </span>
+                          <div
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              item.stock === 0
+                                ? "bg-red-100 text-red-700"
+                                : "bg-green-100 text-green-700"
+                            }`}
+                          >
+                            Stock: {item.stock}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1740,15 +1902,17 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
                 ${totalPrice}
               </span>
             </div>
-              <Button onClick={()=>{
-                 localStorage.setItem('vehicleRentalCart', JSON.stringify(cart));
-    window.location.href = '/dashboard/checkout';
-                toast.success("Proced to checkout page")
+            <Button
+              onClick={() => {
+                localStorage.setItem("vehicleRentalCart", JSON.stringify(cart));
+                window.location.href = "/dashboard/checkout";
+                toast.success("Proced to checkout page");
               }}
-               className="w-full rounded-2xl py-4 text-lg font-black bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl flex items-center justify-center">
-                <DollarSign className="w-6 h-6 mr-3" />
-                Proceed to Checkout ({cart.length})
-              </Button>
+              className="w-full rounded-2xl py-4 text-lg font-black bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl flex items-center justify-center"
+            >
+              <DollarSign className="w-6 h-6 mr-3" />
+              Proceed to Checkout ({cart.length})
+            </Button>
           </div>
         )}
       </motion.div>
