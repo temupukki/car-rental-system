@@ -19,6 +19,7 @@ import Checkout from "./dashboard/Checkout";
 import Bookings from "./dashboard/Bookings";
 import Admin from "./dashboard/Admin";
 import AdminManageCars from "./dashboard/AdminManageCars";
+import Userpage from "./dashboard/User";
 
 function App() {
   return (
@@ -135,6 +136,14 @@ function App() {
               element={
                 <DashLayout>
                   < AdminManageCars/>
+                </DashLayout>
+              }
+            />
+               <Route
+              path="/dashboard/admin/user"
+              element={
+                <DashLayout>
+                  <Userpage/>
                 </DashLayout>
               }
             />
