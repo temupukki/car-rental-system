@@ -133,8 +133,8 @@ export default function Navbar() {
               <LanguageToggle /> 
           </motion.div>
           <div className="flex items-center space-x-3 lg:hidden">
+             <ThemeToggle />
             <LanguageToggle />
-            <ThemeToggle />
             <motion.button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               whileHover={{ scale: 1.1 }}

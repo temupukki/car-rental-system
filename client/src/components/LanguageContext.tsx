@@ -39,7 +39,7 @@ const translations = {
     "home.hero.cta.secondary": "Learn more",
     "home.bookingCard.title": "Book your car",
     "home.bookingCard.subtitle": "Everything you need to hit the road.",
-    "home.bookingCard.button": "Sign up/in to book a car",
+    "home.bookingCard.button": "Get Started",
     "home.features.locations.title": "Flexible Locations",
     "home.features.locations.description":
       "Pick up and drop off at multiple convenient locations",
@@ -617,31 +617,31 @@ const translations = {
 
 
     // Home Page - ዋና ገጽ
- "home.hero.title.line1": "መንገዱን ያለመታወቅ",
-  "home.hero.title.line2": "በሙሉ ይግለጹ",
-  "home.hero.subtitle": "ለጉዞዎ ፍጹም መኪና ያግኙ። ከትናንሽ መኪኖች እስከ ሊክስ ሱቮች፣ ያልተለመደ ምቾት እና አስተማማኝነት የሚያቀርቡ ማሻሻያ የመኪና ኪራይ አገልግሎቶችን እናቀርባለን።",
+ "home.hero.title.line1": "አዲስ በሆነ መንገድ  ",
+  "home.hero.title.line2": "ምርጥ ጉዞ ከኤሊት ድራይቭ ጋር ",
+  "home.hero.subtitle": "ለጉዞዎ ፍጹም መኪና ያግኙ። ከትናንሽ መኪኖች እስከ ሊክስ ሱቮች፣  ምቾት እና አስተማማኝነትን የተላበሱ መኪኖችን የኪራይ አገልግሎቶችን እናቀርባለን።",
   "home.hero.cta.primary": "ሁሉንም መኪኖች ይመልከቱ",
   "home.hero.cta.secondary": "ተጨማሪ ይወቁ",
 
-  "home.bookingCard.title": "መኪናዎን ያርዝሙ",
-  "home.bookingCard.subtitle": "ለመንገድ ለመውጣት የሚያስፈልግዎ ነገር ሁሉ።",
-  "home.bookingCard.button": "ለማርዝም ይመዝገቡ",
+  "home.bookingCard.title": "መኪናዎን ይከራዩ",
+  "home.bookingCard.subtitle": "መንገዱን ለመጀመር ያስፈልጋችሁ ሁሉ እዚህ አለ",
+  "home.bookingCard.button": "ለመከራየት ይመዝገቡ",
 
-  "home.features.locations.title": "ማሻሻያ ቦታዎች",
+  "home.features.locations.title": "ብዙ ቅርንጫፎች",
   "home.features.locations.description": "በብዙ ምቹ ቦታዎች ይውሰዱ እና ይመልሱ",
   "home.features.service.title": "24/7 አገልግሎት",
-  "home.features.service.description": "ቀን ከሌሊት የማርዝም እና የደንበኛ አገልግሎት",
+  "home.features.service.description": "ቀን ከሌሊት የኪራይ አገልግሎት",
   "home.features.insurance.title": "ሙሉ ኢንሹራንስ",
   "home.features.insurance.description": "ለሰላም አእምሮ ሙሉ የኢንሹራንስ ሽፋን",
   "home.features.family.title": "ለቤተሰብ ተስማሚ",
   "home.features.family.description": "ለቤተሰብ ጉዞዎች ፍጹም ሰፊ መኪኖች",
 
-  "home.mainFeatures.availability.title": "ቀላል መገኘት",
-  "home.mainFeatures.availability.description": "በእውነተኛ-ጊዜ መገኘት ስርዓታችን ፍጹም መኪናዎን በማግኘት ያርዝሙ።",
-  "home.mainFeatures.comfort.title": "ማሻሻያ አለባበስ",
-  "home.mainFeatures.comfort.description": "በደንበኛነት የተጠሩ፣ ምቹ እና ንጹህ መኪኖቻችን ይጓዙ።",
-  "home.mainFeatures.savings.title": "ታላቅ ቁጠባ",
-  "home.mainFeatures.savings.description": "የተደባለቁ ዋጋዎች ያለምንም የተደበቁ ክፍያዎች። ለገንዘብዎ ምርጥ ዋጋ ያግኙ።",
+  "home.mainFeatures.availability.title": "የትም አለን",
+  "home.mainFeatures.availability.description": "በእውነተኛ-ጊዜ መገኘት ስርዓታችን ፍጹም መኪናዎን በማግኘት ይከራዩ።",
+  "home.mainFeatures.comfort.title": "የንጉስ ምቾት",
+  "home.mainFeatures.comfort.description": " ምቹ እና ንጹህ መኪኖቻችን ይጓዙ።",
+  "home.mainFeatures.savings.title": "አሪፍ ዋጋ",
+  "home.mainFeatures.savings.description": " ያለምንም የተደበቁ ክፍያዎች። በገንዘብዎ ምርጥ አገልግሎት ያግኙ።",
 
   "home.carExperience.title": "ሊክስ ተሞክሮ",
   "home.carExperience.subtitle": "ለተለየ ጉዞዎች ማሻሻያ መኪኖች",
@@ -660,34 +660,34 @@ const translations = {
 
   "home.cars.camry.name": "ቶዮታ ካምሪ",
   "home.cars.camry.type": "ሴዳን",
-  "home.cars.camry.price": "45 ዶላር/ቀን",
+  "home.cars.camry.price": "450 ብር/ቀን",
   "home.cars.camry.features.seats": "5 መቀመጫዎች",
   "home.cars.camry.features.transmission": "አውቶማቲክ",
   "home.cars.camry.features.ac": "አየር ማስተካከያ",
 
   "home.cars.crv.name": "ሆንዳ ሲአር-ቪ",
   "home.cars.crv.type": "ሱቭ",
-  "home.cars.crv.price": "65 ዶላር/ቀን",
+  "home.cars.crv.price": "650 ብር/ቀን",
   "home.cars.crv.features.seats": "7 መቀመጫዎች",
   "home.cars.crv.features.drive": "4 ወለል አሽከር",
   "home.cars.crv.features.space": "ሰፊ",
 
   "home.cars.bmw.name": "ቢኤምዋይ 3 ሴሪዝ",
   "home.cars.bmw.type": "ሊክስ",
-  "home.cars.bmw.price": "89 ዶላር/ቀን",
+  "home.cars.bmw.price": "890 ብር/ቀን",
   "home.cars.bmw.features.premium": "ማሻሻያ",
   "home.cars.bmw.features.sport": "ስፖርት ሞድ",
   "home.cars.bmw.features.leather": "ቆዳ",
 
   "home.featuredCars.title": "የተመረጡ መኪኖች",
-  "home.featuredCars.subtitle": "ለእያንዳንዱ አጋጣሚ እና በጀት የተመረጡ ማሻሻያ መኪኖችን ያግኙ።",
-  "home.featuredCars.bookButton": "አሁን ያርዙ",
+  "home.featuredCars.subtitle": "ለእያንዳንዱ አጋጣሚ እና በጀት የተመረጡ  መኪኖችን ያግኙ።",
+  "home.featuredCars.bookButton": "አሁን ይከራዩ",
   "home.featuredCars.detailsButton": "ዝርዝሮች",
   "home.featuredCars.viewAllButton": "ሁሉንም መኪኖች ይመልከቱ",
 
   "home.cta.title": "ጉዞዎን ለመጀመር ዝግጁ ነዎት?",
-  "home.cta.subtitle": "ለጉዞ ፍላጎታቸው በእኛ የሚታመኑ በሺዎች የሚቆጠሩ የተረኩ ደንበኞች ይቀላቀሉ። ፍጹም መኪናዎን ዛሬ ያርዙ እና በራስ መተማመን ወደ መንገድ ይውጡ።",
-  "home.cta.primaryButton": "መኪናዎን አሁን ያርዙ",
+  "home.cta.subtitle": "ለጉዞ ፍላጎታቸው በእኛ የሚታመኑ በሺዎች የሚቆጠሩ ደንበኞቻችን ጋር ይቀላቀሉ። መኪናዎን ዛሬ ይከራዩ እና በራስ መተማመን ወደ መንገድ ይውጡ።",
+  "home.cta.primaryButton": "መኪናዎን አሁን ይከራዩ",
   "home.cta.secondaryButton": "አግኙን",
 
     "home.badge": "የመኪና ኪራይ በምርጥ ዋጋ !",
@@ -768,7 +768,7 @@ const translations = {
 
 "vehicles.passengers": "ተሳፋሪ",
 "vehicles.more": "ተጨማሪ",
-"vehicles.bookNow": "አሁን ያርዙ",
+"vehicles.bookNow": "አሁን ይከራዩ",
 "vehicles.details": "ዝርዝሮች",
 "vehicles.loadMore": "ተጨማሪ መኪኖች ይጫኑ",
 
@@ -789,7 +789,7 @@ const translations = {
 "vehicles.trustedBrands.subtitle": "ምርጥ መኪኖችን ለማቅረብ ከዓለም ታዋቂ የመኪና አምራቾች ጋር እንሰራለን",
 
 "vehicles.cta.title": "ፍጹም መኪናዎን ለማግኘት ዝግጁ ነዎት?",
-"vehicles.cta.subtitle": "የማሻሻያ መኪናችንን ሰፊ ስብስብ ይመልከቱ እና የህልምዎን መኪና ዛሬ ያርዙ። ምርጡን የመኪና ኪራይ አገልግሎት ይለማመዱ።",
+"vehicles.cta.subtitle": "የማሻሻያ መኪናችንን ሰፊ ስብስብ ይመልከቱ እና የህልምዎን መኪና ዛሬ ይከራዩ። ምርጡን የመኪና ኪራይ አገልግሎት ይለማመዱ።",
 "vehicles.cta.primaryButton": "ሁሉንም መኪኖች ይመልከቱ",
 "vehicles.cta.secondaryButton": "ከሽያጭ ያግኙን",
 
