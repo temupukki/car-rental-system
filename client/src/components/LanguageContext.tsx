@@ -136,7 +136,7 @@ const translations = {
 
     // Footer
     "footer.company":
-      "Your premier car rental service offering luxury, reliability, and unmatched customer experience since 2010.",
+      "Your premier car rental service offering luxury, reliability, and unmatched customer experience since 2022.",
     "footer.quickLinks": "Quick Links",
     "footer.services": "Our Services",
     "footer.contact": "Contact Info",
@@ -600,6 +600,11 @@ const translations = {
     'auth.stats.customers': 'Customers',
     'auth.stats.rating': 'Rating',
     'auth.stats.vehicles': 'Vehicles',
+
+    'services.luxury':'Luxury',
+    'services.business':'Business',
+    'services.long':'Long term rental',
+
   },
   am: {
     // Navigation - አሰሳ
@@ -1198,6 +1203,10 @@ const translations = {
     'auth.stats.customers': 'ደንበኞች',
     'auth.stats.rating': 'ደረጃ',
     'auth.stats.vehicles': 'መኪኖች',
+
+       'services.luxury':'የከፍተኛ ደረጃ አገልግሎት(የቅንጦት)',
+    'services.business':'የንግድ ጉዞ አገልግሎት',
+    'services.long':'የረዥም ጊዜ ኪራይ አገልግሎት',
   },
 };
 
