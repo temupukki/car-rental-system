@@ -24,6 +24,11 @@ const translations = {
     "company.name": "Elite Drive",
     "nav.dashboard":"Dashboard",
     "nav.myBookings":"My Bookings",
+    'nav.admin': 'Admin',
+    'user.roles.administrator':'Admin',
+    'user.profile':'Profile',
+    
+
 
 
 
@@ -606,6 +611,10 @@ const translations = {
     "company.name": "ኤሊት ድራይቭ",
     "nav.dashboard":"መግቢያ",
     "nav.myBookings":"የኔ ትዕዛዞች",
+    'nav.admin': 'አስተዳዳሪ',
+    'user.roles.administrator':'አስተዳዳሪ',
+    'user.profile':'መገለጫ',
+
 
     // Home Page - ዋና ገጽ
  "home.hero.title.line1": "መንገዱን ያለመታወቅ",

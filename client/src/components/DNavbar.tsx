@@ -66,7 +66,6 @@ export default function DNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -245,7 +244,6 @@ export default function DNavbar() {
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
             <Link to="/" className="flex items-center space-x-3">
               <motion.div
                 whileHover={{ scale: 1.15 }}
@@ -275,7 +273,6 @@ export default function DNavbar() {
               </motion.div>
             </Link>
 
-            {/* Desktop Menu */}
             <div className="hidden lg:flex items-center space-x-4">
               {navItems.map((item, index) => (
                 <motion.div
@@ -298,7 +295,6 @@ export default function DNavbar() {
                       }
                     `}
                   >
-                
                     {item.label}
                     {location.pathname === item.path && (
                       <motion.div
@@ -318,11 +314,9 @@ export default function DNavbar() {
                 </motion.div>
               ))}
 
-              {/* Theme and Language Toggles */}
               <LanguageToggle />
               <ThemeToggle />
 
-              {/* User profile section for signed in users */}
               {session ? (
                 <motion.div
                   ref={userDropdownRef}
@@ -386,7 +380,6 @@ export default function DNavbar() {
                     </motion.div>
                   </motion.button>
 
-                  {/* Dropdown menu */}
                   <AnimatePresence>
                     {isUserDropdownOpen && (
                       <motion.div
@@ -403,7 +396,6 @@ export default function DNavbar() {
                           }
                         `}
                       >
-                        {/* User info header */}
                         <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white">
                           <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white text-lg font-bold">
@@ -430,7 +422,6 @@ export default function DNavbar() {
                           </div>
                         </div>
 
-                        {/* Menu items */}
                         <div className="p-2">
                           <Link
                             to="/dashboard/profile"
@@ -458,15 +449,6 @@ export default function DNavbar() {
                             </div>
                             <div>
                               <p className="font-medium">{t("user.profile")}</p>
-                              <p
-                                className={`text-xs ${
-                                  theme === "light"
-                                    ? "text-gray-500"
-                                    : "text-gray-400"
-                                }`}
-                              >
-                                {t("user.profileDescription")}
-                              </p>
                             </div>
                           </Link>
 
@@ -498,15 +480,6 @@ export default function DNavbar() {
                               <p className="font-medium">
                                 {t("nav.dashboard")}
                               </p>
-                              <p
-                                className={`text-xs ${
-                                  theme === "light"
-                                    ? "text-gray-500"
-                                    : "text-gray-400"
-                                }`}
-                              >
-                                {t("user.dashboardDescription")}
-                              </p>
                             </div>
                           </Link>
                         </div>
@@ -515,7 +488,6 @@ export default function DNavbar() {
                   </AnimatePresence>
                 </motion.div>
               ) : (
-                // Book Now button for guests
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -543,7 +515,6 @@ export default function DNavbar() {
               )}
             </div>
 
-            {/* Mobile Menu Button with Theme and Language Toggles */}
             <div className="flex items-center space-x-3 lg:hidden">
               <LanguageToggle />
               <ThemeToggle />
@@ -585,11 +556,9 @@ export default function DNavbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -597,8 +566,6 @@ export default function DNavbar() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             />
-
-            {/* Mobile Menu Content */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: -50 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -636,7 +603,6 @@ export default function DNavbar() {
                         }
                       `}
                     >
-                      
                       <motion.span
                         whileHover={{ x: 4 }}
                         transition={{ type: "spring", stiffness: 400 }}
@@ -646,8 +612,6 @@ export default function DNavbar() {
                     </Link>
                   </motion.div>
                 ))}
-
-                {/* User info and menu for mobile */}
                 {session ? (
                   <>
                     <div
@@ -657,7 +621,6 @@ export default function DNavbar() {
                           : "border-gray-700"
                       }`}
                     >
-                      {/* User info */}
                       <div
                         className={`
                         flex items-center gap-3 px-4 py-3 rounded-xl mb-3
@@ -696,8 +659,6 @@ export default function DNavbar() {
                           </p>
                         </div>
                       </div>
-
-                      {/* User menu items */}
                       <Link
                         to="/dashboard/profile"
                         onClick={() => setIsMobileMenuOpen(false)}
@@ -731,7 +692,6 @@ export default function DNavbar() {
                     </div>
                   </>
                 ) : (
-                  // Book Now for mobile guests
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
