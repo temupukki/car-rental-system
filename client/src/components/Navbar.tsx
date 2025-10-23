@@ -6,8 +6,6 @@ import LanguageToggle from "./LanguageToggle";
 import { useTheme } from "./ThemeContext";
 import { useLanguage } from "./LanguageContext";
 
-
-
 interface NavLink {
   id: number;
   name: string;
@@ -97,7 +95,7 @@ export default function Navbar() {
                     }
                   `}
                 >
-                  {t(link.name)} {/* Use translation here */}
+                  {t(link.name)} 
                   {isActiveLink(link.href) && (
                     <motion.div
                       className={`
@@ -115,9 +113,6 @@ export default function Navbar() {
                 </Link>
               </motion.div>
             ))}
-
-            <LanguageToggle />
-            <ThemeToggle />
             <Link to={"/sign"}>
             <motion.button
               whileHover={{ scale: 1.06, y: -1 }}
@@ -134,8 +129,9 @@ export default function Navbar() {
               {t("nav.book")}
             </motion.button>
             </Link>
+               <ThemeToggle />
+              <LanguageToggle /> 
           </motion.div>
-
           <div className="flex items-center space-x-3 lg:hidden">
             <LanguageToggle />
             <ThemeToggle />
@@ -202,7 +198,7 @@ export default function Navbar() {
                         whileHover={{ x: 4 }}
                         transition={{ type: "spring", stiffness: 400 }}
                       >
-                        {t(link.name)} {/* Use translation here */}
+                        {t(link.name)} 
                       </motion.span>
                     </Link>
                   </motion.div>
