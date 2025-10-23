@@ -605,6 +605,69 @@ const translations = {
     'services.business':'Business',
     'services.long':'Long term rental',
 
+      "terms.title": "Terms of Service",
+  "terms.subtitle": "Please read these terms carefully before using our car rental services",
+  "terms.heroBadge": "Legal Terms",
+  "terms.lastUpdated": "Last updated: December 2025",
+  "terms.quickNav": "Quick Navigation",
+  "terms.introduction": "Welcome to EliteDrive Car Rental. These Terms of Service govern your use of our website and car rental services. By accessing or using our services, you agree to be bound by these terms.",
+  
+  "terms.agreementOverviewTitle": "1. Agreement Overview",
+  "terms.agreementOverviewContent": "These Terms of Service constitute a legally binding agreement between you and EliteDrive Car Rental. They cover all aspects of our service including booking, payment, vehicle use, and liability.",
+  
+  "terms.servicesDescriptionTitle": "2. Services Description",
+  "terms.servicesDescriptionContent": "EliteDrive provides vehicle rental services through our platform. We offer various vehicle types for short-term and long-term rentals, with different pricing tiers and availability.",
+  
+  "terms.userEligibilityTitle": "3. User Eligibility",
+  "terms.userEligibilityContent": "You must be at least 21 years old with a valid driver's license to rent vehicles. Some premium vehicles may require drivers to be 25 years or older. International renters must present a valid passport and international driving permit.",
+  
+  "terms.accountRegistrationTitle": "4. Account Registration",
+  "terms.accountRegistrationContent": "To book vehicles, you must create an account with accurate information. You are responsible for maintaining account security and all activities under your account.",
+  
+  "terms.bookingPoliciesTitle": "5. Booking Policies",
+  "terms.bookingPoliciesContent": "Bookings are confirmed upon payment authorization. You must present original required documents at pickup. Late returns may incur additional charges.",
+  
+  "terms.paymentTermsTitle": "6. Payment Terms",
+  "terms.paymentTermsContent": "All payments are processed securely. We accept major credit cards and digital payments. A security deposit may be required and will be refunded after vehicle inspection.",
+  
+  "terms.cancellationRefundTitle": "7. Cancellation & Refund",
+  "terms.cancellationRefundContent": "Cancellations made 24 hours before pickup receive full refund. Late cancellations may incur fees. No-shows are charged the full rental amount.",
+  
+  "terms.userResponsibilitiesTitle": "8. User Responsibilities",
+  "terms.userResponsibilitiesContent": "You are responsible for the vehicle during rental period. Follow traffic laws, maintain the vehicle properly, and report any issues immediately. Smoking and pets may be restricted in certain vehicles.",
+  
+  "terms.prohibitedActivitiesTitle": "9. Prohibited Activities",
+  "terms.prohibitedActivitiesContent": "Illegal activities, racing, off-road driving, and substance-impaired driving are strictly prohibited. Violations may result in immediate termination and legal action.",
+  
+  "terms.insuranceCoverageTitle": "10. Insurance Coverage",
+  "terms.insuranceCoverageContent": "Basic insurance is included. Additional coverage options are available. You are responsible for deductible amounts in case of accidents.",
+  
+  "terms.liabilityLimitationsTitle": "11. Liability Limitations",
+  "terms.liabilityLimitationsContent": "EliteDrive is not liable for personal property left in vehicles, traffic violations, or indirect damages. Our liability is limited to direct damages up to the rental amount.",
+  
+  "terms.intellectualPropertyTitle": "12. Intellectual Property",
+  "terms.intellectualPropertyContent": "All content, logos, and software are property of EliteDrive. Unauthorized use is prohibited.",
+  
+  "terms.terminationTitle": "13. Termination",
+  "terms.terminationContent": "We may terminate services for violations of these terms. You may terminate your account at any time.",
+  
+  "terms.governingLawTitle": "14. Governing Law",
+  "terms.governingLawContent": "These terms are governed by the laws of the jurisdiction where EliteDrive is registered. Disputes will be resolved through arbitration.",
+  
+  "terms.changesTermsTitle": "15. Changes to Terms",
+  "terms.changesTermsContent": "We may update these terms periodically. Continued use after changes constitutes acceptance.",
+  
+  "terms.importantNoticeTitle": "Important Notice",
+  "terms.importantNoticeContent": "By using our services, you acknowledge that you have read, understood, and agree to be bound by all these terms and conditions.",
+  
+  "terms.contactTitle": "Questions? Contact Us",
+  "terms.contactContent": "If you have any questions about these Terms of Service, please contact our legal team.",
+  "terms.emailUs": "Email Legal Team",
+  "terms.contactForm": "Contact Form",
+  
+  "terms.acceptanceTitle": "Acceptance of Terms",
+  "terms.acceptanceContent": "By creating an account or making a booking, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service."
+
   },
   am: {
     // Navigation - አሰሳ
@@ -1207,6 +1270,68 @@ const translations = {
        'services.luxury':'የከፍተኛ ደረጃ አገልግሎት(የቅንጦት)',
     'services.business':'የንግድ ጉዞ አገልግሎት',
     'services.long':'የረዥም ጊዜ ኪራይ አገልግሎት',
+     "terms.title": "የአገልግሎት ውሎች",
+  "terms.subtitle": "የመኪና ኪራይ አገልግሎታችንን ከመጠቀምዎ በፊት እባክዎን እነዚህን ውሎች በጥንቃቄ ያንቡ",
+  "terms.heroBadge": "ህጋዊ ውሎች",
+  "terms.lastUpdated": "የመጨረሻ ዝመና፡ ዲሴምበር 2025",
+  "terms.quickNav": "ፈጣን አሰሳ",
+  "terms.introduction": "ወደ ኤሊትድራይቭ መኪና ኪራይ እንኳን በደህና መጡ። እነዚህ የአገልግሎት ውሎች የእኛን ድር ጣቢያ እና የመኪና ኪራይ አገልግሎቶች አጠቃቀምዎን ያስተዳድራሉ። አገልግሎቶቻችንን በመድረስዎ ወይም በመጠቀምዎ እነዚህ ውሎች እንዲገዙዎ ተስማምተዋል።",
+  
+  "terms.agreementOverviewTitle": "1. ስምምነት አጠቃላይ እይታ",
+  "terms.agreementOverviewContent": "እነዚህ የአገልግሎት ውሎች በእርስዎ እና በኤሊትድራይቭ መኪና ኪራይ መካከል ሕጋዊ ስምምነት ይፈጥራሉ። የቦታ ማስያዝ፣ ክፍያ፣ የመኪና አጠቃቀም እና ኃላፊነት ጨምሮ ሁሉንም የአገልግሎታችን ገጽታዎች ይሸፍናሉ።",
+  
+  "terms.servicesDescriptionTitle": "2. የአገልግሎት መግለጫ",
+  "terms.servicesDescriptionContent": "ኤሊትድራይቭ በእኛ መድረክ በኩል የመኪና ኪራይ አገልግሎቶችን ያቀርባል። ለአጭር ጊዜ እና ለረጅም ጊዜ ኪራዮች የተለያዩ የመኪና ዓይነቶችን ከተለያዩ የዋጋ ደረጃዎች እና ክምችት ጋር እናቀርባለን።",
+  
+  "terms.userEligibilityTitle": "3. የተጠቃሚ ብቃት",
+  "terms.userEligibilityContent": "መኪናዎችን ለመክዛ ቢያንስ 21 ዓመት የሆኑ እና ትክክለኛ የሹፌር ፈቃድ ያለው መሆን አለብዎት። አንዳንድ ፕሪሚየም መኪናዎች አሽከርካሪዎች 25 ዓመት ወይም ከዚያ በላይ እንዲሆኑ ሊፈልጉ ይችላሉ። ዓለም አቀፍ ኪራይ ሰጭዎች ትክክለኛ ፓስፖርት እና ዓለም አቀፍ የማሽከርከር ፈቃድ ማቅረብ አለባቸው።",
+  
+  "terms.accountRegistrationTitle": "4. መለያ ምዝገባ",
+  
+  "terms.bookingPoliciesTitle": "5. የቦታ ማስያዝ ፖሊሲዎች",
+  "terms.bookingPoliciesContent": "ቦታ ማስያዝ የክፍያ ማረጋገጫ ሲደረግ ያረጋገጣል። በመግዛት ጊዜ የሚፈለጉትን ኦሪጅናል ሰነዶች ማቅረብ አለብዎት። ዘግይተው መመለስ ተጨማሪ ክፍያ ሊያስከትል ይችላል።",
+  
+  "terms.paymentTermsTitle": "6. የክፍያ ውሎች",
+  "terms.paymentTermsContent": "ሁሉም ክፍያዎች በደህንነት ይከናወናሉ። ዋና ዋና ክሬዲት ካርዶችን እና ዲጂታል ክፍያዎችን እንቀበላለን። የደህንነት ተጠራቂ መያዣ ሊፈለግ ይችላል እና ከመኪና ቁጥጥር በኋላ ይመለሳል።",
+  
+  "terms.cancellationRefundTitle": "7. ስረዛ እና መመለስ",
+  "terms.cancellationRefundContent": "ከመግዛት 24 ሰዓታት በፊት የተደረጉ ስረዛዎች ሙሉ መመለስ ይቀበላሉ። ዘግይተው የተደረጉ ስረዛዎች ክፍያ ሊያስከትሉ ይችላሉ። ያልተገኙ ደንበኞች ሙሉውን የኪራይ መጠን ይከፍላሉ።",
+  
+  "terms.userResponsibilitiesTitle": "8. የተጠቃሚ ኃላፊነቶች",
+  "terms.userResponsibilitiesContent": "በኪራይ ጊዜ ለመኪናው ኃላፊ ነዎት። የትራፊክ ህጎችን ይከተሉ፣ መኪናውን በትክክል ይጠብቁ እና ማንኛውንም ችግር ወዲያውኑ ሪፖርት ያድርጉ። ማጨስ እና የቤት እንስሳት በአንዳንድ መኪናዎች ሊከለከሉ ይችላሉ።",
+  
+  "terms.prohibitedActivitiesTitle": "9. የተከለከሉ ተግባራት",
+  "terms.prohibitedActivitiesContent": "ሕገወጥ ተግባራት፣ ውድድር፣ ከመንገድ ውጪ መንዳት እና በንፅፅር የተጎዳ መንዳት በጥብቅ የተከለከሉ ናቸው። ህገወጥ ተግባራት ወዲያውኑ ማቋረጥ እና ህጋዊ እርምጃ ሊያስከትሉ ይችላሉ።",
+  
+  "terms.insuranceCoverageTitle": "10. የኢንሹራንስ ሽፋን",
+  "terms.insuranceCoverageContent": "መሰረታዊ ኢንሹራንስ ተካትቷል። ተጨማሪ የሽፋን አማራጮች ይገኛሉ። በአደጋ ሁኔታ የሚከፈልበትን መጠን ኃላፊነትዎ ነው።",
+  
+  "terms.liabilityLimitationsTitle": "11. የኃላፊነት ገደቦች",
+  "terms.liabilityLimitationsContent": "ኤሊትድራይቭ በመኪናዎች ውስጥ ለተተዉ የግል ንብረቶች፣ የትራፊክ ሕገወጥ ተግባራት ወይም ቀጥተኛ ያልሆኑ ጉዳቶች ኃላፊ አይደለም። ኃላፊነታችን እስከ የኪራይ መጠን ድረስ ለቀጥታ ጉዳቶች ብቻ የተገደበ ነው።",
+  
+  "terms.intellectualPropertyTitle": "12. የመንግስት ንብረት",
+  "terms.intellectualPropertyContent": "ሁሉም ይዘት፣ ሎጎዎች እና ሶፍትዌር የኤሊትድራይቭ ንብረት ናቸው። ያልተፈቀደ አጠቃቀም የተከለከለ ነው።",
+  
+  "terms.terminationTitle": "13. ማቋረጥ",
+  "terms.terminationContent": "እነዚህን ውሎች ለመጣስ አገልግሎቶችን ልንቆም እንችላለን። መለያዎን በማንኛውም ጊዜ ልትቆሙ ትችላላችሁ።",
+  
+  "terms.governingLawTitle": "14. አስተዳደር ሕግ",
+  "terms.governingLawContent": "እነዚህ ውሎች ኤሊትድራይቭ የተመዘገበበት የሥልጣን አካባቢ ሕጎች ያስተዳድራቸዋል። ክርክሮች በማድረግ ይፈታሉ።",
+  
+  "terms.changesTermsTitle": "15. የውሎች ለውጦች",
+  "terms.changesTermsContent": "እነዚህን ውሎች በየጊዜው ልንዘመናቸው እንችላለን። ከለውጦች በኋላ መጠቀምዎ መቀበልን ያመለክታል።",
+  
+  "terms.importantNoticeTitle": "አስፈላጊ ማስታወሻ",
+  "terms.importantNoticeContent": "አገልግሎቶቻችንን በመጠቀምዎ እነዚህን ሁሉ ውሎች እና ሁኔታዎች አንብበዋል፣ ተረድተዋል እና እንዲገዙዎ ተስማምተዋል የሚል አስተያየት እንደሚሰጡ ያሳውቃሉ።",
+  
+  "terms.contactTitle": "ጥያቄዎች አሉ? ያግኙን",
+  "terms.contactContent": "ስለእነዚህ የአገልግሎት ውሎች ማንኛውም ጥያቄ ካለዎት እባክዎን የህግ ቡድናችንን ያግኙ።",
+  "terms.emailUs": "የህግ ቡድን ኢሜይል",
+  "terms.contactForm": "የመገኛ ቅጽ",
+    "terms.accountRegistrationContent": "መኪናዎችን ለማስያዝ ትክክለኛ መረጃ ያለው መለያ መፍጠር አለብዎት። የመለያ ደህንነት ማቆየት እና በመለያዎ ስር ያሉ ሁሉም ተግባራት በግል ኃላፊነትዎ ነው።",
+  
+  "terms.acceptanceTitle": "የውሎች ተቀባይነት",
+  "terms.acceptanceContent": "መለያ በመፍጠርዎ ወይም ቦታ በማስያዝዎ እነዚህን የአገልግሎት ውሎች አንብበዋል፣ ተረድተዋል እና እንዲገዙዎ ተስማምተዋል  ተብሎ ይቆጠራል ።"
   },
 };
 

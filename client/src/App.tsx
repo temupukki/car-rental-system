@@ -22,6 +22,7 @@ import AdminManageCars from "./dashboard/AdminManageCars";
 import Userpage from "./dashboard/User";
 import ManageOrders from "./dashboard/ManageOrders";
 import Profile from "./dashboard/Profile";
+import Terms from "./pages/Terms";
 
 function App() {
   return (
@@ -163,6 +164,22 @@ function App() {
                 <DashLayout>
                   <Profile/>
                 </DashLayout>
+              }
+            />
+               <Route
+              path="/dashboard/terms"
+              element={
+                <DashLayout>
+                  <Terms/>
+                </DashLayout>
+              }
+            />
+                <Route
+              path="/terms"
+              element={
+                <MainLayout>
+                  <Terms/>
+                </MainLayout>
               }
             />
           </Routes>

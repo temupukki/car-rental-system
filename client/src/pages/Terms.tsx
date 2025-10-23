@@ -2,56 +2,98 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useTheme } from "../components/ThemeContext";
 import { useLanguage } from "../components/LanguageContext";
-import { div } from "framer-motion/client";
 
-export default function Privacy() {
+export default function Terms() {
   const { theme } = useTheme();
   const { t } = useLanguage();
 
   const sections = [
     {
-      id: "information-collection",
-      title: t("privacy.infoCollectionTitle"),
-      content: t("privacy.infoCollectionContent"),
+      id: "agreement-overview",
+      title: t("terms.agreementOverviewTitle"),
+      content: t("terms.agreementOverviewContent"),
     },
     {
-      id: "data-usage",
-      title: t("privacy.dataUsageTitle"),
-      content: t("privacy.dataUsageContent"),
+      id: "services-description",
+      title: t("terms.servicesDescriptionTitle"),
+      content: t("terms.servicesDescriptionContent"),
     },
     {
-      id: "data-sharing",
-      title: t("privacy.dataSharingTitle"),
-      content: t("privacy.dataSharingContent"),
+      id: "user-eligibility",
+      title: t("terms.userEligibilityTitle"),
+      content: t("terms.userEligibilityContent"),
     },
     {
-      id: "data-security",
-      title: t("privacy.dataSecurityTitle"),
-      content: t("privacy.dataSecurityContent"),
+      id: "account-registration",
+      title: t("terms.accountRegistrationTitle"),
+      content: t("terms.accountRegistrationContent"),
     },
     {
-      id: "user-rights",
-      title: t("privacy.userRightsTitle"),
-      content: t("privacy.userRightsContent"),
+      id: "booking-policies",
+      title: t("terms.bookingPoliciesTitle"),
+      content: t("terms.bookingPoliciesContent"),
     },
     {
-      id: "cookies",
-      title: t("privacy.cookiesTitle"),
-      content: t("privacy.cookiesContent"),
+      id: "payment-terms",
+      title: t("terms.paymentTermsTitle"),
+      content: t("terms.paymentTermsContent"),
     },
     {
-      id: "policy-changes",
-      title: t("privacy.policyChangesTitle"),
-      content: t("privacy.policyChangesContent"),
+      id: "cancellation-refund",
+      title: t("terms.cancellationRefundTitle"),
+      content: t("terms.cancellationRefundContent"),
+    },
+    {
+      id: "user-responsibilities",
+      title: t("terms.userResponsibilitiesTitle"),
+      content: t("terms.userResponsibilitiesContent"),
+    },
+    {
+      id: "prohibited-activities",
+      title: t("terms.prohibitedActivitiesTitle"),
+      content: t("terms.prohibitedActivitiesContent"),
+    },
+    {
+      id: "insurance-coverage",
+      title: t("terms.insuranceCoverageTitle"),
+      content: t("terms.insuranceCoverageContent"),
+    },
+    {
+      id: "liability-limitations",
+      title: t("terms.liabilityLimitationsTitle"),
+      content: t("terms.liabilityLimitationsContent"),
+    },
+    {
+      id: "intellectual-property",
+      title: t("terms.intellectualPropertyTitle"),
+      content: t("terms.intellectualPropertyContent"),
+    },
+    {
+      id: "termination",
+      title: t("terms.terminationTitle"),
+      content: t("terms.terminationContent"),
+    },
+    {
+      id: "governing-law",
+      title: t("terms.governingLawTitle"),
+      content: t("terms.governingLawContent"),
+    },
+    {
+      id: "changes-terms",
+      title: t("terms.changesTermsTitle"),
+      content: t("terms.changesTermsContent"),
     },
   ];
 
   const quickLinks = [
-    { name: t("privacy.infoCollectionTitle"), href: "#information-collection" },
-    { name: t("privacy.dataUsageTitle"), href: "#data-usage" },
-    { name: t("privacy.dataSharingTitle"), href: "#data-sharing" },
-    { name: t("privacy.userRightsTitle"), href: "#user-rights" },
-    { name: t("privacy.contactTitle"), href: "#contact" },
+    { name: t("terms.agreementOverviewTitle"), href: "#agreement-overview" },
+    { name: t("terms.bookingPoliciesTitle"), href: "#booking-policies" },
+    { name: t("terms.paymentTermsTitle"), href: "#payment-terms" },
+    { name: t("terms.cancellationRefundTitle"), href: "#cancellation-refund" },
+    { name: t("terms.userResponsibilitiesTitle"), href: "#user-responsibilities" },
+    { name: t("terms.insuranceCoverageTitle"), href: "#insurance-coverage" },
+    { name: t("terms.liabilityLimitationsTitle"), href: "#liability-limitations" },
+    { name: t("terms.contactTitle"), href: "#contact" },
   ];
 
   return (
@@ -60,18 +102,16 @@ export default function Privacy() {
       min-h-screen transition-all duration-500
       ${
         theme === "light"
-          ? "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50"
-          : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900"
+          ? "bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50"
+          : "bg-gradient-to-br from-gray-900 via-orange-900 to-amber-900"
       }
     `}
     >
-      {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Hero Section */}
       <section className="relative py-24 px-6">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/5 to-black/10"></div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
@@ -81,8 +121,8 @@ export default function Privacy() {
             transition={{ duration: 1 }}
             className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6"
           >
-            <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-              🛡️ {t("privacy.heroBadge")}
+            <span className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+              ⚖️ {t("terms.heroBadge")}
             </span>
           </motion.div>
 
@@ -94,12 +134,12 @@ export default function Privacy() {
               text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r bg-clip-text text-transparent
               ${
                 theme === "light"
-                  ? "from-blue-600 via-purple-600 to-cyan-600"
-                  : "from-blue-400 via-purple-400 to-cyan-400"
+                  ? "from-orange-600 via-amber-600 to-yellow-600"
+                  : "from-orange-400 via-amber-400 to-yellow-400"
               }
             `}
           >
-            {t("privacy.title")}
+            {t("terms.title")}
           </motion.h1>
 
           <motion.p
@@ -111,7 +151,7 @@ export default function Privacy() {
               ${theme === "light" ? "text-gray-700" : "text-gray-300"}
             `}
           >
-            {t("privacy.subtitle")}
+            {t("terms.subtitle")}
           </motion.p>
 
           <motion.div
@@ -133,17 +173,15 @@ export default function Privacy() {
               ${theme === "light" ? "text-gray-600" : "text-gray-400"}
             `}
             >
-              {t("privacy.lastUpdated")}
+              {t("terms.lastUpdated")}
             </span>
           </motion.div>
         </div>
       </section>
 
-      {/* Main Content */}
       <section className="py-16 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
-            {/* Quick Navigation */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -155,8 +193,8 @@ export default function Privacy() {
                 rounded-3xl p-6 backdrop-blur-sm border-2 sticky top-24
                 ${
                   theme === "light"
-                    ? "bg-white/80 border-blue-200 shadow-xl"
-                    : "bg-gray-800/80 border-blue-700 shadow-xl"
+                    ? "bg-white/80 border-orange-200 shadow-xl"
+                    : "bg-gray-800/80 border-orange-700 shadow-xl"
                 }
               `}
               >
@@ -166,10 +204,10 @@ export default function Privacy() {
                   ${theme === "light" ? "text-gray-900" : "text-white"}
                 `}
                 >
-                  {t("privacy.quickNav")}
+                  {t("terms.quickNav")}
                 </h3>
                 <nav className="space-y-2">
-                  {quickLinks.map((link, index) => (
+                  {quickLinks.map((link) => (
                     <motion.a
                       key={link.name}
                       href={link.href}
@@ -178,8 +216,8 @@ export default function Privacy() {
                         block py-2 px-3 rounded-lg text-sm transition-all duration-300
                         ${
                           theme === "light"
-                            ? "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                            : "text-gray-400 hover:text-blue-400 hover:bg-blue-900/30"
+                            ? "text-gray-600 hover:text-orange-600 hover:bg-orange-50"
+                            : "text-gray-400 hover:text-orange-400 hover:bg-orange-900/30"
                         }
                       `}
                     >
@@ -201,8 +239,8 @@ export default function Privacy() {
                 rounded-3xl p-8 backdrop-blur-sm border-2
                 ${
                   theme === "light"
-                    ? "bg-white/80 border-blue-200 shadow-2xl"
-                    : "bg-gray-800/80 border-blue-700 shadow-2xl"
+                    ? "bg-white/80 border-orange-200 shadow-2xl"
+                    : "bg-gray-800/80 border-orange-700 shadow-2xl"
                 }
               `}
               >
@@ -218,7 +256,7 @@ export default function Privacy() {
                     ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                   `}
                   >
-                    {t("privacy.introduction")}
+                    {t("terms.introduction")}
                   </p>
                 </motion.div>
 
@@ -243,8 +281,8 @@ export default function Privacy() {
                           w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3
                           ${
                             theme === "light"
-                              ? "bg-blue-100 text-blue-600"
-                              : "bg-blue-900 text-blue-400"
+                              ? "bg-orange-100 text-orange-600"
+                              : "bg-orange-900 text-orange-400"
                           }
                         `}
                         >
@@ -266,7 +304,37 @@ export default function Privacy() {
                       </div>
                     </motion.section>
                   ))}
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.6 }}
+                    className={`
+                      rounded-2xl p-6
+                      ${
+                        theme === "light"
+                          ? "bg-red-50 border border-red-200"
+                          : "bg-red-900/20 border border-red-800"
+                      }
+                    `}
+                  >
+                    <h3
+                      className={`
+                      text-xl font-bold mb-4 flex items-center
+                      ${theme === "light" ? "text-red-800" : "text-red-200"}
+                    `}
+                    >
+                      ⚠️ {t("terms.importantNoticeTitle")}
+                    </h3>
+                    <p
+                      className={`
+                      ${theme === "light" ? "text-red-700" : "text-red-300"}
+                    `}
+                    >
+                      {t("terms.importantNoticeContent")}
+                    </p>
+                  </motion.div>
 
+                  {/* Contact Section */}
                   <motion.section
                     id="contact"
                     initial={{ opacity: 0, y: 30 }}
@@ -276,8 +344,8 @@ export default function Privacy() {
                       rounded-2xl p-6 mt-8
                       ${
                         theme === "light"
-                          ? "bg-blue-50 border border-blue-200"
-                          : "bg-blue-900/20 border border-blue-800"
+                          ? "bg-orange-50 border border-orange-200"
+                          : "bg-orange-900/20 border border-orange-800"
                       }
                     `}
                   >
@@ -287,11 +355,18 @@ export default function Privacy() {
                       ${theme === "light" ? "text-gray-900" : "text-white"}
                     `}
                     >
-                      {t("privacy.contactTitle")}
+                      {t("terms.contactTitle")}
                     </h3>
-                
+                    <p
+                      className={`
+                      mb-4
+                      ${theme === "light" ? "text-gray-700" : "text-gray-300"}
+                    `}
+                    >
+                      {t("terms.contactContent")}
+                    </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                   
+                    
                       <Link to="/contact">
                         <motion.button
                           whileHover={{ scale: 1.05 }}
@@ -299,12 +374,12 @@ export default function Privacy() {
                             inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold border-2 transition-all duration-300
                             ${
                               theme === "light"
-                                ? "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-                                : "border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white"
+                                ? "border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white"
+                                : "border-orange-400 text-orange-400 hover:bg-orange-400 hover:text-white"
                             }
                           `}
                         >
-                          💬 {t("privacy.contactForm")}
+                          💬 {t("terms.contactForm")}
                         </motion.button>
                       </Link>
                     </div>
@@ -330,14 +405,14 @@ export default function Privacy() {
                     ${theme === "light" ? "text-gray-900" : "text-white"}
                   `}
                   >
-                    {t("privacy.acceptanceTitle")}
+                    {t("terms.acceptanceTitle")}
                   </h3>
                   <p
                     className={`
                     ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                   `}
                   >
-                    {t("privacy.acceptanceContent")}
+                    {t("terms.acceptanceContent")}
                   </p>
                 </motion.div>
               </div>

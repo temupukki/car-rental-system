@@ -305,23 +305,35 @@ export default function Footer() {
             </motion.p>
 
             <div className="flex space-x-6">
-              {[t("footer.privacy"), t("footer.terms")].map((item) => (
-                <motion.a
-                  key={item}
-                  href="/privacy"
-                  whileHover={{ scale: 1.05 }}
-                  className={`
-                    text-sm transition-colors duration-300
-                    ${
-                      theme === "light"
-                        ? "text-gray-600 hover:text-blue-600"
-                        : "text-gray-500 hover:text-cyan-400"
-                    }
-                  `}
-                >
-                  {item}
-                </motion.a>
-              ))}
+              <motion.a
+                href="/privacy"
+                whileHover={{ scale: 1.05 }}
+                className={`
+      text-sm transition-colors duration-300
+      ${
+        theme === "light"
+          ? "text-gray-600 hover:text-blue-600"
+          : "text-gray-500 hover:text-cyan-400"
+      }
+    `}
+              >
+                {t("footer.privacy")}
+              </motion.a>
+
+              <motion.a
+                href="/terms"
+                whileHover={{ scale: 1.05 }}
+                className={`
+      text-sm transition-colors duration-300
+      ${
+        theme === "light"
+          ? "text-gray-600 hover:text-blue-600"
+          : "text-gray-500 hover:text-cyan-400"
+      }
+    `}
+              >
+                {t("footer.terms")}
+              </motion.a>
             </div>
           </div>
         </div>
