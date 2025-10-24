@@ -23,6 +23,7 @@ import Userpage from "./dashboard/User";
 import ManageOrders from "./dashboard/ManageOrders";
 import Profile from "./dashboard/Profile";
 import Terms from "./pages/Terms";
+import ManageMessages from "./dashboard/ManageMessages";
 
 function App() {
   return (
@@ -180,6 +181,14 @@ function App() {
                 <MainLayout>
                   <Terms/>
                 </MainLayout>
+              }
+            />
+             <Route
+              path="/dashboard/admin/request"
+              element={
+                <DashLayout>
+                  <ManageMessages/>
+                </DashLayout>
               }
             />
           </Routes>
