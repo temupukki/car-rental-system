@@ -117,6 +117,10 @@ export default function DNavbar() {
       path: "/dashboard/bookings",
       label: t("nav.myBookings"),
     },
+     {
+      path: "/dashboard/contact",
+      label: t("nav.contact"),
+    },
   ];
 
   const adminNavItems = [

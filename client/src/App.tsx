@@ -191,6 +191,14 @@ function App() {
                 </DashLayout>
               }
             />
+              <Route
+              path="/dashboard/contact"
+              element={
+                <DashLayout>
+                  <Contact/>
+                </DashLayout>
+              }
+            />
           </Routes>
         </Router>
       </LanguageProvider>
