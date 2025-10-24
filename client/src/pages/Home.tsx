@@ -35,7 +35,8 @@ export default function Home() {
     const checkSession = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/me");
-        if (response.ok) {
+        const data = await response.json();
+        if (data && data !== null) {
           navigate("/dashboard");
           return;
         }
@@ -47,7 +48,7 @@ export default function Home() {
     };
 
     checkSession();
-  }, []);
+  }, [navigate]);
 
   const features = [
     {
@@ -195,6 +196,7 @@ export default function Home() {
       }
     `}
     >
+      {/* Rest of your JSX remains exactly the same */}
       <div className="relative mx-4 md:mx-8 lg:mx-16 h-auto lg:h-[600px] rounded-3xl mt-4 lg:mt-6 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"

@@ -29,6 +29,8 @@ import {
 import { useState } from "react";
 import { useLanguage } from "../components/LanguageContext";
 import { useTheme } from "../components/ThemeContext";
+import { Link } from "react-router-dom";
+import { div } from "framer-motion/client";
 
 export default function Vehicles() {
   const { t } = useLanguage();
@@ -49,8 +51,14 @@ export default function Vehicles() {
 
   const sortOptions = [
     { value: "featured", label: t("vehicles.featured") || "Featured" },
-    { value: "price-low", label: t("vehicles.priceLow") || "Price: Low to High" },
-    { value: "price-high", label: t("vehicles.priceHigh") || "Price: High to Low" },
+    {
+      value: "price-low",
+      label: t("vehicles.priceLow") || "Price: Low to High",
+    },
+    {
+      value: "price-high",
+      label: t("vehicles.priceHigh") || "Price: High to Low",
+    },
     { value: "rating", label: t("vehicles.rating") || "Highest Rated" },
     { value: "popular", label: t("vehicles.popular") || "Most Popular" },
   ];
@@ -61,12 +69,12 @@ export default function Vehicles() {
       name: t("vehicles.cars.camry.name") || "Toyota Camry 2023",
       type: "sedan",
       price: 45,
-      image: "/bmw.jfif",
+      image: "/camry.avif",
       features: [
         t("vehicles.cars.camry.features.seats") || "5 Seats",
         t("vehicles.cars.camry.features.transmission") || "Automatic",
         t("vehicles.cars.camry.features.ac") || "Air Conditioning",
-        t("vehicles.cars.camry.features.gps") || "GPS"
+        t("vehicles.cars.camry.features.gps") || "GPS",
       ],
       specs: {
         passengers: 5,
@@ -83,12 +91,12 @@ export default function Vehicles() {
       name: t("vehicles.cars.crv.name") || "Honda CR-V Elite",
       type: "suv",
       price: 65,
-      image: "/bmw.jfif",
+      image: "/honda.png",
       features: [
         t("vehicles.cars.crv.features.seats") || "7 Seats",
         t("vehicles.cars.crv.features.drive") || "4WD",
         t("vehicles.cars.crv.features.space") || "Spacious",
-        t("vehicles.cars.crv.features.sunroof") || "Sunroof"
+        t("vehicles.cars.crv.features.sunroof") || "Sunroof",
       ],
       specs: {
         passengers: 7,
@@ -110,7 +118,7 @@ export default function Vehicles() {
         t("vehicles.cars.bmw.features.premium") || "Premium",
         t("vehicles.cars.bmw.features.sport") || "Sport Mode",
         t("vehicles.cars.bmw.features.leather") || "Leather",
-        t("vehicles.cars.bmw.features.sound") || "Premium Sound"
+        t("vehicles.cars.bmw.features.sound") || "Premium Sound",
       ],
       specs: {
         passengers: 5,
@@ -127,12 +135,12 @@ export default function Vehicles() {
       name: t("vehicles.cars.mercedes.name") || "Mercedes-Benz C-Class",
       type: "luxury",
       price: 95,
-      image: "/bmw.jfif",
+      image: "/mud.jpg",
       features: [
         t("vehicles.cars.mercedes.features.luxury") || "Luxury",
         t("vehicles.cars.mercedes.features.seats") || "Heated Seats",
         t("vehicles.cars.mercedes.features.roof") || "Panoramic Roof",
-        t("vehicles.cars.mercedes.features.assist") || "Assist"
+        t("vehicles.cars.mercedes.features.assist") || "Assist",
       ],
       specs: {
         passengers: 5,
@@ -149,12 +157,12 @@ export default function Vehicles() {
       name: t("vehicles.cars.mustang.name") || "Ford Mustang",
       type: "sports",
       price: 75,
-      image: "/bmw.jfif",
+      image: "/car1.jfif",
       features: [
         t("vehicles.cars.mustang.features.sport") || "Sport",
         t("vehicles.cars.mustang.features.convertible") || "Convertible",
         t("vehicles.cars.mustang.features.premium") || "Premium",
-        t("vehicles.cars.mustang.features.fast") || "Fast"
+        t("vehicles.cars.mustang.features.fast") || "Fast",
       ],
       specs: {
         passengers: 4,
@@ -171,12 +179,12 @@ export default function Vehicles() {
       name: t("vehicles.cars.rav4.name") || "Toyota RAV4",
       type: "suv",
       price: 55,
-      image: "/bmw.jfif",
+      image: "/rava4.jfif",
       features: [
         t("vehicles.cars.rav4.features.seats") || "5 Seats",
         t("vehicles.cars.rav4.features.drive") || "AWD",
         t("vehicles.cars.rav4.features.economical") || "Economical",
-        t("vehicles.cars.rav4.features.space") || "Spacious"
+        t("vehicles.cars.rav4.features.space") || "Spacious",
       ],
       specs: {
         passengers: 5,
@@ -193,12 +201,12 @@ export default function Vehicles() {
       name: t("vehicles.cars.civic.name") || "Honda Civic",
       type: "compact",
       price: 35,
-      image: "/bmw.jfif",
+      image: "/civic.jfif",
       features: [
         t("vehicles.cars.civic.features.seats") || "5 Seats",
         t("vehicles.cars.civic.features.economical") || "Economical",
         t("vehicles.cars.civic.features.tech") || "Tech",
-        t("vehicles.cars.civic.features.safe") || "Safe"
+        t("vehicles.cars.civic.features.safe") || "Safe",
       ],
       specs: {
         passengers: 5,
@@ -215,12 +223,12 @@ export default function Vehicles() {
       name: t("vehicles.cars.suburban.name") || "Chevrolet Suburban",
       type: "van",
       price: 85,
-      image: "/bmw.jfif",
+      image: "/suburban.jfif",
       features: [
         t("vehicles.cars.suburban.features.seats") || "8 Seats",
         t("vehicles.cars.suburban.features.space") || "Spacious",
         t("vehicles.cars.suburban.features.family") || "Family",
-        t("vehicles.cars.suburban.features.luxury") || "Luxury"
+        t("vehicles.cars.suburban.features.luxury") || "Luxury",
       ],
       specs: {
         passengers: 8,
@@ -261,13 +269,16 @@ export default function Vehicles() {
   };
 
   return (
-    <div className={`
+    <div
+      className={`
       min-h-screen transition-all duration-500
-      ${theme === 'light' 
-        ? 'bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50' 
-        : 'bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900'
+      ${
+        theme === "light"
+          ? "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50"
+          : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900"
       }
-    `}>
+    `}
+    >
       <div className="relative h-[500px] rounded-b-3xl overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -309,7 +320,8 @@ export default function Vehicles() {
                 transition={{ delay: 0.2 }}
                 className="text-xl text-gray-200 mb-8 max-w-2xl"
               >
-                {t("vehicles.hero.subtitle") || "Discover our premium fleet of vehicles. From compact cars to luxury SUVs, find the perfect car that matches your style and needs."}
+                {t("vehicles.hero.subtitle") ||
+                  "Discover our premium fleet of vehicles. From compact cars to luxury SUVs, find the perfect car that matches your style and needs."}
               </motion.p>
             </motion.div>
           </div>
@@ -322,13 +334,16 @@ export default function Vehicles() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className={`
+          <Card
+            className={`
             rounded-2xl shadow-2xl border-0 backdrop-blur-sm
-            ${theme === 'light'
-              ? 'bg-white/95 border-gray-200'
-              : 'bg-gray-800/95 border-gray-700'
+            ${
+              theme === "light"
+                ? "bg-white/95 border-gray-200"
+                : "bg-gray-800/95 border-gray-700"
             }
-          `}>
+          `}
+          >
             <CardContent className="p-8">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div className="lg:col-span-2">
@@ -336,7 +351,7 @@ export default function Vehicles() {
                     htmlFor="search"
                     className={`
                       text-sm font-semibold mb-2 block
-                      ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
+                      ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                   >
                     <Search className="w-4 h-4 inline mr-2" />
@@ -345,14 +360,18 @@ export default function Vehicles() {
                   <div className="relative">
                     <Input
                       id="search"
-                      placeholder={t("vehicles.searchPlaceholder") || "Search by car name, model, or type..."}
+                      placeholder={
+                        t("vehicles.searchPlaceholder") ||
+                        "Search by car name, model, or type..."
+                      }
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className={`
                         pl-4 py-3 rounded-xl text-lg
-                        ${theme === 'light'
-                          ? 'border-gray-300 bg-white text-gray-900'
-                          : 'border-gray-600 bg-gray-700 text-white'
+                        ${
+                          theme === "light"
+                            ? "border-gray-300 bg-white text-gray-900"
+                            : "border-gray-600 bg-gray-700 text-white"
                         }
                       `}
                     />
@@ -360,31 +379,44 @@ export default function Vehicles() {
                 </div>
 
                 <div>
-                  <Label className={`
+                  <Label
+                    className={`
                     text-sm font-semibold mb-2 block
-                    ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
-                  `}>
+                    ${theme === "light" ? "text-gray-700" : "text-gray-300"}
+                  `}
+                  >
                     <Filter className="w-4 h-4 inline mr-2" />
                     {t("vehicles.vehicleType") || "Vehicle Type"}
                   </Label>
                   <Select value={selectedType} onValueChange={setSelectedType}>
-                    <SelectTrigger className={`
+                    <SelectTrigger
+                      className={`
                       rounded-xl py-3
-                      ${theme === 'light'
-                        ? 'border-gray-300 bg-white text-gray-900'
-                        : 'border-gray-600 bg-gray-700 text-white'
+                      ${
+                        theme === "light"
+                          ? "border-gray-300 bg-white text-gray-900"
+                          : "border-gray-600 bg-gray-700 text-white"
                       }
-                    `}>
-                      <SelectValue placeholder={t("vehicles.selectTypePlaceholder") || "Select type"} />
+                    `}
+                    >
+                      <SelectValue
+                        placeholder={
+                          t("vehicles.selectTypePlaceholder") || "Select type"
+                        }
+                      />
                     </SelectTrigger>
-                    <SelectContent className={`
-                      ${theme === 'light' ? 'bg-white' : 'bg-gray-800'}
-                    `}>
+                    <SelectContent
+                      className={`
+                      ${theme === "light" ? "bg-white" : "bg-gray-800"}
+                    `}
+                    >
                       {vehicleTypes.map((type) => (
-                        <SelectItem 
-                          key={type.value} 
+                        <SelectItem
+                          key={type.value}
                           value={type.value}
-                          className={theme === 'light' ? 'text-gray-900' : 'text-white'}
+                          className={
+                            theme === "light" ? "text-gray-900" : "text-white"
+                          }
                         >
                           {type.label}
                         </SelectItem>
@@ -394,21 +426,27 @@ export default function Vehicles() {
                 </div>
 
                 <div>
-                  <Label className={`
+                  <Label
+                    className={`
                     text-sm font-semibold mb-2 block
-                    ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
-                  `}>
-                    <span className={`
+                    ${theme === "light" ? "text-gray-700" : "text-gray-300"}
+                  `}
+                  >
+                    <span
+                      className={`
                       font-bold
-                      ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}
-                    `}>
+                      ${theme === "light" ? "text-blue-600" : "text-blue-400"}
+                    `}
+                    >
                       ${priceRange[0]}
                     </span>{" "}
                     -
-                    <span className={`
+                    <span
+                      className={`
                       font-bold
-                      ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}
-                    `}>
+                      ${theme === "light" ? "text-blue-600" : "text-blue-400"}
+                    `}
+                    >
                       {" "}
                       ${priceRange[1]}
                     </span>
@@ -425,13 +463,15 @@ export default function Vehicles() {
                       }
                       className={`
                         w-full h-2 rounded-lg appearance-none cursor-pointer slider
-                        ${theme === 'light' ? 'bg-gray-200' : 'bg-gray-600'}
+                        ${theme === "light" ? "bg-gray-200" : "bg-gray-600"}
                       `}
                     />
-                    <div className={`
+                    <div
+                      className={`
                       flex justify-between text-xs
-                      ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}
-                    `}>
+                      ${theme === "light" ? "text-gray-500" : "text-gray-400"}
+                    `}
+                    >
                       <span>$0</span>
                       <span>$100</span>
                       <span>$200</span>
@@ -501,43 +541,56 @@ export default function Vehicles() {
           className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
         >
           <div>
-            <h2 className={`
+            <h2
+              className={`
               text-3xl font-bold
-              ${theme === 'light' ? 'text-gray-800' : 'text-white'}
-            `}>
+              ${theme === "light" ? "text-gray-800" : "text-white"}
+            `}
+            >
               {t("vehicles.availableVehicles") || "Available Vehicles"}
             </h2>
-            <p className={`
+            <p
+              className={`
               mt-2
-              ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-            `}>
-              {filteredVehicles.length} {t("vehicles.vehiclesFound") || "vehicles found"}
+              ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+            `}
+            >
+              {filteredVehicles.length}{" "}
+              {t("vehicles.vehiclesFound") || "vehicles found"}
               {selectedType !== "all" &&
                 ` ${t("vehicles.inCategory") || "in"} ${
                   vehicleTypes.find((t) => t.value === selectedType)?.label
                 }`}
-              {searchTerm && ` ${t("vehicles.forSearch") || "for"} "${searchTerm}"`}
+              {searchTerm &&
+                ` ${t("vehicles.forSearch") || "for"} "${searchTerm}"`}
             </p>
           </div>
           <div className="flex items-center gap-4 mt-4 sm:mt-0">
             <Select defaultValue="featured">
-              <SelectTrigger className={`
+              <SelectTrigger
+                className={`
                 w-[180px] rounded-xl
-                ${theme === 'light'
-                  ? 'border-gray-300 bg-white text-gray-900'
-                  : 'border-gray-600 bg-gray-700 text-white'
+                ${
+                  theme === "light"
+                    ? "border-gray-300 bg-white text-gray-900"
+                    : "border-gray-600 bg-gray-700 text-white"
                 }
-              `}>
+              `}
+              >
                 <SelectValue placeholder={t("vehicles.sortBy") || "Sort by"} />
               </SelectTrigger>
-              <SelectContent className={`
-                ${theme === 'light' ? 'bg-white' : 'bg-gray-800'}
-              `}>
+              <SelectContent
+                className={`
+                ${theme === "light" ? "bg-white" : "bg-gray-800"}
+              `}
+              >
                 {sortOptions.map((option) => (
-                  <SelectItem 
-                    key={option.value} 
+                  <SelectItem
+                    key={option.value}
                     value={option.value}
-                    className={theme === 'light' ? 'text-gray-900' : 'text-white'}
+                    className={
+                      theme === "light" ? "text-gray-900" : "text-white"
+                    }
                   >
                     {option.label}
                   </SelectItem>
@@ -553,21 +606,28 @@ export default function Vehicles() {
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <Car className={`
+            <Car
+              className={`
               w-16 h-16 mx-auto mb-4
-              ${theme === 'light' ? 'text-gray-400' : 'text-gray-600'}
-            `} />
-            <h3 className={`
+              ${theme === "light" ? "text-gray-400" : "text-gray-600"}
+            `}
+            />
+            <h3
+              className={`
               text-xl font-semibold mb-2
-              ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-            `}>
+              ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+            `}
+            >
               {t("vehicles.noVehiclesFound") || "No vehicles found"}
             </h3>
-            <p className={`
+            <p
+              className={`
               mb-4
-              ${theme === 'light' ? 'text-gray-500' : 'text-gray-500'}
-            `}>
-              {t("vehicles.adjustFilters") || "Try adjusting your search filters"}
+              ${theme === "light" ? "text-gray-500" : "text-gray-500"}
+            `}
+            >
+              {t("vehicles.adjustFilters") ||
+                "Try adjusting your search filters"}
             </p>
             <Button
               onClick={() => {
@@ -594,9 +654,10 @@ export default function Vehicles() {
                 transition={{ duration: 0.3 }}
                 className={`
                   rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300
-                  ${theme === 'light'
-                    ? 'bg-white border border-gray-100'
-                    : 'bg-gray-800 border border-gray-700'
+                  ${
+                    theme === "light"
+                      ? "bg-white border border-gray-100"
+                      : "bg-gray-800 border border-gray-700"
                   }
                 `}
               >
@@ -610,46 +671,57 @@ export default function Vehicles() {
                     onClick={() => toggleFavorite(vehicle.id)}
                     className={`
                       absolute top-3 right-3 p-2 rounded-full hover:bg-white transition-colors shadow-lg backdrop-blur-sm
-                      ${theme === 'light' ? 'bg-white/90' : 'bg-gray-800/90'}
+                      ${theme === "light" ? "bg-white/90" : "bg-gray-800/90"}
                     `}
                   >
                     <Heart
                       className={`w-5 h-5 transition-colors ${
                         vehicle.favorite
                           ? "fill-red-500 text-red-500"
-                          : theme === 'light' 
-                            ? "text-gray-600 hover:text-red-500" 
-                            : "text-gray-400 hover:text-red-500"
+                          : theme === "light"
+                          ? "text-gray-600 hover:text-red-500"
+                          : "text-gray-400 hover:text-red-500"
                       }`}
                     />
                   </button>
                   <div className="absolute top-3 left-3">
-                    <span className={`
+                    <span
+                      className={`
                       px-3 py-1 rounded-full text-xs font-semibold shadow-lg
-                      ${theme === 'light'
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-blue-600 text-white'
+                      ${
+                        theme === "light"
+                          ? "bg-blue-500 text-white"
+                          : "bg-blue-600 text-white"
                       }
-                    `}>
-                      {vehicleTypes.find(t => t.value === vehicle.type)?.label || 
-                       vehicle.type.charAt(0).toUpperCase() + vehicle.type.slice(1)}
+                    `}
+                    >
+                      {vehicleTypes.find((t) => t.value === vehicle.type)
+                        ?.label ||
+                        vehicle.type.charAt(0).toUpperCase() +
+                          vehicle.type.slice(1)}
                     </span>
                   </div>
-                  <div className={`
+                  <div
+                    className={`
                     absolute bottom-3 left-3 rounded-full px-3 py-1 flex items-center gap-1 shadow-lg backdrop-blur-sm
-                    ${theme === 'light' ? 'bg-white/90' : 'bg-gray-800/90'}
-                  `}>
+                    ${theme === "light" ? "bg-white/90" : "bg-gray-800/90"}
+                  `}
+                  >
                     <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                    <span className={`
+                    <span
+                      className={`
                       font-semibold text-sm
-                      ${theme === 'light' ? 'text-gray-800' : 'text-white'}
-                    `}>
+                      ${theme === "light" ? "text-gray-800" : "text-white"}
+                    `}
+                    >
                       {vehicle.rating}
                     </span>
-                    <span className={`
+                    <span
+                      className={`
                       text-sm
-                      ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}
-                    `}>
+                      ${theme === "light" ? "text-gray-500" : "text-gray-400"}
+                    `}
+                    >
                       ({vehicle.reviews})
                     </span>
                   </div>
@@ -658,55 +730,72 @@ export default function Vehicles() {
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">
-                      <h3 className={`
+                      <h3
+                        className={`
                         font-bold text-lg mb-1
-                        ${theme === 'light' ? 'text-gray-800' : 'text-white'}
-                      `}>
+                        ${theme === "light" ? "text-gray-800" : "text-white"}
+                      `}
+                      >
                         {vehicle.name}
                       </h3>
-                      <p className={`
+                      <p
+                        className={`
                         text-sm
-                        ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}
-                      `}>
+                        ${theme === "light" ? "text-gray-500" : "text-gray-400"}
+                      `}
+                      >
                         {t("vehicles.perDay") || "Per day"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className={`
+                      <span
+                        className={`
                         text-2xl font-bold
-                        ${theme === 'light' ? 'text-blue-600' : 'text-blue-400'}
-                      `}>
+                        ${theme === "light" ? "text-blue-600" : "text-blue-400"}
+                      `}
+                      >
                         ${vehicle.price}
                       </span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className={`
+                    <div
+                      className={`
                       flex items-center gap-2 text-sm
-                      ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-                    `}>
+                      ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                    `}
+                    >
                       <Users className="w-4 h-4" />
-                      <span>{vehicle.specs.passengers} {t("vehicles.passengers") || "Pass"}</span>
+                      <span>
+                        {vehicle.specs.passengers}{" "}
+                        {t("vehicles.passengers") || "Pass"}
+                      </span>
                     </div>
-                    <div className={`
+                    <div
+                      className={`
                       flex items-center gap-2 text-sm
-                      ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-                    `}>
+                      ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                    `}
+                    >
                       <Fuel className="w-4 h-4" />
                       <span>{vehicle.specs.fuel}</span>
                     </div>
-                    <div className={`
+                    <div
+                      className={`
                       flex items-center gap-2 text-sm
-                      ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-                    `}>
+                      ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                    `}
+                    >
                       <Gauge className="w-4 h-4" />
                       <span>{vehicle.specs.transmission}</span>
                     </div>
-                    <div className={`
+                    <div
+                      className={`
                       flex items-center gap-2 text-sm
-                      ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-                    `}>
+                      ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                    `}
+                    >
                       <Clock className="w-4 h-4" />
                       <span>{vehicle.specs.mileage}</span>
                     </div>
@@ -718,9 +807,10 @@ export default function Vehicles() {
                         key={index}
                         className={`
                           px-2 py-1 rounded-full text-xs font-medium
-                          ${theme === 'light'
-                            ? 'bg-gray-100 text-gray-700'
-                            : 'bg-gray-700 text-gray-300'
+                          ${
+                            theme === "light"
+                              ? "bg-gray-100 text-gray-700"
+                              : "bg-gray-700 text-gray-300"
                           }
                         `}
                       >
@@ -728,40 +818,37 @@ export default function Vehicles() {
                       </span>
                     ))}
                     {vehicle.features.length > 3 && (
-                      <span className={`
+                      <span
+                        className={`
                         px-2 py-1 rounded-full text-xs font-medium
-                        ${theme === 'light'
-                          ? 'bg-gray-100 text-gray-700'
-                          : 'bg-gray-700 text-gray-300'
+                        ${
+                          theme === "light"
+                            ? "bg-gray-100 text-gray-700"
+                            : "bg-gray-700 text-gray-300"
                         }
-                      `}>
-                        +{vehicle.features.length - 3} {t("vehicles.more") || "more"}
+                      `}
+                      >
+                        +{vehicle.features.length - 3}{" "}
+                        {t("vehicles.more") || "more"}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button className={`
-                      flex-1 rounded-xl py-3 font-semibold
-                      ${theme === 'light'
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : 'bg-blue-700 hover:bg-blue-800 text-white'
+                  <div>
+                    <Link to="/sign">
+                      <Button
+                        className={`
+                       rounded-xl py-3 font-semibold w-full
+                      ${
+                        theme === "light"
+                          ? "bg-blue-600 hover:bg-blue-700 text-white"
+                          : "bg-blue-700 hover:bg-blue-800 text-white"
                       }
-                    `}>
-                      {t("vehicles.bookNow") || "Book Now"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className={`
-                        flex-1 rounded-xl py-3 px-4
-                        ${theme === 'light'
-                          ? 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                          : 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                        }
-                      `}
-                    >
-                      {t("vehicles.details") || "Details"}
-                    </Button>
+                    `}
+                      >
+                        {t("vehicles.bookNow") || "Book Now"}
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </motion.div>
@@ -771,19 +858,22 @@ export default function Vehicles() {
 
         {filteredVehicles.length > 0 && (
           <div className="text-center mt-12">
-            <Button
-              variant="outline"
-              className={`
+            <Link to="/sign">
+              <Button
+                variant="outline"
+                className={`
                 rounded-2xl px-8 py-3 font-semibold
-                ${theme === 'light'
-                  ? 'border-blue-600 text-blue-600 hover:bg-blue-50'
-                  : 'border-blue-400 text-blue-400 hover:bg-blue-900/20'
+                ${
+                  theme === "light"
+                    ? "border-blue-600 text-blue-600 hover:bg-blue-50"
+                    : "border-blue-400 text-blue-400 hover:bg-blue-900/20"
                 }
               `}
-            >
-              {t("vehicles.loadMore") || "Load More Vehicles"}
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
+              >
+                {t("vehicles.loadMore") || "Load More Vehicles"}
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
           </div>
         )}
       </div>
@@ -794,9 +884,10 @@ export default function Vehicles() {
           whileInView={{ opacity: 1, y: 0 }}
           className={`
             rounded-3xl p-8 text-white shadow-2xl
-            ${theme === 'light'
-              ? 'bg-gradient-to-r from-blue-600 to-purple-600'
-              : 'bg-gradient-to-r from-blue-700 to-purple-700'
+            ${
+              theme === "light"
+                ? "bg-gradient-to-r from-blue-600 to-purple-600"
+                : "bg-gradient-to-r from-blue-700 to-purple-700"
             }
           `}
         >
@@ -806,8 +897,13 @@ export default function Vehicles() {
               <h3 className="text-xl font-bold mb-2">
                 {t("vehicles.benefits.insured.title") || "Fully Insured"}
               </h3>
-              <p className={theme === 'light' ? 'text-blue-100' : 'text-gray-200'}>
-                {t("vehicles.benefits.insured.description") || "Comprehensive coverage for complete peace of mind"}
+              <p
+                className={
+                  theme === "light" ? "text-blue-100" : "text-gray-200"
+                }
+              >
+                {t("vehicles.benefits.insured.description") ||
+                  "Comprehensive coverage for complete peace of mind"}
               </p>
             </div>
             <div className="text-center">
@@ -815,8 +911,13 @@ export default function Vehicles() {
               <h3 className="text-xl font-bold mb-2">
                 {t("vehicles.benefits.support.title") || "24/7 Support"}
               </h3>
-              <p className={theme === 'light' ? 'text-blue-100' : 'text-gray-200'}>
-                {t("vehicles.benefits.support.description") || "Round-the-clock assistance whenever you need it"}
+              <p
+                className={
+                  theme === "light" ? "text-blue-100" : "text-gray-200"
+                }
+              >
+                {t("vehicles.benefits.support.description") ||
+                  "Round-the-clock assistance whenever you need it"}
               </p>
             </div>
             <div className="text-center">
@@ -824,8 +925,13 @@ export default function Vehicles() {
               <h3 className="text-xl font-bold mb-2">
                 {t("vehicles.benefits.price.title") || "Best Price Guarantee"}
               </h3>
-              <p className={theme === 'light' ? 'text-blue-100' : 'text-gray-200'}>
-                {t("vehicles.benefits.price.description") || "Find a better price? We'll match it!"}
+              <p
+                className={
+                  theme === "light" ? "text-blue-100" : "text-gray-200"
+                }
+              >
+                {t("vehicles.benefits.price.description") ||
+                  "Find a better price? We'll match it!"}
               </p>
             </div>
           </div>
@@ -838,17 +944,22 @@ export default function Vehicles() {
           whileInView={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h2 className={`
+          <h2
+            className={`
             text-3xl md:text-4xl font-bold mb-4
-            ${theme === 'light' ? 'text-gray-800' : 'text-white'}
-          `}>
+            ${theme === "light" ? "text-gray-800" : "text-white"}
+          `}
+          >
             {t("vehicles.trustedBrands.title") || "Trusted by Leading Brands"}
           </h2>
-          <p className={`
+          <p
+            className={`
             text-lg max-w-2xl mx-auto
-            ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
-          `}>
-            {t("vehicles.trustedBrands.subtitle") || "We partner with the world's most reputable automotive manufacturers to bring you the best vehicles"}
+            ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+          `}
+          >
+            {t("vehicles.trustedBrands.subtitle") ||
+              "We partner with the world's most reputable automotive manufacturers to bring you the best vehicles"}
           </p>
         </motion.div>
 
@@ -867,9 +978,10 @@ export default function Vehicles() {
               whileHover={{ scale: 1.1, y: -5 }}
               className={`
                 flex items-center justify-center p-4 rounded-2xl shadow-lg border hover:shadow-xl transition-all duration-300
-                ${theme === 'light'
-                  ? 'bg-white border-gray-100'
-                  : 'bg-gray-800 border-gray-700'
+                ${
+                  theme === "light"
+                    ? "bg-white border-gray-100"
+                    : "bg-gray-800 border-gray-700"
                 }
               `}
             >
@@ -882,51 +994,61 @@ export default function Vehicles() {
           ))}
         </motion.div>
       </div>
-
-      {/* CTA Section */}
       <div className="max-w-7xl mx-auto px-8 my-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           className={`
             rounded-3xl p-12 text-center text-white shadow-2xl
-            ${theme === 'light'
-              ? 'bg-gradient-to-r from-orange-500 to-red-500'
-              : 'bg-gradient-to-r from-orange-600 to-red-600'
+            ${
+              theme === "light"
+                ? "bg-gradient-to-r from-orange-500 to-red-500"
+                : "bg-gradient-to-r from-orange-600 to-red-600"
             }
           `}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {t("vehicles.cta.title") || "Ready to Find Your Perfect Car?"}
           </h2>
-          <p className={`
+          <p
+            className={`
             text-lg mb-8 max-w-2xl mx-auto
-            ${theme === 'light' ? 'text-orange-100' : 'text-gray-200'}
-          `}>
-            {t("vehicles.cta.subtitle") || "Browse our extensive collection of premium vehicles and book your dream car today. Experience the best in car rental services."}
+            ${theme === "light" ? "text-orange-100" : "text-gray-200"}
+          `}
+          >
+            {t("vehicles.cta.subtitle") ||
+              "Browse our extensive collection of premium vehicles and book your dream car today. Experience the best in car rental services."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className={`
+            <Link to="/sign">
+              <Button
+                className={`
               font-bold rounded-2xl px-8 py-3 text-lg
-              ${theme === 'light'
-                ? 'bg-white text-orange-600 hover:bg-gray-100'
-                : 'bg-white text-orange-700 hover:bg-gray-100'
+              ${
+                theme === "light"
+                  ? "bg-white text-orange-600 hover:bg-gray-100"
+                  : "bg-white text-orange-700 hover:bg-gray-100"
               }
-            `}>
-              {t("vehicles.cta.primaryButton") || "Browse All Vehicles"}
-            </Button>
-            <Button
-              variant="outline"
-              className={`
+            `}
+              >
+                {t("vehicles.cta.primaryButton") || "Browse All Vehicles"}
+              </Button>
+            </Link>
+            <Link to="/contact">
+              <Button
+                variant="outline"
+                className={`
                 rounded-2xl px-8 py-3 text-lg
-                ${theme === 'light'
-                  ? 'border-white text-white hover:bg-white hover:text-orange-600'
-                  : 'border-white text-white hover:bg-white hover:text-orange-700'
+                ${
+                  theme === "light"
+                    ? "border-white text-white hover:bg-white hover:text-orange-600"
+                    : "border-white text-white hover:bg-white hover:text-orange-700"
                 }
               `}
-            >
-              {t("vehicles.cta.secondaryButton") || "Contact Sales"}
-            </Button>
+              >
+                {t("vehicles.cta.secondaryButton") || "Contact Sales"}
+              </Button>
+            </Link>
           </div>
         </motion.div>
       </div>
