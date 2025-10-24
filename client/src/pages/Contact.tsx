@@ -2,10 +2,12 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useTheme } from "../components/ThemeContext";
 import { useLanguage } from "../components/LanguageContext";
+import { toast } from "sonner";
 
 export default function Contact() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,7 +38,7 @@ export default function Contact() {
     {
       icon: "📍",
       title: t("contact.address") || "Address",
-      details: "Gondar,Maraki",
+      details: "Gondar, Maraki",
       description: t("contact.addressDesc") || "Visit our main office",
       gradient: "from-green-500 to-emerald-500",
       bgColor: "bg-green-500/10",
@@ -54,37 +56,76 @@ export default function Contact() {
   const faqs = [
     {
       question: t("contact.faq1q") || "How quickly can I get a response?",
-      answer: t("contact.faq1a") || "We typically respond within 2 hours during business hours and within 12 hours for after-hours inquiries.",
+      answer:
+        t("contact.faq1a") ||
+        "We typically respond within 2 hours during business hours and within 12 hours for after-hours inquiries.",
     },
     {
       question: t("contact.faq2q") || "What's your cancellation policy?",
-      answer: t("contact.faq2a") || "You can cancel your booking up to 24 hours before pickup for a full refund. Late cancellations may incur a small fee.",
+      answer:
+        t("contact.faq2a") ||
+        "You can cancel your booking up to 24 hours before pickup for a full refund. Late cancellations may incur a small fee.",
     },
     {
       question: t("contact.faq3q") || "Do you offer long-term rentals?",
-      answer: t("contact.faq3a") || "Yes! We offer special rates for weekly and monthly rentals. Contact us for custom long-term rental packages.",
+      answer:
+        t("contact.faq3a") ||
+        "Yes! We offer special rates for weekly and monthly rentals. Contact us for custom long-term rental packages.",
     },
     {
       question: t("contact.faq4q") || "What payment methods do you accept?",
-      answer: t("contact.faq4a") || "We accept all major credit cards, PayPal, and bank transfers. Corporate accounts are also available.",
+      answer:
+        t("contact.faq4a") ||
+        "We accept all major credit cards, PayPal, and bank transfers. Corporate accounts are also available.",
     },
   ];
 
-  const handleInputChange = (e: { target: { name: any; value: any } }) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch("http://localhost:3000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Message Sent Successfully!");
+
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        
+        toast.error("Failed to Send Message");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Network Error");
+    } finally {
       setIsSubmitting(false);
-      console.log("Form submitted:", formData);
-    }, 2000);
+    }
   };
 
   const toggleFAQ = (index: number) => {
@@ -102,9 +143,9 @@ export default function Contact() {
       }
     `}
     >
-
+     
+     
       <div className="relative h-[500px] rounded-b-3xl overflow-hidden">
-      
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -121,7 +162,7 @@ export default function Contact() {
               transition={{ duration: 0.7 }}
             >
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-               {t("contact.title")}
+                {t("contact.title") || "Get in Touch"}
               </h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -129,10 +170,10 @@ export default function Contact() {
                 transition={{ delay: 0.2 }}
                 className="text-xl text-gray-200 mb-8 max-w-2xl"
               >
-                {t("contact.subtitle") || "Have questions? We're here to help. Get in touch with our team and let's discuss how we can assist you."}
+                {t("contact.subtitle") ||
+                  "Have questions? We're here to help. Get in touch with our team and let's discuss how we can assist you."}
               </motion.p>
 
-         
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -155,9 +196,7 @@ export default function Contact() {
                     <div className="text-2xl md:text-3xl font-bold text-white mb-1">
                       {stat.number}
                     </div>
-                    <div className="text-sm text-gray-300">
-                      {stat.label}
-                    </div>
+                    <div className="text-sm text-gray-300">{stat.label}</div>
                   </motion.div>
                 ))}
               </motion.div>
@@ -166,7 +205,7 @@ export default function Contact() {
         </div>
       </div>
 
- 
+   
       <section className="py-20 px-6 relative -mt-20">
         <div className="max-w-7xl mx-auto">
        
@@ -177,10 +216,10 @@ export default function Contact() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
-                whileHover={{ 
-                  y: -8, 
+                whileHover={{
+                  y: -8,
                   scale: 1.02,
-                  boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)"
+                  boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)",
                 }}
                 className={`
                   rounded-3xl p-8 text-center backdrop-blur-sm border-2 transition-all duration-300 relative overflow-hidden group
@@ -191,25 +230,23 @@ export default function Contact() {
                   }
                 `}
               >
-           
                 <motion.div
                   className={`absolute inset-0 bg-gradient-to-br ${method.gradient} opacity-0`}
                   whileHover={{ opacity: 0.05 }}
                   transition={{ duration: 0.3 }}
                 />
 
-      
                 <motion.div
                   className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br ${method.gradient} text-white text-3xl mb-6 mx-auto shadow-2xl relative overflow-hidden`}
-                  whileHover={{ 
-                    scale: 1.15, 
+                  whileHover={{
+                    scale: 1.15,
                     rotate: [0, -5, 5, 0],
-                    boxShadow: `0 15px 30px -5px rgba(0,0,0,0.3)`
+                    boxShadow: `0 15px 30px -5px rgba(0,0,0,0.3)`,
                   }}
-                  transition={{ 
-                    type: "spring", 
+                  transition={{
+                    type: "spring",
                     stiffness: 300,
-                    rotate: { duration: 0.5 }
+                    rotate: { duration: 0.5 },
                   }}
                 >
                   {method.icon}
@@ -219,6 +256,7 @@ export default function Contact() {
                     transition={{ duration: 0.3 }}
                   />
                 </motion.div>
+
                 <h3
                   className={`
                   text-xl font-bold mb-3 relative z-10
@@ -246,26 +284,25 @@ export default function Contact() {
                   {method.description}
                 </p>
 
-             
                 <motion.div
                   className={`absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-br ${method.gradient} opacity-20`}
-                  animate={{ 
+                  animate={{
                     scale: [1, 1.5, 1],
-                    opacity: [0.2, 0.4, 0.2]
+                    opacity: [0.2, 0.4, 0.2],
                   }}
-                  transition={{ 
-                    duration: 3, 
+                  transition={{
+                    duration: 3,
                     repeat: Infinity,
-                    delay: index * 0.5
+                    delay: index * 0.5,
                   }}
                 />
               </motion.div>
             ))}
           </div>
 
-     
+         
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-   
+           
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -279,7 +316,7 @@ export default function Contact() {
                 }
               `}
             >
-      
+             
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-2xl"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500 rounded-full blur-2xl"></div>
@@ -294,8 +331,13 @@ export default function Contact() {
                 >
                   {t("contact.formTitle") || "Send us a Message"}
                 </h2>
-                <p className={`mb-8 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
-                  Fill out the form below and we'll get back to you as soon as possible.
+                <p
+                  className={`mb-8 ${
+                    theme === "light" ? "text-gray-600" : "text-gray-400"
+                  }`}
+                >
+                  Fill out the form below and we'll get back to you as soon as
+                  possible.
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -323,7 +365,9 @@ export default function Contact() {
                               : "bg-gray-700 border-gray-600 text-white focus:border-blue-400 placeholder-gray-500"
                           }
                         `}
-                        placeholder={t("contact.namePlaceholder") || "Enter your full name"}
+                        placeholder={
+                          t("contact.namePlaceholder") || "Enter your full name"
+                        }
                       />
                     </div>
 
@@ -350,7 +394,9 @@ export default function Contact() {
                               : "bg-gray-700 border-gray-600 text-white focus:border-blue-400 placeholder-gray-500"
                           }
                         `}
-                        placeholder={t("contact.emailPlaceholder") || "your@email.com"}
+                        placeholder={
+                          t("contact.emailPlaceholder") || "your@email.com"
+                        }
                       />
                     </div>
                   </div>
@@ -378,7 +424,9 @@ export default function Contact() {
                               : "bg-gray-700 border-gray-600 text-white focus:border-blue-400 placeholder-gray-500"
                           }
                         `}
-                        placeholder={t("contact.phonePlaceholder") || "+1 (555) 000-0000"}
+                        placeholder={
+                          t("contact.phonePlaceholder") || "+1 (555) 000-0000"
+                        }
                       />
                     </div>
 
@@ -405,10 +453,18 @@ export default function Contact() {
                           }
                         `}
                       >
-                        <option value="">{t("contact.selectSubject") || "Select a subject"}</option>
-                        <option value="general">{t("contact.general") || "General Inquiry"}</option>
-                        <option value="booking">{t("contact.booking") || "Booking Assistance"}</option>
-                        <option value="support">{t("contact.support") || "Technical Support"}</option>
+                        <option value="">
+                          {t("contact.selectSubject") || "Select a subject"}
+                        </option>
+                        <option value="general">
+                          {t("contact.general") || "General Inquiry"}
+                        </option>
+                        <option value="booking">
+                          {t("contact.booking") || "Booking Assistance"}
+                        </option>
+                        <option value="support">
+                          {t("contact.support") || "Technical Support"}
+                        </option>
                         <option value="complaint">
                           {t("contact.complaint") || "Complaint"}
                         </option>
@@ -442,7 +498,10 @@ export default function Contact() {
                             : "bg-gray-700 border-gray-600 text-white focus:border-blue-400 placeholder-gray-500"
                         }
                       `}
-                      placeholder={t("contact.messagePlaceholder") || "Tell us how we can help you..."}
+                      placeholder={
+                        t("contact.messagePlaceholder") ||
+                        "Tell us how we can help you..."
+                      }
                     ></textarea>
                   </div>
 
@@ -492,14 +551,12 @@ export default function Contact() {
               </div>
             </motion.div>
 
-        
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               className="space-y-8"
             >
-           
               <div
                 className={`
                 rounded-3xl overflow-hidden backdrop-blur-sm border-2 relative
@@ -510,14 +567,17 @@ export default function Contact() {
                 }
               `}
               >
-                <div className="h-80 bg-cover bg-center relative" style={{ backgroundImage: "url('/show-room.jpg')" }}>
+                <div
+                  className="h-80 bg-cover bg-center relative"
+                  style={{ backgroundImage: "url('/show-room.jpg')" }}
+                >
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 text-white">
                     <h3 className="text-2xl font-bold mb-2">
                       {t("contact.visitUs") || "Visit Our Office"}
                     </h3>
                     <p className="text-blue-100 text-lg">
-                     Gondar, Maraki,Kebele 18
+                      Gondar, Maraki, Kebele 18
                     </p>
                     <p className="text-gray-300 mt-2">
                       🕒 Mon - Fri: 2:00 AM - 11:00 AM LT
@@ -526,7 +586,6 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* FAQ Section */}
               <div
                 className={`
                 rounded-3xl p-8 backdrop-blur-sm border-2
@@ -545,7 +604,11 @@ export default function Contact() {
                 >
                   {t("contact.faqTitle") || "Frequently Asked Questions"}
                 </h3>
-                <p className={`mb-6 ${theme === "light" ? "text-gray-600" : "text-gray-400"}`}>
+                <p
+                  className={`mb-6 ${
+                    theme === "light" ? "text-gray-600" : "text-gray-400"
+                  }`}
+                >
                   Quick answers to common questions
                 </p>
 
@@ -563,7 +626,7 @@ export default function Contact() {
                             ? "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:border-blue-300"
                             : "bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-800 hover:border-blue-600"
                         }
-                        ${activeFAQ === index ? 'ring-2 ring-blue-500/30' : ''}
+                        ${activeFAQ === index ? "ring-2 ring-blue-500/30" : ""}
                       `}
                       onClick={() => toggleFAQ(index)}
                     >
@@ -586,9 +649,9 @@ export default function Contact() {
                       </div>
                       <motion.div
                         initial={false}
-                        animate={{ 
-                          height: activeFAQ === index ? 'auto' : 0,
-                          opacity: activeFAQ === index ? 1 : 0 
+                        animate={{
+                          height: activeFAQ === index ? "auto" : 0,
+                          opacity: activeFAQ === index ? 1 : 0,
                         }}
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden"
@@ -596,7 +659,11 @@ export default function Contact() {
                         <p
                           className={`
                           mt-3 text-sm leading-relaxed
-                          ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                          ${
+                            theme === "light"
+                              ? "text-gray-600"
+                              : "text-gray-400"
+                          }
                         `}
                         >
                           {faq.answer}
