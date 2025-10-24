@@ -20,7 +20,7 @@ export default function Contact() {
     {
       icon: "📞",
       title: t("contact.phone") || "Phone",
-      details: "09090909090",
+      details: "0982533682",
       description: t("contact.phoneDesc") || "Mon-Sun, 24/7 Support",
       gradient: "from-blue-500 to-cyan-500",
       bgColor: "bg-blue-500/10",
