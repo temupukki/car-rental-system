@@ -1,14 +1,29 @@
 import { Link } from "react-router-dom";
-import { Users, DollarSign, HelpCircle, Settings, Car, ReceiptText } from "lucide-react";
+import { Users, HelpCircle, ReceiptText } from "lucide-react";
 
 export default function Admin() {
   const links = [
-    { name: "Manage Users", icon: <Users className="w-6 h-6" />, to: "/dashboard/admin/user" },
-    { name: "Orders", icon: <ReceiptText  className="w-6 h-6" />, to: "/dashboard/admin/orders" },
-    { name: "Manage Cars", icon: <Car className="w-6 h-6" />, to: "/dashboard/admin/manage" },
+    {
+      name: "Manage Users",
+      icon: <Users className="w-6 h-6" />,
+      to: "/dashboard/admin/user",
+    },
+    {
+      name: "Orders",
+      icon: <ReceiptText className="w-6 h-6" />,
+      to: "/dashboard/admin/orders",
+    },
+    {
+      name: "Manage Cars",
+      icon: <Car className="w-6 h-6" />,
+      to: "/dashboard/admin/manage",
+    },
 
-    { name: "Customer Requests", icon: <HelpCircle className="w-6 h-6" />, to: "/dashboard/admin/request" },
-  
+    {
+      name: "Customer Requests",
+      icon: <HelpCircle className="w-6 h-6" />,
+      to: "/dashboard/admin/request",
+    },
   ];
 
   return (

@@ -1,52 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Search, 
-  Filter, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Car, 
-  DollarSign, 
-  Package, 
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Car,
+  DollarSign,
+  Package,
   MapPin,
   Users,
   Fuel,
-  Settings,
-  Eye,
   EyeOff,
   RefreshCw,
   AlertTriangle,
   CheckCircle,
   X,
-  BarChart3,
   Camera,
-  Upload,
   Save,
-  Image as ImageIcon
-} from 'lucide-react';
-import type { Vehicle, VehicleType, CreateVehicleInput, ApiResponse } from '../types/vehicle';
+} from "lucide-react";
+import type { Vehicle, VehicleType, ApiResponse } from "../types/vehicle";
 
 const fuelTypes: string[] = [
   "Gasoline",
-  "Diesel", 
+  "Diesel",
   "Electric",
   "Hybrid",
-  "Plug-in Hybrid"
+  "Plug-in Hybrid",
 ];
 
-const transmissionTypes: string[] = [
-  "Automatic",
-  "Manual",
-  "CVT"
-];
+const transmissionTypes: string[] = ["Automatic", "Manual", "CVT"];
 
 const vehicleTypes: VehicleType[] = [
-  "SEDAN", "SUV", "LUXURY", "SPORTS", "COMPACT", "VAN"
+  "SEDAN",
+  "SUV",
+  "LUXURY",
+  "SPORTS",
+  "COMPACT",
+  "VAN",
 ];
 
 interface StockStatus {
-  status: 'out-of-stock' | 'low-stock' | 'in-stock';
+  status: "out-of-stock" | "low-stock" | "in-stock";
   color: string;
   bg: string;
   text: string;
@@ -55,60 +50,63 @@ interface StockStatus {
 const AdminManageCars: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filterType, setFilterType] = useState<string>('');
-  const [availabilityFilter, setAvailabilityFilter] = useState<string>('all');
-  const [stockFilter, setStockFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("");
+  const [availabilityFilter, setAvailabilityFilter] = useState<string>("all");
+  const [stockFilter, setStockFilter] = useState<string>("all");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
-  const [sortBy, setSortBy] = useState<string>('name');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [imagePreview, setImagePreview] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
-  const [newFeature, setNewFeature] = useState<string>('');
-  const [newImageUrl, setNewImageUrl] = useState<string>('');
+  const [newFeature, setNewFeature] = useState<string>("");
+  const [newImageUrl, setNewImageUrl] = useState<string>("");
   const [stats, setStats] = useState({
     total: 0,
     available: 0,
     unavailable: 0,
     lowStock: 0,
     outOfStock: 0,
-    totalValue: 0
+    totalValue: 0,
   });
 
-  const API_BASE_URL = 'http://localhost:3000/api';
+  const API_BASE_URL = "http://localhost:3000/api";
 
   const fetchVehicles = async (): Promise<void> => {
     try {
       setLoading(true);
-      setError('');
-      
+      setError("");
+
       const response = await fetch(`${API_BASE_URL}/vehicles/all`, {
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        credentials: 'include'
+        credentials: "include",
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result: ApiResponse<Vehicle[]> = await response.json();
-      
+
       if (result.success && result.data) {
         setVehicles(result.data);
         calculateStats(result.data);
       } else {
-        throw new Error(result.error || 'Failed to fetch vehicles');
+        throw new Error(result.error || "Failed to fetch vehicles");
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching vehicles';
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching vehicles";
       setError(errorMessage);
-      console.error('Error fetching vehicles:', err);
+      console.error("Error fetching vehicles:", err);
     } finally {
       setLoading(false);
     }
@@ -116,11 +114,16 @@ const AdminManageCars: React.FC = () => {
 
   const calculateStats = (vehiclesData: Vehicle[]): void => {
     const total = vehiclesData.length;
-    const available = vehiclesData.filter(v => v.isAvailable).length;
-    const unavailable = vehiclesData.filter(v => !v.isAvailable).length;
-    const lowStock = vehiclesData.filter(v => v.stock > 0 && v.stock <= 3).length;
-    const outOfStock = vehiclesData.filter(v => v.stock === 0).length;
-    const totalValue = vehiclesData.reduce((sum, vehicle) => sum + (vehicle.pricePerDay * vehicle.stock), 0);
+    const available = vehiclesData.filter((v) => v.isAvailable).length;
+    const unavailable = vehiclesData.filter((v) => !v.isAvailable).length;
+    const lowStock = vehiclesData.filter(
+      (v) => v.stock > 0 && v.stock <= 3
+    ).length;
+    const outOfStock = vehiclesData.filter((v) => v.stock === 0).length;
+    const totalValue = vehiclesData.reduce(
+      (sum, vehicle) => sum + vehicle.pricePerDay * vehicle.stock,
+      0
+    );
 
     setStats({
       total,
@@ -128,7 +131,7 @@ const AdminManageCars: React.FC = () => {
       unavailable,
       lowStock,
       outOfStock,
-      totalValue
+      totalValue,
     });
   };
 
@@ -137,65 +140,77 @@ const AdminManageCars: React.FC = () => {
   }, []);
 
   const filteredVehicles: Vehicle[] = vehicles
-    .filter(vehicle => {
-      const matchesSearch = 
+    .filter((vehicle) => {
+      const matchesSearch =
         vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         vehicle.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
         vehicle.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
         vehicle.location?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesType = !filterType || vehicle.type === filterType;
-      
-      const matchesAvailability = 
-        availabilityFilter === 'all' || 
-        (availabilityFilter === 'available' && vehicle.isAvailable) ||
-        (availabilityFilter === 'unavailable' && !vehicle.isAvailable);
-      
-      const matchesStock = 
-        stockFilter === 'all' ||
-        (stockFilter === 'in-stock' && vehicle.stock > 0) ||
-        (stockFilter === 'low-stock' && vehicle.stock > 0 && vehicle.stock <= 3) ||
-        (stockFilter === 'out-of-stock' && vehicle.stock === 0);
-      
-      const matchesPrice = 
-        vehicle.pricePerDay >= priceRange[0] && 
+
+      const matchesAvailability =
+        availabilityFilter === "all" ||
+        (availabilityFilter === "available" && vehicle.isAvailable) ||
+        (availabilityFilter === "unavailable" && !vehicle.isAvailable);
+
+      const matchesStock =
+        stockFilter === "all" ||
+        (stockFilter === "in-stock" && vehicle.stock > 0) ||
+        (stockFilter === "low-stock" &&
+          vehicle.stock > 0 &&
+          vehicle.stock <= 3) ||
+        (stockFilter === "out-of-stock" && vehicle.stock === 0);
+
+      const matchesPrice =
+        vehicle.pricePerDay >= priceRange[0] &&
         vehicle.pricePerDay <= priceRange[1];
 
-      return matchesSearch && matchesType && matchesAvailability && matchesStock && matchesPrice;
+      return (
+        matchesSearch &&
+        matchesType &&
+        matchesAvailability &&
+        matchesStock &&
+        matchesPrice
+      );
     })
     .sort((a, b) => {
       let aValue: any = a[sortBy as keyof Vehicle];
       let bValue: any = b[sortBy as keyof Vehicle];
-      
-      if (sortBy === 'pricePerDay' || sortBy === 'stock' || sortBy === 'year') {
+
+      if (sortBy === "pricePerDay" || sortBy === "stock" || sortBy === "year") {
         aValue = Number(aValue);
         bValue = Number(bValue);
       }
-      
-      if (sortOrder === 'asc') {
+
+      if (sortOrder === "asc") {
         return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       } else {
         return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
       }
     });
 
-  const handleQuickAction = async (vehicleId: string, action: string, value?: any): Promise<void> => {
+  const handleQuickAction = async (
+    vehicleId: string,
+    action: string,
+    value?: any
+  ): Promise<void> => {
     try {
-      setError('');
-      let endpoint = '';
-      let method = 'PATCH';
+      setError("");
+      let endpoint = "";
+      let method = "PATCH";
       let body: any = {};
 
       switch (action) {
-        case 'toggle-availability':
+        case "toggle-availability":
           endpoint = `${API_BASE_URL}/vehicles/${vehicleId}`;
           body = { isAvailable: value };
           break;
-        case 'update-stock':
+        case "update-stock":
           endpoint = `${API_BASE_URL}/vehicles/${vehicleId}/stock`;
-          body = { stock: value, operation: 'set' };
+          body = { stock: value, operation: "set" };
           break;
-        case 'update-price':
+        case "update-price":
           endpoint = `${API_BASE_URL}/vehicles/${vehicleId}`;
           body = { pricePerDay: value };
           break;
@@ -206,9 +221,9 @@ const AdminManageCars: React.FC = () => {
       const response = await fetch(endpoint, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(body),
       });
 
@@ -224,23 +239,28 @@ const AdminManageCars: React.FC = () => {
         throw new Error(result.error || `Failed to ${action}`);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : `Failed to perform ${action}`;
+      const errorMessage =
+        err instanceof Error ? err.message : `Failed to perform ${action}`;
       setError(errorMessage);
       console.error(`Error performing ${action}:`, err);
     }
   };
 
   const handleDeleteVehicle = async (id: string): Promise<void> => {
-    if (!window.confirm('Are you sure you want to delete this vehicle? This action cannot be undone.')) {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this vehicle? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     try {
-      setError('');
-      
+      setError("");
+
       const response = await fetch(`${API_BASE_URL}/vehicles/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
+        method: "DELETE",
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -252,12 +272,13 @@ const AdminManageCars: React.FC = () => {
       if (result.success) {
         fetchVehicles();
       } else {
-        setError(result.error || 'Failed to delete vehicle');
+        setError(result.error || "Failed to delete vehicle");
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete vehicle';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete vehicle";
       setError(errorMessage);
-      console.error('Error deleting vehicle:', err);
+      console.error("Error deleting vehicle:", err);
     }
   };
 
@@ -266,21 +287,24 @@ const AdminManageCars: React.FC = () => {
     if (!selectedVehicle) return;
 
     try {
-      setError('');
-      
+      setError("");
+
       const updatedVehicle = {
         ...selectedVehicle,
-        images: additionalImages
+        images: additionalImages,
       };
 
-      const response = await fetch(`${API_BASE_URL}/vehicles/${selectedVehicle.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(updatedVehicle),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/vehicles/${selectedVehicle.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(updatedVehicle),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -291,18 +315,19 @@ const AdminManageCars: React.FC = () => {
       if (result.success) {
         setShowEditModal(false);
         setSelectedVehicle(null);
-        setImagePreview('');
+        setImagePreview("");
         setAdditionalImages([]);
-        setNewFeature('');
-        setNewImageUrl('');
+        setNewFeature("");
+        setNewImageUrl("");
         fetchVehicles();
       } else {
-        setError(result.error || 'Failed to update vehicle');
+        setError(result.error || "Failed to update vehicle");
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update vehicle';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update vehicle";
       setError(errorMessage);
-      console.error('Error updating vehicle:', err);
+      console.error("Error updating vehicle:", err);
     }
   };
 
@@ -318,60 +343,86 @@ const AdminManageCars: React.FC = () => {
     value: string | number | boolean | string[] | VehicleType
   ): void => {
     if (selectedVehicle) {
-      setSelectedVehicle(prev => prev ? { ...prev, [field]: value } : null);
+      setSelectedVehicle((prev) => (prev ? { ...prev, [field]: value } : null));
     }
   };
 
   const handleImageChange = (value: string): void => {
     if (selectedVehicle) {
-      setSelectedVehicle(prev => prev ? { ...prev, image: value } : null);
+      setSelectedVehicle((prev) => (prev ? { ...prev, image: value } : null));
       setImagePreview(value);
     }
   };
   const handleAddAdditionalImage = (): void => {
     if (newImageUrl.trim()) {
-      setAdditionalImages(prev => [...prev, newImageUrl.trim()]);
-      setNewImageUrl('');
+      setAdditionalImages((prev) => [...prev, newImageUrl.trim()]);
+      setNewImageUrl("");
     }
   };
 
   const handleRemoveAdditionalImage = (index: number): void => {
-    setAdditionalImages(prev => prev.filter((_, i) => i !== index));
+    setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleAddFeature = (): void => {
     if (newFeature.trim() && selectedVehicle) {
-      const updatedFeatures = [...(selectedVehicle.features || []), newFeature.trim()];
-      setSelectedVehicle(prev => prev ? { ...prev, features: updatedFeatures } : null);
-      setNewFeature('');
+      const updatedFeatures = [
+        ...(selectedVehicle.features || []),
+        newFeature.trim(),
+      ];
+      setSelectedVehicle((prev) =>
+        prev ? { ...prev, features: updatedFeatures } : null
+      );
+      setNewFeature("");
     }
   };
 
   const handleRemoveFeature = (index: number): void => {
     if (selectedVehicle) {
-      const updatedFeatures = (selectedVehicle.features || []).filter((_, i) => i !== index);
-      setSelectedVehicle(prev => prev ? { ...prev, features: updatedFeatures } : null);
+      const updatedFeatures = (selectedVehicle.features || []).filter(
+        (_, i) => i !== index
+      );
+      setSelectedVehicle((prev) =>
+        prev ? { ...prev, features: updatedFeatures } : null
+      );
     }
   };
 
   const clearError = (): void => {
-    setError('');
+    setError("");
   };
 
   const getStockStatus = (stock: number): StockStatus => {
-    if (stock === 0) return { status: 'out-of-stock', color: 'text-red-500', bg: 'bg-red-100', text: 'Out of Stock' };
-    if (stock <= 3) return { status: 'low-stock', color: 'text-orange-500', bg: 'bg-orange-100', text: 'Low Stock' };
-    return { status: 'in-stock', color: 'text-green-500', bg: 'bg-green-100', text: 'In Stock' };
+    if (stock === 0)
+      return {
+        status: "out-of-stock",
+        color: "text-red-500",
+        bg: "bg-red-100",
+        text: "Out of Stock",
+      };
+    if (stock <= 3)
+      return {
+        status: "low-stock",
+        color: "text-orange-500",
+        bg: "bg-orange-100",
+        text: "Low Stock",
+      };
+    return {
+      status: "in-stock",
+      color: "text-green-500",
+      bg: "bg-green-100",
+      text: "In Stock",
+    };
   };
 
   // Close modal and reset states
   const closeModal = (): void => {
     setShowEditModal(false);
     setSelectedVehicle(null);
-    setImagePreview('');
+    setImagePreview("");
     setAdditionalImages([]);
-    setNewFeature('');
-    setNewImageUrl('');
+    setNewFeature("");
+    setNewImageUrl("");
   };
 
   if (loading) {
@@ -394,11 +445,15 @@ const AdminManageCars: React.FC = () => {
               <Car className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Vehicle Inventory</h1>
-              <p className="text-gray-600 mt-1">Manage your rental fleet and stock levels</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Vehicle Inventory
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Manage your rental fleet and stock levels
+              </p>
             </div>
           </div>
-          <Link 
+          <Link
             to="/dashboard/admin/add"
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
           >
@@ -414,67 +469,79 @@ const AdminManageCars: React.FC = () => {
                 <Car className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.total}
+                </p>
                 <p className="text-sm text-gray-600">Total Vehicles</p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.available}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.available}
+                </p>
                 <p className="text-sm text-gray-600">Available</p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-100 rounded-lg">
                 <EyeOff className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.unavailable}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.unavailable}
+                </p>
                 <p className="text-sm text-gray-600">Unavailable</p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-orange-100 rounded-lg">
                 <AlertTriangle className="w-5 h-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.lowStock}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.lowStock}
+                </p>
                 <p className="text-sm text-gray-600">Low Stock</p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-100 rounded-lg">
                 <Package className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.outOfStock}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.outOfStock}
+                </p>
                 <p className="text-sm text-gray-600">Out of Stock</p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-100 rounded-lg">
                 <DollarSign className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">${stats.totalValue}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${stats.totalValue}
+                </p>
                 <p className="text-sm text-gray-600">Total Value</p>
               </div>
             </div>
@@ -487,7 +554,7 @@ const AdminManageCars: React.FC = () => {
               <AlertTriangle className="w-5 h-5" />
               <span>{error}</span>
             </div>
-            <button 
+            <button
               onClick={clearError}
               className="text-red-500 hover:text-red-700 font-bold text-lg ml-4"
             >
@@ -498,7 +565,6 @@ const AdminManageCars: React.FC = () => {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            
             <div className="lg:col-span-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -506,29 +572,37 @@ const AdminManageCars: React.FC = () => {
                   type="text"
                   placeholder="Search vehicles..."
                   value={searchTerm}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearchTerm(e.target.value)
+                  }
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             <div>
-              <select 
-                value={filterType} 
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilterType(e.target.value)}
+              <select
+                value={filterType}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setFilterType(e.target.value)
+                }
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Types</option>
-                {vehicleTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
+                {vehicleTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <select 
-                value={availabilityFilter} 
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setAvailabilityFilter(e.target.value)}
+              <select
+                value={availabilityFilter}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setAvailabilityFilter(e.target.value)
+                }
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Status</option>
@@ -538,9 +612,11 @@ const AdminManageCars: React.FC = () => {
             </div>
 
             <div>
-              <select 
-                value={stockFilter} 
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStockFilter(e.target.value)}
+              <select
+                value={stockFilter}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setStockFilter(e.target.value)
+                }
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">All Stock</option>
@@ -562,16 +638,22 @@ const AdminManageCars: React.FC = () => {
                 max="1000"
                 step="10"
                 value={priceRange[1]}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPriceRange([0, parseInt(e.target.value)])}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPriceRange([0, parseInt(e.target.value)])
+                }
                 className="w-full"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-              <select 
-                value={sortBy} 
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value)}
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sort By
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setSortBy(e.target.value)
+                }
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="name">Name</option>
@@ -583,10 +665,14 @@ const AdminManageCars: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
-              <select 
-                value={sortOrder} 
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortOrder(e.target.value as 'asc' | 'desc')}
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Order
+              </label>
+              <select
+                value={sortOrder}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setSortOrder(e.target.value as "asc" | "desc")
+                }
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="asc">Ascending</option>
@@ -601,10 +687,12 @@ const AdminManageCars: React.FC = () => {
             <div className="col-span-full text-center py-12">
               <Car className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500 text-lg mb-4">
-                {vehicles.length === 0 ? 'No vehicles in your inventory.' : 'No vehicles found matching your criteria.'}
+                {vehicles.length === 0
+                  ? "No vehicles in your inventory."
+                  : "No vehicles found matching your criteria."}
               </p>
               {vehicles.length === 0 && (
-                <Link 
+                <Link
                   to="/dashboard/admin/add"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold inline-flex items-center gap-2"
                 >
@@ -616,40 +704,47 @@ const AdminManageCars: React.FC = () => {
           ) : (
             filteredVehicles.map((vehicle) => {
               const stockStatus = getStockStatus(vehicle.stock);
-              
+
               return (
-                <div 
-                  key={vehicle.id} 
+                <div
+                  key={vehicle.id}
                   className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border-2 border-transparent hover:border-blue-200"
                 >
                   <div className="relative h-48 bg-gray-200">
-                    <img 
-                      src={vehicle.image} 
+                    <img
+                      src={vehicle.image}
                       alt={vehicle.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = 'https://via.placeholder.com/400x300?text=No+Image';
+                        target.src =
+                          "https://via.placeholder.com/400x300?text=No+Image";
                       }}
                     />
                     <div className="absolute top-3 right-3 flex flex-col gap-2">
-                      <div className={`px-3 py-1 rounded-full text-xs font-semibold ${stockStatus.bg} ${stockStatus.color}`}>
+                      <div
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${stockStatus.bg} ${stockStatus.color}`}
+                      >
                         {vehicle.stock} in stock
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        vehicle.isAvailable 
-                          ? 'bg-green-500 text-white' 
-                          : 'bg-red-500 text-white'
-                      }`}>
-                        {vehicle.isAvailable ? 'Available' : 'Unavailable'}
+                      <div
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          vehicle.isAvailable
+                            ? "bg-green-500 text-white"
+                            : "bg-red-500 text-white"
+                        }`}
+                      >
+                        {vehicle.isAvailable ? "Available" : "Unavailable"}
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h3 className="font-bold text-lg text-gray-900 mb-1">{vehicle.name}</h3>
+                        <h3 className="font-bold text-lg text-gray-900 mb-1">
+                          {vehicle.name}
+                        </h3>
                         <p className="text-gray-600 text-sm">
                           {vehicle.brand} {vehicle.model} • {vehicle.year}
                         </p>
@@ -683,17 +778,33 @@ const AdminManageCars: React.FC = () => {
 
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Stock:</span>
+                        <span className="text-sm font-medium text-gray-700">
+                          Stock:
+                        </span>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => handleQuickAction(vehicle.id, 'update-stock', Math.max(0, vehicle.stock - 1))}
+                            onClick={() =>
+                              handleQuickAction(
+                                vehicle.id,
+                                "update-stock",
+                                Math.max(0, vehicle.stock - 1)
+                              )
+                            }
                             className="w-6 h-6 bg-red-500 text-white rounded text-sm font-bold hover:bg-red-600"
                           >
                             -
                           </button>
-                          <span className="text-sm font-semibold w-8 text-center">{vehicle.stock}</span>
+                          <span className="text-sm font-semibold w-8 text-center">
+                            {vehicle.stock}
+                          </span>
                           <button
-                            onClick={() => handleQuickAction(vehicle.id, 'update-stock', vehicle.stock + 1)}
+                            onClick={() =>
+                              handleQuickAction(
+                                vehicle.id,
+                                "update-stock",
+                                vehicle.stock + 1
+                              )
+                            }
                             className="w-6 h-6 bg-green-500 text-white rounded text-sm font-bold hover:bg-green-600"
                           >
                             +
@@ -702,17 +813,33 @@ const AdminManageCars: React.FC = () => {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Price:</span>
+                        <span className="text-sm font-medium text-gray-700">
+                          Price:
+                        </span>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => handleQuickAction(vehicle.id, 'update-price', Math.max(0, vehicle.pricePerDay - 10))}
+                            onClick={() =>
+                              handleQuickAction(
+                                vehicle.id,
+                                "update-price",
+                                Math.max(0, vehicle.pricePerDay - 10)
+                              )
+                            }
                             className="w-6 h-6 bg-red-500 text-white rounded text-sm font-bold hover:bg-red-600"
                           >
                             -
                           </button>
-                          <span className="text-sm font-semibold">${vehicle.pricePerDay}</span>
+                          <span className="text-sm font-semibold">
+                            ${vehicle.pricePerDay}
+                          </span>
                           <button
-                            onClick={() => handleQuickAction(vehicle.id, 'update-price', vehicle.pricePerDay + 10)}
+                            onClick={() =>
+                              handleQuickAction(
+                                vehicle.id,
+                                "update-price",
+                                vehicle.pricePerDay + 10
+                              )
+                            }
                             className="w-6 h-6 bg-green-500 text-white rounded text-sm font-bold hover:bg-green-600"
                           >
                             +
@@ -721,29 +848,37 @@ const AdminManageCars: React.FC = () => {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Status:</span>
+                        <span className="text-sm font-medium text-gray-700">
+                          Status:
+                        </span>
                         <button
-                          onClick={() => handleQuickAction(vehicle.id, 'toggle-availability', !vehicle.isAvailable)}
+                          onClick={() =>
+                            handleQuickAction(
+                              vehicle.id,
+                              "toggle-availability",
+                              !vehicle.isAvailable
+                            )
+                          }
                           className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
                             vehicle.isAvailable
-                              ? 'bg-green-500 hover:bg-green-600 text-white'
-                              : 'bg-red-500 hover:bg-red-600 text-white'
+                              ? "bg-green-500 hover:bg-green-600 text-white"
+                              : "bg-red-500 hover:bg-red-600 text-white"
                           }`}
                         >
-                          {vehicle.isAvailable ? 'Available' : 'Unavailable'}
+                          {vehicle.isAvailable ? "Available" : "Unavailable"}
                         </button>
                       </div>
                     </div>
 
                     <div className="flex gap-2 mt-4">
-                      <button 
+                      <button
                         onClick={() => openEditModal(vehicle)}
                         className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-2"
                       >
                         <Edit className="w-4 h-4" />
                         Edit
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDeleteVehicle(vehicle.id)}
                         className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center gap-2"
                       >
@@ -762,28 +897,36 @@ const AdminManageCars: React.FC = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-xl max-w-6xl w-full max-h-[95vh] overflow-y-auto">
               <div className="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
-                <h2 className="text-2xl font-bold text-gray-900">Edit Vehicle - {selectedVehicle.name}</h2>
-                <button 
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Edit Vehicle - {selectedVehicle.name}
+                </h2>
+                <button
                   onClick={closeModal}
                   className="text-gray-400 hover:text-gray-600 text-2xl"
                 >
                   ×
                 </button>
               </div>
-              
+
               <form onSubmit={handleUpdateVehicle} className="p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">Main Image</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Main Image
+                      </label>
                       <div className="space-y-3">
                         <div className="relative h-64 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300">
                           {imagePreview ? (
-                            <img 
-                              src={imagePreview} 
+                            <img
+                              src={imagePreview}
                               alt="Vehicle preview"
                               className="w-full h-full object-cover rounded-lg"
-                              onError={() => setImagePreview('https://via.placeholder.com/400x300?text=Invalid+Image')}
+                              onError={() =>
+                                setImagePreview(
+                                  "https://via.placeholder.com/400x300?text=Invalid+Image"
+                                )
+                              }
                             />
                           ) : (
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
@@ -796,14 +939,20 @@ const AdminManageCars: React.FC = () => {
                           <input
                             type="url"
                             value={selectedVehicle.image}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleImageChange(e.target.value)}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => handleImageChange(e.target.value)}
                             placeholder="Enter image URL"
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             required
                           />
                           <button
                             type="button"
-                            onClick={() => navigator.clipboard.readText().then(text => handleImageChange(text))}
+                            onClick={() =>
+                              navigator.clipboard
+                                .readText()
+                                .then((text) => handleImageChange(text))
+                            }
                             className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
                           >
                             Paste
@@ -813,13 +962,17 @@ const AdminManageCars: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">Additional Images</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Additional Images
+                      </label>
                       <div className="space-y-3">
                         <div className="flex gap-2">
                           <input
                             type="url"
                             value={newImageUrl}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewImageUrl(e.target.value)}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => setNewImageUrl(e.target.value)}
                             placeholder="Enter image URL"
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           />
@@ -831,22 +984,25 @@ const AdminManageCars: React.FC = () => {
                             Add
                           </button>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 gap-3">
                           {additionalImages.map((url, index) => (
                             <div key={index} className="relative group">
-                              <img 
-                                src={url} 
+                              <img
+                                src={url}
                                 alt={`Additional ${index + 1}`}
                                 className="w-full h-24 object-cover rounded-lg"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
-                                  target.src = 'https://via.placeholder.com/150x100?text=Invalid+Image';
+                                  target.src =
+                                    "https://via.placeholder.com/150x100?text=Invalid+Image";
                                 }}
                               />
                               <button
                                 type="button"
-                                onClick={() => handleRemoveAdditionalImage(index)}
+                                onClick={() =>
+                                  handleRemoveAdditionalImage(index)
+                                }
                                 className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs font-bold hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                               >
                                 ×
@@ -858,17 +1014,21 @@ const AdminManageCars: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">Features</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Features
+                      </label>
                       <div className="space-y-3">
                         <div className="flex gap-2">
                           <input
                             type="text"
                             value={newFeature}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewFeature(e.target.value)}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => setNewFeature(e.target.value)}
                             placeholder="Add a feature"
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             onKeyPress={(e: React.KeyboardEvent) => {
-                              if (e.key === 'Enter') {
+                              if (e.key === "Enter") {
                                 e.preventDefault();
                                 handleAddFeature();
                               }
@@ -882,23 +1042,25 @@ const AdminManageCars: React.FC = () => {
                             Add
                           </button>
                         </div>
-                        
+
                         <div className="flex flex-wrap gap-2">
-                          {(selectedVehicle.features || []).map((feature, index) => (
-                            <span 
-                              key={index} 
-                              className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
-                            >
-                              {feature}
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveFeature(index)}
-                                className="text-blue-600 hover:text-blue-800 font-bold text-lg leading-none"
+                          {(selectedVehicle.features || []).map(
+                            (feature, index) => (
+                              <span
+                                key={index}
+                                className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
                               >
-                                ×
-                              </button>
-                            </span>
-                          ))}
+                                {feature}
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveFeature(index)}
+                                  className="text-blue-600 hover:text-blue-800 font-bold text-lg leading-none"
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            )
+                          )}
                         </div>
                       </div>
                     </div>
@@ -907,48 +1069,69 @@ const AdminManageCars: React.FC = () => {
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Name *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Vehicle Name *
+                        </label>
                         <input
                           type="text"
                           value={selectedVehicle.name}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('name', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange("name", e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Type *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Type *
+                        </label>
                         <select
                           value={selectedVehicle.type}
-                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleEditVehicleChange('type', e.target.value as VehicleType)}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            handleEditVehicleChange(
+                              "type",
+                              e.target.value as VehicleType
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         >
                           <option value="">Select Type</option>
-                          {vehicleTypes.map(type => (
-                            <option key={type} value={type}>{type}</option>
+                          {vehicleTypes.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
                           ))}
                         </select>
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Brand *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Brand *
+                        </label>
                         <input
                           type="text"
                           value={selectedVehicle.brand}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('brand', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange("brand", e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Model *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Model *
+                        </label>
                         <input
                           type="text"
                           value={selectedVehicle.model}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('model', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange("model", e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
@@ -957,25 +1140,39 @@ const AdminManageCars: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Day ($) *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Price Per Day ($) *
+                        </label>
                         <input
                           type="number"
                           step="0.01"
                           min="0"
                           value={selectedVehicle.pricePerDay}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('pricePerDay', parseFloat(e.target.value))}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange(
+                              "pricePerDay",
+                              parseFloat(e.target.value)
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Stock Quantity *
+                        </label>
                         <input
                           type="number"
                           min="0"
                           value={selectedVehicle.stock}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('stock', parseInt(e.target.value))}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange(
+                              "stock",
+                              parseInt(e.target.value)
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
@@ -984,39 +1181,60 @@ const AdminManageCars: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Year *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Year *
+                        </label>
                         <input
                           type="number"
                           min="1900"
                           max="2030"
                           value={selectedVehicle.year}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('year', parseInt(e.target.value))}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange(
+                              "year",
+                              parseInt(e.target.value)
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Seats *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Seats *
+                        </label>
                         <input
                           type="number"
                           min="1"
                           max="20"
                           value={selectedVehicle.seats}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('seats', parseInt(e.target.value))}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange(
+                              "seats",
+                              parseInt(e.target.value)
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Doors</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Doors
+                        </label>
                         <input
                           type="number"
                           min="1"
                           max="10"
-                          value={selectedVehicle.doors || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('doors', parseInt(e.target.value) || 0)}
+                          value={selectedVehicle.doors || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange(
+                              "doors",
+                              parseInt(e.target.value) || 0
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
@@ -1024,29 +1242,44 @@ const AdminManageCars: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Fuel Type
+                        </label>
                         <select
                           value={selectedVehicle.fuelType}
-                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleEditVehicleChange('fuelType', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            handleEditVehicleChange("fuelType", e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                           <option value="">Select Fuel Type</option>
-                          {fuelTypes.map(type => (
-                            <option key={type} value={type}>{type}</option>
+                          {fuelTypes.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
                           ))}
                         </select>
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Transmission
+                        </label>
                         <select
                           value={selectedVehicle.transmission}
-                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleEditVehicleChange('transmission', e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            handleEditVehicleChange(
+                              "transmission",
+                              e.target.value
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                           <option value="">Select Transmission</option>
-                          {transmissionTypes.map(type => (
-                            <option key={type} value={type}>{type}</option>
+                          {transmissionTypes.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -1054,23 +1287,34 @@ const AdminManageCars: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Mileage (MPG)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Mileage (MPG)
+                        </label>
                         <input
                           type="number"
                           step="0.1"
                           min="0"
-                          value={selectedVehicle.mileage || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('mileage', parseFloat(e.target.value) || 0)}
+                          value={selectedVehicle.mileage || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange(
+                              "mileage",
+                              parseFloat(e.target.value) || 0
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Location
+                        </label>
                         <input
                           type="text"
-                          value={selectedVehicle.location || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('location', e.target.value)}
+                          value={selectedVehicle.location || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange("location", e.target.value)
+                          }
                           placeholder="Enter vehicle location"
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -1078,10 +1322,14 @@ const AdminManageCars: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                      </label>
                       <textarea
-                        value={selectedVehicle.description || ''}
-                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleEditVehicleChange('description', e.target.value)}
+                        value={selectedVehicle.description || ""}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                          handleEditVehicleChange("description", e.target.value)
+                        }
                         rows={4}
                         placeholder="Enter vehicle description..."
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
@@ -1094,10 +1342,18 @@ const AdminManageCars: React.FC = () => {
                         type="checkbox"
                         id="isAvailable"
                         checked={selectedVehicle.isAvailable}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEditVehicleChange('isAvailable', e.target.checked)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleEditVehicleChange(
+                            "isAvailable",
+                            e.target.checked
+                          )
+                        }
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />
-                      <label htmlFor="isAvailable" className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="isAvailable"
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Available for rental
                       </label>
                     </div>
