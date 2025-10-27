@@ -1110,7 +1110,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                 
                 <div className="flex items-center gap-4">
                   <div className="flex gap-2">
-                    {['basic', 'specs', 'media', 'features', 'inventory'].map((section, index) => (
+                    {['basic', 'specs', 'media', 'features', 'inventory'].map((section) => (
                       <button
                         key={section}
                         type="button"

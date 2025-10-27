@@ -1,17 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, type JSX, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
-  Menu,
-  X,
-  Car,
-  Users,
+   Car,
+ 
   Phone,
   User,
   LayoutDashboard,
   ChevronDown,
-  ClipboardList,
-  CarTaxiFront,
+ 
   Shield,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
@@ -278,7 +275,7 @@ export default function DNavbar() {
             </Link>
 
             <div className="hidden lg:flex items-center space-x-4">
-              {navItems.map((item, index) => (
+              {navItems.map((item) => (
                 <motion.div
                   key={item.path}
                   whileHover={{ scale: 1.05 }}
@@ -585,7 +582,7 @@ export default function DNavbar() {
               `}
             >
               <div className="p-4 flex flex-col gap-2">
-                {navItems.map((item, index) => (
+                {navItems.map((item) => (
                   <motion.div
                     key={item.path}
                     whileHover={{ x: 8 }}
@@ -595,7 +592,7 @@ export default function DNavbar() {
                       to={item.path}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`
-                        block py-3 px-4 font-medium rounded-lg transition-all duration-200 flex items-center gap-3 mx-2
+                        block py-3 px-4 font-medium rounded-lg transition-all duration-200  items-center gap-3 mx-2
                         ${
                           location.pathname === item.path
                             ? theme === "light"
