@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -20,14 +19,8 @@ import {
   Clock,
   MapPin,
   Calendar,
-  Users,
-  Fuel,
-  Gauge,
-  Star,
   Plus,
   Minus,
-  Trash2,
-  Edit,
   Save,
   X,
   LogIn,
@@ -81,37 +74,6 @@ interface ApiResponse {
   user: UserSession;
 }
 
-interface Order {
-  id: string;
-  userId: string;
-  vehicleId: string;
-  startDate: string;
-  endDate: string;
-  totalDays: number;
-  dailyRate: number;
-  totalAmount: number;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  customerLicense: string;
-  pickupLocation: string;
-  dropoffLocation: string;
-  status: "PENDING" | "CONFIRMED" | "ACTIVE" | "COMPLETED" | "CANCELLED";
-  createdAt: string;
-  updatedAt: string;
-  vehicle: {
-    id: string;
-    name: string;
-    brand: string;
-    model: string;
-    image: string;
-    type: string;
-    seats: number;
-    fuelType: string;
-    transmission: string;
-  };
-}
-
 const enhancedApiService = {
   async createOrder(orderData: any): Promise<any> {
     try {
@@ -153,7 +115,7 @@ const enhancedApiService = {
         pickupLocation: checkoutData.userInfo.address || "Main Office",
         dropoffLocation: checkoutData.userInfo.address || "Main Office",
         status: "PENDING",
-        vehicle: checkoutData.cartItems[0] 
+        vehicle: checkoutData.cartItems[0],
       };
 
       console.log("📝 Creating order for payment:", orderData);
@@ -368,12 +330,6 @@ export default function CheckoutPage() {
     localStorage.setItem("vehicleRentalCart", JSON.stringify(updatedCart));
   };
 
-  const removeFromCart = (vehicleId: string) => {
-    const updatedCart = cartItems.filter((item) => item.id !== vehicleId);
-    setCartItems(updatedCart);
-    localStorage.setItem("vehicleRentalCart", JSON.stringify(updatedCart));
-  };
-
   const saveUserInfo = async () => {
     if (!editedUser) return;
 
@@ -436,7 +392,6 @@ export default function CheckoutPage() {
 
       setProcessingPayment(true);
 
-      // Prepare user data
       const userData: any = {
         id: userSession.id,
         name: editedUser.name,
@@ -452,7 +407,6 @@ export default function CheckoutPage() {
 
       console.log("💰 Processing payment directly...");
 
-      // Use enhanced service that creates order and processes payment
       const paymentResponse = await enhancedApiService.processCheckoutWithChapa(
         {
           userInfo: userData,
@@ -470,10 +424,8 @@ export default function CheckoutPage() {
         console.log("✅ Payment initialized, redirecting...");
         toast.success("Redirecting to payment...");
 
-        // Clear cart before redirecting
         localStorage.removeItem("vehicleRentalCart");
 
-        // Redirect to payment page
         window.location.href = paymentResponse.paymentUrl;
       } else {
         throw new Error(
@@ -532,7 +484,6 @@ export default function CheckoutPage() {
     `}
     >
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -545,7 +496,7 @@ export default function CheckoutPage() {
               className="rounded-2xl"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Vehicles
+              {t("company.name")}{" "}
             </Button>
             <h1
               className={`
@@ -699,7 +650,8 @@ export default function CheckoutPage() {
                         ${theme === "light" ? "text-blue-700" : "text-blue-300"}
                       `}
                       >
-                        Update your information below. Phone number is required for booking confirmation.
+                        Update your information below. Phone number is required
+                        for booking confirmation.
                       </p>
                     </div>
                   </div>
@@ -1764,7 +1716,6 @@ function CheckoutError({
     </div>
   );
 }
-
 
 function EmptyCart({ theme }: { theme: string }) {
   return (

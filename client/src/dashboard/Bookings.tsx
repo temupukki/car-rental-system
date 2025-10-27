@@ -22,7 +22,6 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Download,
   Eye,
   Filter,
   Search,
@@ -30,7 +29,6 @@ import {
   Users,
   Fuel,
   Gauge,
-  Star,
   Shield,
   FileText,
   CreditCard as CreditCardIcon,
@@ -43,9 +41,6 @@ import {
   Printer,
   Share2,
   MessageCircle,
-  Truck,
-  Wrench,
-  ClipboardCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -91,12 +86,12 @@ interface Order {
   customerLicense: string;
   pickupLocation: string;
   dropoffLocation: string;
-  status: 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
+  status: "PENDING" | "CONFIRMED" | "ACTIVE" | "COMPLETED" | "CANCELLED";
   createdAt: string;
   updatedAt: string;
   vehicle: Vehicle;
   user?: OrderUser;
-  paymentStatus: 'PENDING' | 'PAID' | 'REFUNDED' | 'FAILED';
+  paymentStatus: "PENDING" | "PAID" | "REFUNDED" | "FAILED";
   paymentMethod?: string;
   insuranceIncluded: boolean;
   additionalDriver: boolean;
@@ -127,22 +122,25 @@ const apiService = {
   // Get user orders with proper typing
   async getUserOrders(userId: string): Promise<ApiResponse<Order[]>> {
     try {
-      const response = await fetch(`http://localhost:3000/api/orders?userId=${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/orders?userId=${userId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch orders');
+        throw new Error("Failed to fetch orders");
       }
 
       const data = await response.json();
       return data as ApiResponse<Order[]>;
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error("Error fetching orders:", error);
       throw error;
     }
   },
@@ -262,7 +260,7 @@ const OrderDetailsModal: React.FC<{
               <p className="text-sm opacity-70">Order #{order.id}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -296,7 +294,9 @@ const OrderDetailsModal: React.FC<{
             {/* Left Column - Order & Vehicle Info */}
             <div className="lg:col-span-2 space-y-6">
               {/* Order Status & Summary */}
-              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+              <Card
+                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <div className="flex items-center gap-3">
@@ -305,7 +305,9 @@ const OrderDetailsModal: React.FC<{
                       </div>
                       <div>
                         <h3 className="font-bold text-lg">Order Status</h3>
-                        <Badge className={`${statusConfig.color} text-white mt-1`}>
+                        <Badge
+                          className={`${statusConfig.color} text-white mt-1`}
+                        >
                           {statusConfig.text}
                         </Badge>
                       </div>
@@ -315,7 +317,8 @@ const OrderDetailsModal: React.FC<{
                         {formatCurrency(order.totalAmount)}
                       </p>
                       <p className="text-sm opacity-70">
-                        {order.totalDays} day{order.totalDays !== 1 ? 's' : ''} • {formatCurrency(order.dailyRate)}/day
+                        {order.totalDays} day{order.totalDays !== 1 ? "s" : ""}{" "}
+                        • {formatCurrency(order.dailyRate)}/day
                       </p>
                     </div>
                   </div>
@@ -327,7 +330,9 @@ const OrderDetailsModal: React.FC<{
                     </div>
                     <div>
                       <p className="font-semibold opacity-70">Payment Status</p>
-                      <Badge className={`${paymentStatusConfig.color} text-white`}>
+                      <Badge
+                        className={`${paymentStatusConfig.color} text-white`}
+                      >
                         {paymentStatusConfig.text}
                       </Badge>
                     </div>
@@ -337,33 +342,42 @@ const OrderDetailsModal: React.FC<{
                     </div>
                     <div>
                       <p className="font-semibold opacity-70">Insurance</p>
-                      <p>{order.insuranceIncluded ? "Included ✓" : "Not Included"}</p>
+                      <p>
+                        {order.insuranceIncluded
+                          ? "Included ✓"
+                          : "Not Included"}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Vehicle Details */}
-              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+              <Card
+                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+              >
                 <CardContent className="p-6">
                   <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                     <CarIcon className="w-5 h-5 text-blue-500" />
                     Vehicle Information
                   </h3>
-                  
+
                   <div className="flex flex-col md:flex-row gap-6">
                     <img
                       src={order.vehicle.image}
                       alt={order.vehicle.name}
                       className="w-48 h-32 rounded-xl object-cover flex-shrink-0"
                     />
-                    
+
                     <div className="flex-1">
-                      <h4 className="text-xl font-black mb-2">{order.vehicle.name}</h4>
+                      <h4 className="text-xl font-black mb-2">
+                        {order.vehicle.name}
+                      </h4>
                       <p className="text-sm opacity-70 mb-3">
-                        {order.vehicle.brand} • {order.vehicle.model} • {order.vehicle.type}
+                        {order.vehicle.brand} • {order.vehicle.model} •{" "}
+                        {order.vehicle.type}
                       </p>
-                      
+
                       <div className="grid grid-cols-2 gap-4 text-sm mb-4">
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4 text-blue-500" />
@@ -383,43 +397,58 @@ const OrderDetailsModal: React.FC<{
                         </div>
                       </div>
 
-                      {order.vehicle.features && order.vehicle.features.length > 0 && (
-                        <div>
-                          <p className="font-semibold text-sm mb-2">Features:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {order.vehicle.features.slice(0, 6).map((feature, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">
-                                {feature}
-                              </Badge>
-                            ))}
-                            {order.vehicle.features.length > 6 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{order.vehicle.features.length - 6} more
-                              </Badge>
-                            )}
+                      {order.vehicle.features &&
+                        order.vehicle.features.length > 0 && (
+                          <div>
+                            <p className="font-semibold text-sm mb-2">
+                              Features:
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {order.vehicle.features
+                                .slice(0, 6)
+                                .map((feature, index) => (
+                                  <Badge
+                                    key={index}
+                                    variant="outline"
+                                    className="text-xs"
+                                  >
+                                    {feature}
+                                  </Badge>
+                                ))}
+                              {order.vehicle.features.length > 6 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{order.vehicle.features.length - 6} more
+                                </Badge>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Rental Period & Locations */}
-              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+              <Card
+                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+              >
                 <CardContent className="p-6">
                   <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-green-500" />
                     Rental Schedule
                   </h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold mb-3 text-blue-500">Pickup</h4>
+                      <h4 className="font-semibold mb-3 text-blue-500">
+                        Pickup
+                      </h4>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
-                          <span className="font-medium">{formatDate(order.startDate)}</span>
+                          <span className="font-medium">
+                            {formatDate(order.startDate)}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
@@ -427,13 +456,17 @@ const OrderDetailsModal: React.FC<{
                         </div>
                       </div>
                     </div>
-                    
+
                     <div>
-                      <h4 className="font-semibold mb-3 text-green-500">Drop-off</h4>
+                      <h4 className="font-semibold mb-3 text-green-500">
+                        Drop-off
+                      </h4>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
-                          <span className="font-medium">{formatDate(order.endDate)}</span>
+                          <span className="font-medium">
+                            {formatDate(order.endDate)}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="w-4 h-4" />
@@ -442,11 +475,13 @@ const OrderDetailsModal: React.FC<{
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
                     <div className="flex items-center justify-between text-sm">
                       <span>Total Rental Period:</span>
-                      <span className="font-bold">{order.totalDays} day{order.totalDays !== 1 ? 's' : ''}</span>
+                      <span className="font-bold">
+                        {order.totalDays} day{order.totalDays !== 1 ? "s" : ""}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -456,13 +491,15 @@ const OrderDetailsModal: React.FC<{
             {/* Right Column - Customer & Actions */}
             <div className="space-y-6">
               {/* Customer Information */}
-              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+              <Card
+                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+              >
                 <CardContent className="p-6">
                   <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                     <UserIcon className="w-5 h-5 text-purple-500" />
                     Customer Information
                   </h3>
-                  
+
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <User className="w-4 h-4" />
@@ -471,20 +508,22 @@ const OrderDetailsModal: React.FC<{
                         <p className="text-sm opacity-70">Primary Driver</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <MailIcon className="w-4 h-4" />
                       <span className="text-sm">{order.customerEmail}</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <PhoneIcon className="w-4 h-4" />
                       <span className="text-sm">{order.customerPhone}</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <CreditCardIcon className="w-4 h-4" />
-                      <span className="text-sm">License: {order.customerLicense}</span>
+                      <span className="text-sm">
+                        License: {order.customerLicense}
+                      </span>
                     </div>
                   </div>
 
@@ -492,7 +531,9 @@ const OrderDetailsModal: React.FC<{
                     <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
                       <div className="flex items-center gap-2 text-sm">
                         <Users className="w-4 h-4 text-yellow-500" />
-                        <span className="font-semibold">Additional Driver Included</span>
+                        <span className="font-semibold">
+                          Additional Driver Included
+                        </span>
                       </div>
                     </div>
                   )}
@@ -500,43 +541,51 @@ const OrderDetailsModal: React.FC<{
               </Card>
 
               {/* Price Breakdown */}
-              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+              <Card
+                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+              >
                 <CardContent className="p-6">
                   <h3 className="font-bold text-lg mb-4">Price Breakdown</h3>
-                  
+
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Daily Rate ({order.totalDays} days)</span>
-                      <span>{formatCurrency(order.dailyRate * order.totalDays)}</span>
+                      <span>
+                        {formatCurrency(order.dailyRate * order.totalDays)}
+                      </span>
                     </div>
-                    
+
                     {order.insuranceIncluded && (
                       <div className="flex justify-between">
                         <span>Insurance Coverage</span>
                         <span className="text-green-500">Included</span>
                       </div>
                     )}
-                    
+
                     {order.additionalDriver && (
                       <div className="flex justify-between">
                         <span>Additional Driver</span>
                         <span>{formatCurrency(500)}</span>
                       </div>
                     )}
-                    
+
                     <div className="flex justify-between border-t pt-2 font-bold">
                       <span>Total Amount</span>
-                      <span className="text-green-600">{formatCurrency(order.totalAmount)}</span>
+                      <span className="text-green-600">
+                        {formatCurrency(order.totalAmount)}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Quick Actions */}
-              <Card className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}>
+              <Card
+                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+              >
                 <CardContent className="p-6">
                   <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
-                  
+
                   <div className="space-y-3">
                     <Button
                       onClick={handleContactSupport}
@@ -545,7 +594,7 @@ const OrderDetailsModal: React.FC<{
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Contact Support
                     </Button>
-                    
+
                     <Button
                       variant="outline"
                       onClick={handlePrint}
@@ -554,7 +603,7 @@ const OrderDetailsModal: React.FC<{
                       <Printer className="w-4 h-4 mr-2" />
                       Print Receipt
                     </Button>
-                    
+
                     <Button
                       variant="outline"
                       onClick={handleShare}
@@ -564,11 +613,14 @@ const OrderDetailsModal: React.FC<{
                       Share Order
                     </Button>
 
-                    {(order.status === 'ACTIVE' || order.status === 'CONFIRMED') && (
+                    {(order.status === "ACTIVE" ||
+                      order.status === "CONFIRMED") && (
                       <Button
                         variant="outline"
                         className="w-full rounded-xl text-red-500 border-red-200 hover:bg-red-50"
-                        onClick={() => toast.info("Cancellation process started")}
+                        onClick={() =>
+                          toast.info("Cancellation process started")
+                        }
                       >
                         <XCircle className="w-4 h-4 mr-2" />
                         Cancel Order
@@ -579,13 +631,19 @@ const OrderDetailsModal: React.FC<{
               </Card>
 
               {/* Support Information */}
-              <Card className={theme === "light" ? "bg-blue-50 border-blue-200" : "bg-blue-900/20 border-blue-800"}>
+              <Card
+                className={
+                  theme === "light"
+                    ? "bg-blue-50 border-blue-200"
+                    : "bg-blue-900/20 border-blue-800"
+                }
+              >
                 <CardContent className="p-6">
                   <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                     <Shield className="w-5 h-5 text-blue-500" />
                     24/7 Support
                   </h3>
-                  
+
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4" />
@@ -631,7 +689,7 @@ export default function Bookings() {
         });
 
         if (!res.ok) {
-          throw new Error('Failed to fetch user session');
+          throw new Error("Failed to fetch user session");
         }
 
         const userData = await res.json();
@@ -639,11 +697,12 @@ export default function Bookings() {
 
         // Fetch user orders with proper typing
         if (userData.user) {
-          const ordersResponse: ApiResponse<Order[]> = await apiService.getUserOrders(userData.user.id);
+          const ordersResponse: ApiResponse<Order[]> =
+            await apiService.getUserOrders(userData.user.id);
           if (ordersResponse.success) {
             setOrders(ordersResponse.data);
           } else {
-            throw new Error(ordersResponse.error || 'Failed to fetch orders');
+            throw new Error(ordersResponse.error || "Failed to fetch orders");
           }
         }
       } catch (err) {
@@ -660,15 +719,16 @@ export default function Bookings() {
 
   const refreshOrders = async () => {
     if (!userSession) return;
-    
+
     setLoading(true);
     try {
-      const ordersResponse: ApiResponse<Order[]> = await apiService.getUserOrders(userSession.id);
+      const ordersResponse: ApiResponse<Order[]> =
+        await apiService.getUserOrders(userSession.id);
       if (ordersResponse.success) {
         setOrders(ordersResponse.data);
         toast.success("Orders updated");
       } else {
-        throw new Error(ordersResponse.error || 'Failed to refresh orders');
+        throw new Error(ordersResponse.error || "Failed to refresh orders");
       }
     } catch (err) {
       console.error("Error refreshing orders:", err);
@@ -683,11 +743,13 @@ export default function Bookings() {
     setIsDetailsModalOpen(true);
   };
 
-  const filteredOrders = orders.filter(order => {
-    const matchesStatus = filterStatus === "all" || order.status === filterStatus;
-    const matchesSearch = order.vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.vehicle.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.id.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredOrders = orders.filter((order) => {
+    const matchesStatus =
+      filterStatus === "all" || order.status === filterStatus;
+    const matchesSearch =
+      order.vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.vehicle.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.id.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -700,7 +762,8 @@ export default function Bookings() {
       CANCELLED: { color: "bg-red-500", text: "Cancelled", icon: XCircle },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.PENDING;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.PENDING;
     const IconComponent = config.icon;
 
     return (
@@ -732,10 +795,10 @@ export default function Bookings() {
 
   if (!userSession) {
     return (
-      <OrdersError 
-        theme={theme} 
+      <OrdersError
+        theme={theme}
         message="Please log in to view your orders"
-        onAction={() => window.location.href = "/login"}
+        onAction={() => (window.location.href = "/login")}
         actionText="Log In"
       />
     );
@@ -753,7 +816,6 @@ export default function Bookings() {
     `}
     >
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -766,7 +828,7 @@ export default function Bookings() {
               className="rounded-2xl"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
-              Back
+              {t("company.name")}
             </Button>
             <h1
               className={`
@@ -785,7 +847,9 @@ export default function Bookings() {
               className="rounded-2xl"
               disabled={loading}
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+              />
               Refresh
             </Button>
 
@@ -908,7 +972,7 @@ export default function Bookings() {
                 ${theme === "light" ? "text-gray-600" : "text-gray-400"}
               `}
               >
-                {orders.length === 0 
+                {orders.length === 0
                   ? "You haven't made any orders yet. Start by renting a vehicle!"
                   : "No orders match your current filters."}
               </p>
@@ -956,7 +1020,11 @@ export default function Bookings() {
                             <h3
                               className={`
                               text-xl font-bold mb-1
-                              ${theme === "light" ? "text-gray-800" : "text-white"}
+                              ${
+                                theme === "light"
+                                  ? "text-gray-800"
+                                  : "text-white"
+                              }
                             `}
                             >
                               {order.vehicle.name}
@@ -965,11 +1033,14 @@ export default function Bookings() {
                               className={`
                               text-sm mb-2
                               ${
-                                theme === "light" ? "text-gray-600" : "text-gray-400"
+                                theme === "light"
+                                  ? "text-gray-600"
+                                  : "text-gray-400"
                               }
                             `}
                             >
-                              {order.vehicle.brand} • {order.vehicle.model} • {order.vehicle.type}
+                              {order.vehicle.brand} • {order.vehicle.model} •{" "}
+                              {order.vehicle.type}
                             </p>
                             {getStatusBadge(order.status)}
                           </div>
@@ -978,7 +1049,11 @@ export default function Bookings() {
                             <p
                               className={`
                               text-2xl font-bold
-                              ${theme === "light" ? "text-gray-800" : "text-white"}
+                              ${
+                                theme === "light"
+                                  ? "text-gray-800"
+                                  : "text-white"
+                              }
                             `}
                             >
                               {formatCurrency(order.totalAmount)}
@@ -987,11 +1062,15 @@ export default function Bookings() {
                               className={`
                               text-sm
                               ${
-                                theme === "light" ? "text-gray-600" : "text-gray-400"
+                                theme === "light"
+                                  ? "text-gray-600"
+                                  : "text-gray-400"
                               }
                             `}
                             >
-                              {order.totalDays} day{order.totalDays !== 1 ? "s" : ""} • {formatCurrency(order.dailyRate)}/day
+                              {order.totalDays} day
+                              {order.totalDays !== 1 ? "s" : ""} •{" "}
+                              {formatCurrency(order.dailyRate)}/day
                             </p>
                           </div>
                         </div>
@@ -1004,11 +1083,14 @@ export default function Bookings() {
                               className={`
                               text-sm
                               ${
-                                theme === "light" ? "text-gray-600" : "text-gray-400"
+                                theme === "light"
+                                  ? "text-gray-600"
+                                  : "text-gray-400"
                               }
                             `}
                             >
-                              {formatDate(order.startDate)} - {formatDate(order.endDate)}
+                              {formatDate(order.startDate)} -{" "}
+                              {formatDate(order.endDate)}
                             </span>
                           </div>
 
@@ -1018,7 +1100,9 @@ export default function Bookings() {
                               className={`
                               text-sm
                               ${
-                                theme === "light" ? "text-gray-600" : "text-gray-400"
+                                theme === "light"
+                                  ? "text-gray-600"
+                                  : "text-gray-400"
                               }
                             `}
                             >
@@ -1032,7 +1116,9 @@ export default function Bookings() {
                               className={`
                               text-sm
                               ${
-                                theme === "light" ? "text-gray-600" : "text-gray-400"
+                                theme === "light"
+                                  ? "text-gray-600"
+                                  : "text-gray-400"
                               }
                             `}
                             >
@@ -1046,7 +1132,9 @@ export default function Bookings() {
                               className={`
                               text-sm
                               ${
-                                theme === "light" ? "text-gray-600" : "text-gray-400"
+                                theme === "light"
+                                  ? "text-gray-600"
+                                  : "text-gray-400"
                               }
                             `}
                             >
@@ -1059,11 +1147,7 @@ export default function Bookings() {
                         <div
                           className={`
                           p-3 rounded-xl mb-4
-                          ${
-                            theme === "light"
-                              ? "bg-gray-50"
-                              : "bg-gray-700"
-                          }
+                          ${theme === "light" ? "bg-gray-50" : "bg-gray-700"}
                         `}
                         >
                           <div className="flex flex-wrap gap-4 text-sm">
@@ -1089,14 +1173,17 @@ export default function Bookings() {
                               className={`
                               text-xs
                               ${
-                                theme === "light" ? "text-gray-500" : "text-gray-400"
+                                theme === "light"
+                                  ? "text-gray-500"
+                                  : "text-gray-400"
                               }
                             `}
                             >
-                              Order ID: {order.id} • Created: {formatDate(order.createdAt)}
+                              Order ID: {order.id} • Created:{" "}
+                              {formatDate(order.createdAt)}
                             </p>
                           </div>
-                          
+
                           <div className="flex gap-2">
                             <Button
                               variant="outline"
@@ -1107,13 +1194,17 @@ export default function Bookings() {
                               <Eye className="w-4 h-4 mr-1" />
                               View Details
                             </Button>
-                            
-                            {(order.status === 'CONFIRMED' || order.status === 'ACTIVE') && (
+
+                            {(order.status === "CONFIRMED" ||
+                              order.status === "ACTIVE") && (
                               <Button
                                 size="sm"
                                 className="rounded-xl bg-blue-500 hover:bg-blue-600"
                                 onClick={() => {
-                                  toast.info("Contacting support for " + order.vehicle.name);
+                                  toast.info(
+                                    "Contacting support for " +
+                                      order.vehicle.name
+                                  );
                                 }}
                               >
                                 <Phone className="w-4 h-4 mr-1" />
@@ -1165,7 +1256,11 @@ export default function Bookings() {
                 >
                   {orders.length}
                 </p>
-                <p className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                <p
+                  className={
+                    theme === "light" ? "text-blue-700" : "text-blue-300"
+                  }
+                >
                   Total Orders
                 </p>
               </div>
@@ -1175,9 +1270,13 @@ export default function Bookings() {
                   text-2xl font-bold text-green-600
                 `}
                 >
-                  {orders.filter(o => o.status === 'COMPLETED').length}
+                  {orders.filter((o) => o.status === "COMPLETED").length}
                 </p>
-                <p className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                <p
+                  className={
+                    theme === "light" ? "text-blue-700" : "text-blue-300"
+                  }
+                >
                   Completed
                 </p>
               </div>
@@ -1187,9 +1286,17 @@ export default function Bookings() {
                   text-2xl font-bold text-blue-600
                 `}
                 >
-                  {orders.filter(o => o.status === 'ACTIVE' || o.status === 'CONFIRMED').length}
+                  {
+                    orders.filter(
+                      (o) => o.status === "ACTIVE" || o.status === "CONFIRMED"
+                    ).length
+                  }
                 </p>
-                <p className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                <p
+                  className={
+                    theme === "light" ? "text-blue-700" : "text-blue-300"
+                  }
+                >
                   Active
                 </p>
               </div>
@@ -1200,9 +1307,15 @@ export default function Bookings() {
                   ${theme === "light" ? "text-blue-800" : "text-blue-400"}
                 `}
                 >
-                  {formatCurrency(orders.reduce((sum, order) => sum + order.totalAmount, 0))}
+                  {formatCurrency(
+                    orders.reduce((sum, order) => sum + order.totalAmount, 0)
+                  )}
                 </p>
-                <p className={theme === "light" ? "text-blue-700" : "text-blue-300"}>
+                <p
+                  className={
+                    theme === "light" ? "text-blue-700" : "text-blue-300"
+                  }
+                >
                   Total Spent
                 </p>
               </div>

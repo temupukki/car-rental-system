@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Users, HelpCircle, ReceiptText } from "lucide-react";
+import { Users, HelpCircle, ReceiptText, Car } from "lucide-react";
 
 export default function Admin() {
   const links = [

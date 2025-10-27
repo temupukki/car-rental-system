@@ -39,13 +39,11 @@ import {
   Minus,
   Package,
   AlertTriangle,
-  RefreshCw,
 } from "lucide-react";
 
 import { useLanguage } from "../components/LanguageContext";
 import { useTheme } from "../components/ThemeContext";
 import type { Vehicle } from "../types/vehicle";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 interface VehicleType {
@@ -162,7 +160,6 @@ export default function DVehicles() {
   const [error, setError] = useState<string | null>(null);
 
   const [filters, setFilters] = useState<Filters>(initialFilters);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [maxPrice, setMaxPrice] = useState(1000);
   const {
     cart,
@@ -173,7 +170,6 @@ export default function DVehicles() {
     getTotalPrice,
   } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("all");
   const [rentalDays, setRentalDays] = useState<{ [key: string]: number }>({});
 
   const vehicleTypes: VehicleType[] = useMemo(
@@ -260,11 +256,6 @@ export default function DVehicles() {
     loadVehicles();
   }, []);
 
-  const availableBrands = useMemo(() => {
-    const brands = new Set(vehicles.map((v) => v.brand).filter(Boolean));
-    return Array.from(brands).sort();
-  }, [vehicles]);
-
   const handleFilterChange = (key: keyof Filters, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
@@ -311,22 +302,6 @@ export default function DVehicles() {
 
     return filtered;
   }, [vehicles, filters]);
-
-  const resetFilters = useCallback(() => {
-    setFilters({
-      ...initialFilters,
-      priceRange: [0, maxPrice],
-    });
-  }, [maxPrice]);
-
-  const activeFilterCount = useMemo(() => {
-    return (
-      (filters.searchText ? 1 : 0) +
-      filters.selectedTypes.length +
-      filters.selectedBrands.length +
-      (filters.priceRange[0] > 0 || filters.priceRange[1] < maxPrice ? 1 : 0)
-    );
-  }, [filters, maxPrice]);
 
   const handleBookNow = (vehicle: Vehicle): void => {
     const days = rentalDays[vehicle.id] || 1;
@@ -849,7 +824,7 @@ export default function DVehicles() {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
               layout
             >
-              {filteredAndSortedVehicles.map((vehicle, index) => (
+              {filteredAndSortedVehicles.map((vehicle) => (
                 <motion.div
                   key={vehicle.id}
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -1207,7 +1182,7 @@ interface EnhancedVehicleCardProps extends VehicleCardProps {
 const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
   vehicle,
   theme,
-  onBookNow,
+
   onToggleFavorite,
   onAddToCart,
   isAddedToCart,
@@ -1658,7 +1633,6 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
   updateRentalDays,
   removeFromCart,
   theme,
-  t,
 }) => {
   const totalPrice = useMemo(
     () => cart.reduce((sum, item) => sum + item.totalPrice, 0),
@@ -1923,7 +1897,7 @@ const NoVehiclesFound: React.FC<{
   theme: string;
   loadVehicles: () => void;
   t: (key: string) => string | undefined;
-}> = ({ theme, loadVehicles, t }) => (
+}> = ({ theme, loadVehicles }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
