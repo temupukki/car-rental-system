@@ -49,9 +49,9 @@ export default function Profile() {
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [rentalStats, setRentalStats] = useState<RentalStat[]>([]);
-  const [loyaltyBadges, setLoyaltyBadges] = useState<LoyaltyBadge[]>([]);
-  const [reservations, setReservations] = useState<any[]>([]);
-  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [loyaltyBadges] = useState<LoyaltyBadge[]>([]);
+  const [reservations] = useState<any[]>([]);
+  const [paymentMethods] = useState<any[]>([]);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -140,7 +140,7 @@ export default function Profile() {
     setPasswordLoading(true);
 
     try {
-      const { data, error } = await authClient.changePassword({
+      const { error } = await authClient.changePassword({
         newPassword: newPassword,
         currentPassword: currentPassword,
         revokeOtherSessions: true,
@@ -528,7 +528,7 @@ export default function Profile() {
                     Active & Past Reservations
                   </h3>
                   {reservations.length > 0 ? (
-                    reservations.map((reservation, index) => (
+                    reservations.map((_reservation, index) => (
                       <div
                         key={index}
                         className="bg-red-50 border border-red-200 rounded-xl p-6"
@@ -565,7 +565,7 @@ export default function Profile() {
                     Saved Payment Methods
                   </h3>
                   {paymentMethods.length > 0 ? (
-                    paymentMethods.map((method, index) => (
+                    paymentMethods.map((_method, index) => (
                       <div
                         key={index}
                         className="bg-green-50 border border-green-200 rounded-xl p-4"

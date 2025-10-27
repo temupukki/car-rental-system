@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useTheme } from "../components/ThemeContext";
 import { useLanguage } from "../components/LanguageContext";
-import { div } from "framer-motion/client";
+
 
 export default function Privacy() {
   const { theme } = useTheme();
@@ -169,7 +169,7 @@ export default function Privacy() {
                   {t("privacy.quickNav")}
                 </h3>
                 <nav className="space-y-2">
-                  {quickLinks.map((link, index) => (
+                  {quickLinks.map((link) => (
                     <motion.a
                       key={link.name}
                       href={link.href}

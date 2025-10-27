@@ -13,12 +13,12 @@ import {
   Wallet,
   Shield,
   Clock,
-  Users,
+ 
   Star,
-  CheckCircle,
+ 
   ArrowRight,
-  Phone,
-  Mail,
+ 
+ 
 } from "lucide-react";
 import { useTheme } from "../components/ThemeContext";
 import { useLanguage } from "../components/LanguageContext";
@@ -74,15 +74,7 @@ export default function Home() {
     },
   ];
 
-  const carFeatures = [
-    t("home.carFeatures.gps") || "GPS Navigation System",
-    t("home.carFeatures.bluetooth") || "Bluetooth Connectivity",
-    t("home.carFeatures.climate") || "Climate Control",
-    t("home.carFeatures.sound") || "Premium Sound System",
-    t("home.carFeatures.camera") || "Backup Camera",
-    t("home.carFeatures.seats") || "Leather Seats",
-    t("home.carFeatures.sunroof") || "Sunroof/Moonroof",
-  ];
+
 
   const cars = [
     {

@@ -17,8 +17,7 @@ import {
   Users,
   Fuel,
   Gauge,
-  Calendar,
-  MapPin,
+ 
   Star,
   Heart,
   ArrowRight,
@@ -30,7 +29,6 @@ import { useState } from "react";
 import { useLanguage } from "../components/LanguageContext";
 import { useTheme } from "../components/ThemeContext";
 import { Link } from "react-router-dom";
-import { div } from "framer-motion/client";
 
 export default function Vehicles() {
   const { t } = useLanguage();

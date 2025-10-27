@@ -104,7 +104,6 @@ export default function Contact() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
 
       if (response.ok) {
         toast.success("Message Sent Successfully!");

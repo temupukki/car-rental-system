@@ -188,7 +188,7 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
               >
-                {additionalStats.map((stat, index) => (
+                {additionalStats.map((stat) => (
                   <motion.div
                     key={stat.label}
                     whileHover={{ scale: 1.05, y: -5 }}
