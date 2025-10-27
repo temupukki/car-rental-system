@@ -150,7 +150,7 @@ export default function CheckoutPage() {
   const { theme } = useTheme();
   const { t } = useLanguage();
 
-  const [session, setSession] = useState<ApiResponse | null>(null);
+  const [, setSession] = useState<ApiResponse | null>(null);
   const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
