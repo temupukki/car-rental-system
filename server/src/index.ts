@@ -6,6 +6,7 @@ import vehicleRoutes from './routes/vehicles';
 import orderRoutes from './routes/orders';
 import paymentRoutes from './routes/payment';
 import contactRoutes from './routes/contact';
+import userRoutes from './routes/user';
 import prisma from "./lib/prisma";
 
 const app = express();
@@ -46,6 +47,8 @@ app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/users', userRoutes);
+
 
 app.get("/api/health", (req: Request, res: Response) => {
   res.json({ 
