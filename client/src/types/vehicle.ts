@@ -1,4 +1,4 @@
-export type VehicleType = 'SEDAN' | 'SUV' | 'LUXURY' | 'SPORTS' | 'COMPACT' | 'VAN';
+export type VehicleType = 'Tour' | 'City' | 'Vacation' | 'Bridal' ;
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
 export type UserRole = 'USER' | 'ADMIN';
 

@@ -62,6 +62,7 @@ export default function Sign() {
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
+  const [checkingPhone, setCheckingPhone] = useState(false);
   
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -104,6 +105,31 @@ export default function Sign() {
     { value: "4.9★", label: t('auth.stats.rating') || "Customer Rating", icon: <Star className="w-4 h-4" /> },
     { value: "50+", label: t('auth.stats.vehicles') || "Premium Vehicles", icon: <Award className="w-4 h-4" /> },
   ];
+
+  // Check if phone number exists
+  const checkPhoneNumberExists = async (phone: string): Promise<{ exists: boolean; user?: any }> => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/check-phone?phone=${encodeURIComponent(phone)}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to check phone number');
+      }
+
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to check phone number');
+      }
+
+      return {
+        exists: data.data.exists,
+        user: data.data.user
+      };
+    } catch (error) {
+      console.error("Failed to check phone number:", error);
+      throw error;
+    }
+  };
 
   // Validation functions
   const validateEmail = (email: string): string | undefined => {
@@ -155,7 +181,7 @@ export default function Sign() {
     return undefined;
   };
 
-  const validatePhone = (phone: string): string | undefined => {
+  const validatePhone = async (phone: string): Promise<string | undefined> => {
     if (!phone.trim()) {
       return t('auth.errors.phoneRequired') || "Phone number is required";
     }
@@ -175,6 +201,38 @@ export default function Sign() {
       return t('auth.errors.phoneDigits') || "Phone number must contain only digits";
     }
     
+    // Check if phone number already exists (only for sign-up)
+    if (!isLogin && cleanPhone.length === 10) {
+      setCheckingPhone(true);
+      try {
+        const { exists, user } = await checkPhoneNumberExists(cleanPhone);
+        if (exists) {
+          toast.error(
+            t('auth.errors.phoneExists') || 
+            "📱 This phone number is already registered! Please use a different number or sign in with your existing account.",
+            {
+              duration: 5000,
+              action: {
+                label: "Sign In",
+                onClick: () => setIsLogin(true)
+              }
+            }
+          );
+          return t('auth.errors.phoneExists') || "This phone number is already registered. Please use a different number.";
+        }
+      } catch (error) {
+        console.error("Error checking phone number:", error);
+        toast.warning(
+          t('auth.errors.phoneCheckFailed') || 
+          "⚠️ Unable to verify phone number availability. Please try again.",
+          { duration: 3000 }
+        );
+        return t('auth.errors.phoneCheckFailed') || "Unable to verify phone number. Please try again.";
+      } finally {
+        setCheckingPhone(false);
+      }
+    }
+    
     return undefined;
   };
 
@@ -189,7 +247,7 @@ export default function Sign() {
   };
 
   // Real-time validation for specific field
-  const validateField = (name: keyof FormData, value: string): string | undefined => {
+  const validateField = async (name: keyof FormData, value: string): Promise<string | undefined> => {
     switch (name) {
       case 'email':
         return validateEmail(value);
@@ -200,7 +258,7 @@ export default function Sign() {
       case 'fullName':
         return validateFullName(value);
       case 'phone':
-        return validatePhone(value);
+        return await validatePhone(value);
       case 'address':
         return validateAddress(value);
       default:
@@ -209,13 +267,13 @@ export default function Sign() {
   };
 
   // Form validation
-  const validateForm = (): boolean => {
+  const validateForm = async (): Promise<boolean> => {
     const newErrors: FormErrors = {};
 
     // Validate all fields based on current mode
     if (!isLogin) {
       newErrors.fullName = validateFullName(formData.fullName);
-      newErrors.phone = validatePhone(formData.phone);
+      newErrors.phone = await validatePhone(formData.phone);
       newErrors.confirmPassword = validateConfirmPassword(formData.password, formData.confirmPassword);
       newErrors.address = validateAddress(formData.address);
     }
@@ -231,8 +289,7 @@ export default function Sign() {
     setErrors(filteredErrors);
 
     if (Object.keys(filteredErrors).length > 0) {
-      const firstError = Object.values(filteredErrors)[0];
-      toast.error(firstError);
+      // Don't show toast here as individual field validations already show toasts
       return false;
     }
 
@@ -254,13 +311,18 @@ export default function Sign() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save phone number');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save phone number');
       }
 
       await response.json();
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save phone number:", error);
+      toast.error(
+        error.message || "Failed to save phone number to your profile",
+        { duration: 3000 }
+      );
       return false;
     }
   };
@@ -269,7 +331,8 @@ export default function Sign() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    const isValid = await validateForm();
+    if (!isValid) {
       return;
     }
 
@@ -283,7 +346,11 @@ export default function Sign() {
       }
     } catch (error: any) {
       console.error("Auth error:", error);
-      toast.error(t('auth.errors.somethingWentWrong') || "Something went wrong. Please try again.");
+      toast.error(
+        t('auth.errors.somethingWentWrong') || 
+        "❌ Something went wrong. Please try again.",
+        { duration: 4000 }
+      );
     } finally {
       setLoading(false);
     }
@@ -297,16 +364,54 @@ export default function Sign() {
     });
 
     if (result.error) {
-      toast.error(t('auth.errors.signInFailed') || "Sign in failed: " + result.error.message);
+      toast.error(
+        t('auth.errors.signInFailed') || 
+        "🔐 Sign in failed. Please check your credentials and try again.",
+        { duration: 4000 }
+      );
       return;
     }
 
-    toast.success(t('auth.success.welcomeBack') || "Welcome back!");
+    toast.success(
+      t('auth.success.welcomeBack') || 
+      "🎉 Welcome back to EliteDrive!",
+      { duration: 3000 }
+    );
     navigate("/dashboard");
   };
 
   // Signup handler
   const handleSignUp = async () => {
+    // Double-check phone number existence before signup
+    if (formData.phone) {
+      const cleanPhone = formData.phone.replace(/\D/g, '');
+      try {
+        const { exists } = await checkPhoneNumberExists(cleanPhone);
+        if (exists) {
+          toast.error(
+            t('auth.errors.phoneExists') || 
+            "📱 This phone number is already registered! Please use a different number.",
+            {
+              duration: 5000,
+              action: {
+                label: "Sign In Instead",
+                onClick: () => setIsLogin(true)
+              }
+            }
+          );
+          setErrors(prev => ({ ...prev, phone: t('auth.errors.phoneExists') || "Phone number already registered" }));
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking phone number during signup:", error);
+        toast.error(
+          "❌ Cannot verify phone number. Please try again later.",
+          { duration: 4000 }
+        );
+        return;
+      }
+    }
+
     const result = await authClient.signUp.email({
       email: formData.email + "@elitedrive.com",
       password: formData.password,
@@ -315,7 +420,11 @@ export default function Sign() {
     });
 
     if (result.error) {
-      toast.error(t('auth.errors.signUpFailed') || "Sign up failed: " + result.error.message);
+      toast.error(
+        t('auth.errors.signUpFailed') || 
+        "❌ Sign up failed. Please try again with different credentials.",
+        { duration: 4000 }
+      );
       return;
     }
 
@@ -323,11 +432,25 @@ export default function Sign() {
     if (formData.phone) {
       const phoneSaved = await savePhoneNumber(formData.email, formData.phone);
       if (!phoneSaved) {
-        toast.warning(t('auth.info.phoneSaveFailed') || "Account created but phone number not saved");
+        toast.warning(
+          t('auth.info.phoneSaveFailed') || 
+          "⚠️ Account created but phone number not saved. You can update it later in your profile.",
+          { duration: 5000 }
+        );
       }
     }
 
-    toast.success(t('auth.success.accountCreated') || "Account created successfully!");
+    toast.success(
+      t('auth.success.accountCreated') || 
+      "🎉 Account created successfully! Welcome to EliteDrive!",
+      { 
+        duration: 4000,
+        action: {
+          label: "Go to Dashboard",
+          onClick: () => navigate("/dashboard")
+        }
+      }
+    );
     
     // Reset form
     setFormData({
@@ -355,14 +478,26 @@ export default function Sign() {
       });
 
       if (result.error) {
-        toast.error(t('auth.errors.resetFailed') || "Password reset failed: " + result.error.message);
+        toast.error(
+          t('auth.errors.resetFailed') || 
+          "❌ Password reset failed. Please check your email and try again.",
+          { duration: 4000 }
+        );
       } else {
-        toast.success(t('auth.success.resetSent') || "Password reset link sent!");
+        toast.success(
+          t('auth.success.resetSent') || 
+          "📧 Password reset link sent! Check your email inbox.",
+          { duration: 5000 }
+        );
         setShowForgotPassword(false);
         setResetEmail("");
       }
     } catch (error: any) {
-      toast.error(t('auth.errors.somethingWentWrong') || "Something went wrong");
+      toast.error(
+        t('auth.errors.somethingWentWrong') || 
+        "❌ Something went wrong. Please try again.",
+        { duration: 4000 }
+      );
       console.error("Forgot password error:", error);
     } finally {
       setLoading(false);
@@ -385,9 +520,32 @@ export default function Sign() {
       [name]: processedValue,
     }));
 
-    // Real-time validation
+    // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
-      const error = validateField(name as keyof FormData, processedValue);
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
+    }
+  };
+
+  // Input blur handler for validation
+  const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    if (name === 'phone' && !isLogin && value.replace(/\D/g, '').length === 10) {
+      setCheckingPhone(true);
+      try {
+        const error = await validateField(name as keyof FormData, value);
+        setErrors(prev => ({
+          ...prev,
+          [name]: error
+        }));
+      } finally {
+        setCheckingPhone(false);
+      }
+    } else {
+      const error = await validateField(name as keyof FormData, value);
       setErrors(prev => ({
         ...prev,
         [name]: error
@@ -395,21 +553,22 @@ export default function Sign() {
     }
   };
 
-  // Input blur handler for validation
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    const error = validateField(name as keyof FormData, value);
-    setErrors(prev => ({
-      ...prev,
-      [name]: error
-    }));
-  };
-
   // Toggle auth mode
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
     // Clear errors when switching modes
     setErrors({});
+    // Clear form data when switching to sign up
+    if (!isLogin) {
+      setFormData({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        fullName: "",
+        phone: "",
+        address: ""
+      });
+    }
   };
 
   // Theme classes
@@ -771,7 +930,7 @@ export default function Sign() {
               <div className="relative">
                 <CircleUser className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
                   errors.email ? 'text-red-500' : 'text-gray-400'
-                }`} />
+                  }`} />
                 <input
                   type="text"
                   name="email"
@@ -825,7 +984,13 @@ export default function Sign() {
                     placeholder={t('auth.placeholders.phone') || "07XX or 09XX XXXXXX"}
                     required={!isLogin}
                     maxLength={10}
+                    disabled={checkingPhone}
                   />
+                  {checkingPhone && (
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
                 </div>
                 {errors.phone && (
                   <motion.p
@@ -840,6 +1005,15 @@ export default function Sign() {
                 <p className={`text-xs mt-2 ${themeClasses.text.muted}`}>
                   {t('auth.info.phoneFormat') || "Must be 10 digits starting with 07 or 09"}
                 </p>
+                {checkingPhone && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className={`text-xs mt-1 ${themeClasses.text.muted}`}
+                  >
+                    {t('auth.loading.checkingPhone') || "Checking phone number availability..."}
+                  </motion.p>
+                )}
               </motion.div>
             )}
 
@@ -987,7 +1161,7 @@ export default function Sign() {
               whileHover={{ scale: loading ? 1 : 1.02 }}
               whileTap={{ scale: loading ? 1 : 0.98 }}
               type="submit"
-              disabled={loading}
+              disabled={loading || checkingPhone}
               className={`w-full text-white py-5 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${themeClasses.button.primary}`}
             >
               {loading ? (

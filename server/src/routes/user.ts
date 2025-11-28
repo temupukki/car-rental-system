@@ -62,6 +62,68 @@ router.post(
   }
 );
 
+// GET /api/users/check-phone - Check if phone number exists
+// GET /api/users/check-phone - Check if phone number exists
+router.get(
+  "/check-phone",
+  async (
+    req: Request,
+    res: Response<ApiResponse>
+  ) => {
+    try {
+      const { phone } = req.query;
+
+      if (!phone) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Phone number is required" 
+        });
+      }
+
+      // Clean the phone number (remove any non-digit characters)
+      const cleanPhone = String(phone).replace(/\D/g, '');
+
+      if (cleanPhone.length !== 10) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Phone number must be 10 digits" 
+        });
+      }
+
+      // Get all users and check if any has the same clean phone number
+      const users = await prisma.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          name: true,
+        },
+      });
+
+      // Check if any user has the same phone number (after cleaning)
+      const existingUser = users.find(user => {
+        if (!user.phone) return false;
+        const userCleanPhone = user.phone.replace(/\D/g, '');
+        return userCleanPhone === cleanPhone;
+      });
+
+      res.json({ 
+        success: true, 
+        data: { 
+          exists: !!existingUser,
+          user: existingUser || null
+        } 
+      });
+    } catch (error: any) {
+      console.error("Error checking phone number:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to check phone number" 
+      });
+    }
+  }
+);
+
 // GET /api/users - Get all users
 router.get("/", async (req: Request, res: Response<ApiResponse>) => {
   try {
@@ -84,8 +146,6 @@ router.get("/", async (req: Request, res: Response<ApiResponse>) => {
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 });
-
-
 
 // PATCH /api/users/:id - Update user
 router.patch("/:id", async (req: Request, res: Response<ApiResponse>) => {

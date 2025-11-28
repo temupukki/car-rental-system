@@ -15,12 +15,11 @@ enum Userrole {
 }
 
 enum VehicleType {
-  SEDAN
-  SUV
-  LUXURY
-  SPORTS
-  COMPACT
-  VAN
+  City
+  Vacation
+  Tour
+  Bridal
+  
 }
 
 enum OrderStatus {
@@ -40,7 +39,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
   role          Userrole  @default(USER)
-  phone         String?
+  phone         String ?
   licenseNumber String?      
   sessions      Session[]
   accounts      Account[]

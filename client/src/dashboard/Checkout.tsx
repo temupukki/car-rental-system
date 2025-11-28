@@ -254,8 +254,8 @@ export default function CheckoutPage() {
             role: data.user.role,
             createdAt: data.user.createdAt,
             updatedAt: data.user.updatedAt,
-            phone: data.user.phone || "",
-            address: data.user.address || "",
+         
+            address: data.user.image ,
           };
           setUserSession(userData);
           setEditedUser(userData);
@@ -698,7 +698,7 @@ export default function CheckoutPage() {
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
-                      Email Address *
+                    User Name *
                     </Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
@@ -721,12 +721,7 @@ export default function CheckoutPage() {
                         placeholder="your.email@example.com"
                       />
                     </div>
-                    {editedUser?.emailVerified && (
-                      <p className="text-xs text-green-600 flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        Email verified
-                      </p>
-                    )}
+                  
                   </div>
 
                   {/* Phone Field - Always Editable */}
@@ -794,7 +789,7 @@ export default function CheckoutPage() {
                         value={editedUser?.address || ""}
                         onChange={(e) =>
                           setEditedUser((prev) =>
-                            prev ? { ...prev, address: e.target.value } : null
+                            prev ? { ...prev, image: e.target.value } : null
                           )
                         }
                         className={`

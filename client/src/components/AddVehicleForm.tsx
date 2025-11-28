@@ -53,7 +53,7 @@ interface Vehicle {
   updatedAt: string;
 }
 
-type VehicleType = 'SEDAN' | 'SUV' | 'LUXURY' | 'SPORTS' | 'COMPACT' | 'VAN';
+type VehicleType = 'City' | 'Vacation' | 'Tour' | 'Bridal' ;
 
 interface CreateVehicleInput {
   name: string;
@@ -161,7 +161,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
   
   const [formData, setFormData] = useState<CreateVehicleInput>({
     name: '',
-    type: 'SEDAN',
+    type: 'City',
     brand: '',
     model: '',
     year: new Date().getFullYear(),
@@ -289,7 +289,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
 
       setFormData({
         name: '',
-        type: 'SEDAN',
+        type: 'City',
         brand: '',
         model: '',
         year: new Date().getFullYear(),
@@ -325,7 +325,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
   const handleClearForm = (): void => {
     setFormData({
       name: '',
-      type: 'SEDAN',
+      type: 'City',
       brand: '',
       model: '',
       year: new Date().getFullYear(),
@@ -527,12 +527,11 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="SEDAN">Sedan</SelectItem>
-                            <SelectItem value="SUV">SUV</SelectItem>
-                            <SelectItem value="LUXURY">Luxury</SelectItem>
-                            <SelectItem value="SPORTS">Sports</SelectItem>
-                            <SelectItem value="COMPACT">Compact</SelectItem>
-                            <SelectItem value="VAN">Van</SelectItem>
+                            <SelectItem value="City">City</SelectItem>
+                            <SelectItem value="Vacation">Vacation</SelectItem>
+                            <SelectItem value="Tour">Tour</SelectItem>
+                            <SelectItem value="Bridal">Bridal</SelectItem>
+                            
                           </SelectContent>
                         </Select>
                       </div>

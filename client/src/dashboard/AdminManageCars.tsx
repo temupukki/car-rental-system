@@ -32,12 +32,11 @@ const fuelTypes: string[] = [
 const transmissionTypes: string[] = ["Automatic", "Manual", "CVT"];
 
 const vehicleTypes: VehicleType[] = [
-  "SEDAN",
-  "SUV",
-  "LUXURY",
-  "SPORTS",
-  "COMPACT",
-  "VAN",
+  "City",
+  "Tour",
+  "Vacation",
+  "Bridal",
+
 ];
 
 interface StockStatus {

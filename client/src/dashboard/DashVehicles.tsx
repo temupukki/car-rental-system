@@ -175,41 +175,30 @@ export default function DVehicles() {
   const vehicleTypes: VehicleType[] = useMemo(
     () => [
       {
-        value: "SEDAN",
-        label: t("vehicles.sedan") || "Sedan",
+        value: "City",
+        label: t("vehicles.city") || "City",
         icon: <Car className="w-4 h-4" />,
         color: "from-blue-500 to-cyan-500",
       },
       {
-        value: "SUV",
-        label: t("vehicles.suv") || "SUV",
+        value: "Tour",
+        label: t("vehicles.tour") || "Tour",
         icon: <Truck className="w-4 h-4" />,
         color: "from-green-500 to-emerald-500",
       },
       {
-        value: "LUXURY",
-        label: t("vehicles.luxury") || "Luxury",
+        value: "Vacation",
+        label: t("vehicles.vacation") || "Vacation",
         icon: <Sparkles className="w-4 h-4" />,
         color: "from-purple-500 to-pink-500",
       },
       {
-        value: "SPORTS",
-        label: t("vehicles.sports") || "Sports",
+        value: "Bridal",
+        label: t("vehicles.bridal") || "Bridal",
         icon: <TrendingUp className="w-4 h-4" />,
         color: "from-red-500 to-orange-500",
       },
-      {
-        value: "COMPACT",
-        label: t("vehicles.compact") || "Compact",
-        icon: <CarFront className="w-4 h-4" />,
-        color: "from-gray-500 to-slate-500",
-      },
-      {
-        value: "VAN",
-        label: t("vehicles.van") || "Van",
-        icon: <Users className="w-4 h-4" />,
-        color: "from-yellow-500 to-amber-500",
-      },
+    
     ],
     [t]
   );
