@@ -252,6 +252,7 @@ export default function CheckoutPage() {
             emailVerified: data.user.emailVerified,
             image: data.user.image,
             role: data.user.role,
+            phone:data.user.phone,
             createdAt: data.user.createdAt,
             updatedAt: data.user.updatedAt,
          
@@ -658,7 +659,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name Field */}
+                  {/* Name Field - NON EDITABLE */}
                   <div className="space-y-2">
                     <Label
                       className={`
@@ -672,25 +673,26 @@ export default function CheckoutPage() {
                       <User className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                       <Input
                         value={editedUser?.name || ""}
-                        onChange={(e) =>
-                          setEditedUser((prev) =>
-                            prev ? { ...prev, name: e.target.value } : null
-                          )
-                        }
+                        readOnly
+                        disabled
                         className={`
-                          pl-10 rounded-xl transition-all duration-200
+                          pl-10 rounded-xl transition-all duration-200 opacity-70
                           ${
                             theme === "light"
-                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
+                              ? "bg-gray-100 border-gray-300"
+                              : "bg-gray-600 border-gray-500"
                           }
                         `}
                         placeholder="Enter your full name"
                       />
                     </div>
+                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                      <Info className="w-3 h-3" />
+                      Name cannot be changed during checkout
+                    </p>
                   </div>
 
-                  {/* Email Field */}
+                  {/* Email Field - NON EDITABLE */}
                   <div className="space-y-2">
                     <Label
                       className={`
@@ -705,23 +707,23 @@ export default function CheckoutPage() {
                       <Input
                         type="email"
                         value={editedUser?.email || ""}
-                        onChange={(e) =>
-                          setEditedUser((prev) =>
-                            prev ? { ...prev, email: e.target.value } : null
-                          )
-                        }
+                        readOnly
+                        disabled
                         className={`
-                          pl-10 rounded-xl transition-all duration-200
+                          pl-10 rounded-xl transition-all duration-200 opacity-70
                           ${
                             theme === "light"
-                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
+                              ? "bg-gray-100 border-gray-300"
+                              : "bg-gray-600 border-gray-500"
                           }
                         `}
                         placeholder="your.email@example.com"
                       />
                     </div>
-                  
+                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                      <Info className="w-3 h-3" />
+                      Email cannot be changed during checkout
+                    </p>
                   </div>
 
                   {/* Phone Field - Always Editable */}
@@ -739,7 +741,11 @@ export default function CheckoutPage() {
                       <Input
                         type="tel"
                         value={editedUser?.phone || ""}
-                        onChange={(e) => handlePhoneChange(e.target.value)}
+                         onChange={(e) =>
+                          setEditedUser((prev) =>
+                            prev ? { ...prev, phone: e.target.value } : null
+                          )
+                        }
                         className={`
                           pl-10 rounded-xl transition-all duration-200
                           ${

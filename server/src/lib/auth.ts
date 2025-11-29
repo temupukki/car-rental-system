@@ -18,6 +18,10 @@ export const auth = betterAuth({
       role: {
         type: ["USER", "ADMIN"],
       },
+       phone: {
+        type: "string",   // you can also use "number" if you want numeric-only
+        
+      },
     },
   },
   trustedOrigins: ["http://localhost:5173"],
