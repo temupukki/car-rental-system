@@ -600,6 +600,14 @@ const translations = {
     'auth.stats.customers': 'Customers',
     'auth.stats.rating': 'Rating',
     'auth.stats.vehicles': 'Vehicles',
+    'auth.placeholders.username':'Enter your User name',
+    'auth.placeholders.address':'Enter your Address',
+  'auth.labels.username':'User name',
+      'auth.labels.address':'Address',
+          'auth.info.phoneFormat':' Must be 10 digits starting with 07 or 09.',
+
+
+
 
     'services.luxury':'Luxury',
     'services.business':'Business',
@@ -1210,6 +1218,7 @@ const translations = {
     'auth.buttons.backTo': 'ወደ ተመለስ',
     'auth.buttons.resendEmail': 'ኢሜይል እንደገና ላክ',
     'auth.buttons.continueWithGoogle': 'በGoogle ይቀጥሉ',
+   'auth.placeholders.username':'መላያ ስም ያስገቡ',
     
     // Loading States
     'auth.loading.signingIn': 'በመግባት ላይ...',
@@ -1224,6 +1233,7 @@ const translations = {
     'auth.info.orContinueWith': 'ወይም በቀጥሎ ይቀጥሉ',
     'auth.info.verifyEmail': 'እባክዎ ኢሜይልዎን ያረጋግጡ',
     'auth.info.checkSpam': 'እባክዎ የማገጃ ፎልደርዎን ይመልከቱ',
+    'auth.info.phoneFormat':' ስልክ ቁጥሩዎ በ 07 ወይም 09 መጀመር አለበት እና ድምሩ 10 አሃዞች መሆን ይገባል።',
     
     // Error Messages
     'auth.errors.signInFailed': 'መግባት አልተሳካም: ',
@@ -1233,6 +1243,8 @@ const translations = {
     'auth.errors.googleFailed': 'በGoogle መግባት አልተሳካም',
     'auth.errors.resetFailed': 'የይለፍ ቃል መቀየር አልተሳካም: ',
     'auth.errors.resendFailed': 'ኢሜይል እንደገና ማስተላለፍ አልተሳካም',
+        'auth.placeholders.address':'አድራሻዎን ያስገቡ',
+
     
     // Success Messages
         'auth.success.welcomeBack': 'እንኳን ደህና መጡ!',
@@ -1249,6 +1261,8 @@ const translations = {
     'auth.verification.step2': 'የማረጋገጫ አገናኙን ይጫኑ',
     'auth.verification.step3': 'ምዝገባዎን ይጨርሱ',
     'auth.verification.ifNotSee': 'ኢሜይሉን ካላዩ',
+    'auth.labels.username':'መለያ ስም',
+    'auth.labels.address':'አድራሻ',
     
     // Forgot Password
     'auth.forgotPassword.title': 'የይለፍ ቃል ዳግም አስጀምር',

@@ -501,7 +501,6 @@ function DriverLicenseUpload({
               </div>
             </div>
 
-            {/* Back License Upload */}
             <div className="space-y-4">
               <h3 className={`font-bold flex items-center gap-2 ${
                 theme === 'light' ? 'text-gray-800' : 'text-white'
@@ -889,16 +888,16 @@ export default function CheckoutPage() {
             phone: data.user.phone,
             createdAt: data.user.createdAt,
             updatedAt: data.user.updatedAt,
-            address: data.user.address, // FIXED: was data.user.image
+            address: data.user.image, 
           };
           setUserSession(userData);
           
-          // Auto-fill ALL form data from API response
+        
           setFormData({
             name: data.user.name || '',
             email: data.user.email || '',
             phone: data.user.phone || '',
-            address: data.user.address || ''
+            address: data.user.image || ''
           });
           
           console.log("✅ Form data populated:", {
@@ -1337,15 +1336,15 @@ export default function CheckoutPage() {
                           }
                         `}
                         placeholder="Enter your full name"
+                        disabled
                       />
                     </div>
                     <p className="text-xs text-gray-500 flex items-center gap-1">
-                      <Info className="w-3 h-3" />
-                      Fetched from your profile
+                     
                     </p>
                   </div>
 
-                  {/* Email Field - EDITABLE */}
+                 
                   <div className="space-y-2">
                     <Label
                       className={`
@@ -1353,7 +1352,7 @@ export default function CheckoutPage() {
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
-                      Email Address *
+                      User Name *
                     </Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
@@ -1370,15 +1369,14 @@ export default function CheckoutPage() {
                           }
                         `}
                         placeholder="your.email@example.com"
+                        disabled
                       />
                     </div>
                     <p className="text-xs text-gray-500 flex items-center gap-1">
-                      <Info className="w-3 h-3" />
-                      Fetched from your profile
+                  
                     </p>
                   </div>
 
-                  {/* Phone Field - Editable */}
                   <div className="space-y-2">
                     <Label
                       className={`

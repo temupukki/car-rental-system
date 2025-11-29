@@ -13,12 +13,8 @@ import {
   Wallet,
   Shield,
   Clock,
- 
   Star,
- 
   ArrowRight,
- 
- 
 } from "lucide-react";
 import { useTheme } from "../components/ThemeContext";
 import { useLanguage } from "../components/LanguageContext";
@@ -34,12 +30,32 @@ export default function Home() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/me");
-        const data = await response.json();
-        if (data && data !== null) {
-          navigate("/dashboard");
-          return;
+        console.log("Checking user session...");
+        const response = await fetch("http://localhost:3000/api/me", {
+          method: "GET",
+          credentials: "include", // Important for cookies/sessions
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Session check response status:", response.status);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Session data received:", data);
+          
+          // More robust session check - adjust based on your API response structure
+          if (data && (data.user || data.id || data.email)) {
+            console.log("Valid session exists, redirecting to dashboard");
+            navigate("/dashboard", { replace: true });
+            return;
+          }
         }
+        
+        // If we get here, no valid session exists
+        console.log("No valid session found, showing home page");
+        
       } catch (error) {
         console.error("Error checking session:", error);
       } finally {
@@ -73,8 +89,6 @@ export default function Home() {
         "Comprehensive insurance coverage for peace of mind",
     },
   ];
-
-
 
   const cars = [
     {
@@ -170,7 +184,7 @@ export default function Home() {
             ${theme === "light" ? "text-gray-600" : "text-gray-400"}
           `}
           >
-            Loading...
+            Checking authentication...
           </p>
         </div>
       </div>
@@ -188,7 +202,7 @@ export default function Home() {
       }
     `}
     >
-      {/* Rest of your JSX remains exactly the same */}
+      {/* Hero Section */}
       <div className="relative mx-4 md:mx-8 lg:mx-16 h-auto lg:h-[600px] rounded-3xl mt-4 lg:mt-6 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -362,7 +376,7 @@ export default function Home() {
                     ))}
                   </div>
 
-                  <a href="/sign" className="block">
+                  <Link to="/sign" className="block">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -377,7 +391,7 @@ export default function Home() {
                     >
                       {t("home.bookingCard.button") || "Sign Up to Book"}
                     </motion.button>
-                  </a>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
@@ -385,6 +399,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Main Features Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-12 sm:my-16 lg:my-20">
         {mainFeatures.map((feature, index) => (
           <motion.div
@@ -396,8 +411,8 @@ export default function Home() {
               flex flex-col items-center text-center p-6 sm:p-8 rounded-3xl shadow-lg border transition-all duration-300
               ${
                 theme === "light"
-                  ? `bg-white border-${feature.color}-100 hover:shadow-xl`
-                  : `bg-gray-800 border-${feature.color}-800 hover:shadow-2xl`
+                  ? "bg-white border-gray-200 hover:shadow-xl"
+                  : "bg-gray-800 border-gray-700 hover:shadow-2xl"
               }
             `}
           >
@@ -405,9 +420,11 @@ export default function Home() {
               className={`
               p-3 sm:p-4 rounded-2xl mb-4 sm:mb-6
               ${
-                theme === "light"
-                  ? `bg-${feature.color}-500`
-                  : `bg-${feature.color}-600`
+                feature.color === "blue" 
+                  ? theme === "light" ? "bg-blue-500" : "bg-blue-600"
+                  : feature.color === "green"
+                  ? theme === "light" ? "bg-green-500" : "bg-green-600"
+                  : theme === "light" ? "bg-orange-500" : "bg-orange-600"
               }
             `}
             >
@@ -433,6 +450,7 @@ export default function Home() {
         ))}
       </div>
 
+      {/* Featured Cars Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-12 sm:my-16 lg:my-20">
         <div className="text-center mb-8 sm:mb-12">
           <h2
@@ -580,6 +598,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* CTA Section */}
       <div
         className={`
         rounded-3xl mx-4 sm:mx-6 lg:mx-8 my-12 sm:my-16 lg:my-20 p-6 sm:p-8 lg:p-12 text-center

@@ -41,8 +41,10 @@ import {
   Printer,
   Share2,
   MessageCircle,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router";
 
 // Define proper TypeScript interfaces
 interface Vehicle {
@@ -117,9 +119,9 @@ interface ApiResponse<T> {
   error?: string;
 }
 
-// Update the apiService to include proper typing
+
 const apiService = {
-  // Get user orders with proper typing
+ 
   async getUserOrders(userId: string): Promise<ApiResponse<Order[]>> {
     try {
       const response = await fetch(
@@ -146,7 +148,302 @@ const apiService = {
   },
 };
 
-// Order Details Modal Component
+
+const generateOrderPDF = (order: Order) => {
+  
+  const printContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Order Receipt - ${order.id}</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 20px;
+          color: #333;
+        }
+        .header {
+          text-align: center;
+          background: #3b82f6;
+          color: white;
+          padding: 20px;
+          margin-bottom: 30px;
+          border-radius: 10px;
+        }
+        .section {
+          margin-bottom: 25px;
+          padding: 15px;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+        }
+        .section-title {
+          font-size: 18px;
+          font-weight: bold;
+          color: #3b82f6;
+          margin-bottom: 15px;
+          border-bottom: 2px solid #3b82f6;
+          padding-bottom: 5px;
+        }
+        .grid-2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+        }
+        .grid-4 {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+          gap: 10px;
+        }
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8px;
+          padding: 5px 0;
+        }
+        .detail-label {
+          font-weight: bold;
+          color: #6b7280;
+        }
+        .total-row {
+          border-top: 2px solid #10b981;
+          padding-top: 10px;
+          font-weight: bold;
+          font-size: 18px;
+          color: #10b981;
+        }
+        .badge {
+          display: inline-block;
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: bold;
+          color: white;
+        }
+        .badge-pending { background: #f59e0b; }
+        .badge-paid { background: #10b981; }
+        .badge-confirmed { background: #3b82f6; }
+        .badge-active { background: #10b981; }
+        .badge-completed { background: #6b7280; }
+        .badge-cancelled { background: #ef4444; }
+        .footer {
+          text-align: center;
+          margin-top: 30px;
+          padding: 20px;
+          border-top: 1px solid #e5e7eb;
+          color: #6b7280;
+          font-size: 12px;
+        }
+        @media print {
+          body { margin: 0; }
+          .no-print { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>RENTAL CAR SERVICE</h1>
+        <h2>Order Receipt</h2>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Order Information</div>
+        <div class="grid-4">
+          <div>
+            <strong>Order ID:</strong><br>
+            ${order.id}
+          </div>
+          <div>
+            <strong>Order Date:</strong><br>
+            ${new Date(order.createdAt).toLocaleDateString()}
+          </div>
+          <div>
+            <strong>Status:</strong><br>
+            <span class="badge badge-${order.status.toLowerCase()}">${order.status}</span>
+          </div>
+          <div>
+            <strong>Payment Status:</strong><br>
+            <span class="badge badge-${order.paymentStatus.toLowerCase()}">${order.paymentStatus}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Customer Information</div>
+        <div class="grid-2">
+          <div>
+            <strong>Customer Name:</strong><br>
+            ${order.customerName}
+          </div>
+          <div>
+            <strong>Contact Information:</strong><br>
+            ${order.customerEmail}<br>
+            ${order.customerPhone}
+          </div>
+          <div>
+            <strong>Driver License:</strong><br>
+            ${order.customerLicense}
+          </div>
+          <div>
+            <strong>Additional Services:</strong><br>
+            Insurance: ${order.insuranceIncluded ? 'Included ✓' : 'Not Included'}<br>
+            Additional Driver: ${order.additionalDriver ? 'Yes ✓' : 'No'}
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Vehicle Information</div>
+        <div class="grid-2">
+          <div>
+            <strong>Vehicle:</strong> ${order.vehicle.name}<br>
+            <strong>Brand/Model:</strong> ${order.vehicle.brand} ${order.vehicle.model}<br>
+            <strong>Type:</strong> ${order.vehicle.type}<br>
+            <strong>Seats:</strong> ${order.vehicle.seats}<br>
+          </div>
+          <div>
+            <strong>Fuel Type:</strong> ${order.vehicle.fuelType}<br>
+            <strong>Transmission:</strong> ${order.vehicle.transmission}<br>
+            <strong>Mileage:</strong> ${order.vehicle.mileage}<br>
+            <strong>Features:</strong> ${order.vehicle.features?.slice(0, 3).join(', ')}...
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Rental Period & Locations</div>
+        <div class="grid-2">
+          <div>
+            <strong>Pickup Information:</strong><br>
+            Date: ${new Date(order.startDate).toLocaleDateString()}<br>
+            Location: ${order.pickupLocation}
+          </div>
+          <div>
+            <strong>Drop-off Information:</strong><br>
+            Date: ${new Date(order.endDate).toLocaleDateString()}<br>
+            Location: ${order.dropoffLocation}
+          </div>
+        </div>
+        <div style="margin-top: 15px; padding: 10px; background: #f0f9ff; border-radius: 5px;">
+          <strong>Total Rental Period:</strong> ${order.totalDays} day${order.totalDays !== 1 ? 's' : ''}
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Price Breakdown</div>
+        <div style="max-width: 500px;">
+          <div class="detail-row">
+            <span class="detail-label">Daily Rate (${order.totalDays} days × ${order.dailyRate} ETB):</span>
+            <span>${(order.dailyRate * order.totalDays).toFixed(2)} ETB</span>
+          </div>
+          ${order.insuranceIncluded ? `
+          <div class="detail-row">
+            <span class="detail-label">Insurance Coverage:</span>
+            <span style="color: #10b981;">Included</span>
+          </div>
+          ` : ''}
+          ${order.additionalDriver ? `
+          <div class="detail-row">
+            <span class="detail-label">Additional Driver:</span>
+            <span>500.00 ETB</span>
+          </div>
+          ` : ''}
+          <div class="detail-row total-row">
+            <span class="detail-label">TOTAL AMOUNT:</span>
+            <span>${order.totalAmount.toFixed(2)} ETB</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>Thank you for choosing our rental service!</p>
+        <p>For support: support@rentalcars.com | +1 (555) 123-4567</p>
+        <p>Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+      </div>
+
+      <div class="no-print" style="text-align: center; margin-top: 20px;">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer;">
+          Print Receipt
+        </button>
+        <button onclick="window.close()" style="padding: 10px 20px; background: #6b7280; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+          Close Window
+        </button>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  if (printWindow) {
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Wait for content to load then print
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+  } else {
+    toast.error("Please allow pop-ups to generate PDF");
+  }
+};
+
+
+const downloadOrderPDF = (order: Order) => {
+  toast.loading("Generating PDF...");
+  
+  setTimeout(() => {
+   
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Order Receipt - ${order.id}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+          .header { text-align: center; background: #3b82f6; color: white; padding: 20px; margin-bottom: 20px; }
+          .section { margin: 15px 0; padding: 15px; border: 1px solid #ddd; }
+          .section-title { font-weight: bold; color: #3b82f6; margin-bottom: 10px; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+          .total { font-weight: bold; color: #10b981; font-size: 18px; border-top: 2px solid #10b981; padding-top: 10px; }
+          @media print { body { margin: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>RENTAL CAR SERVICE</h1>
+          <h2>Order Receipt - ${order.id}</h2>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">Order Details</div>
+          <p><strong>Vehicle:</strong> ${order.vehicle.name}</p>
+          <p><strong>Customer:</strong> ${order.customerName}</p>
+          <p><strong>Period:</strong> ${new Date(order.startDate).toLocaleDateString()} to ${new Date(order.endDate).toLocaleDateString()}</p>
+          <p><strong>Total Days:</strong> ${order.totalDays}</p>
+          <p class="total"><strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)} ETB</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px;">
+          Generated on ${new Date().toLocaleDateString()}
+        </div>
+      </body>
+      </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+    
+    toast.dismiss();
+    toast.success("PDF generated successfully!");
+  }, 1000);
+};
+
+
 const OrderDetailsModal: React.FC<{
   order: Order;
   isOpen: boolean;
@@ -197,11 +494,12 @@ const OrderDetailsModal: React.FC<{
   const StatusIcon = statusConfig.icon;
 
   const handlePrint = () => {
-    toast.success("Printing order details...");
-    // In a real app, this would generate a PDF
-    setTimeout(() => {
-      window.print();
-    }, 1000);
+    toast.success("Generating printable receipt...");
+    generateOrderPDF(order);
+  };
+
+  const handleDownloadPDF = () => {
+    downloadOrderPDF(order);
   };
 
   const handleShare = () => {
@@ -217,10 +515,7 @@ const OrderDetailsModal: React.FC<{
     }
   };
 
-  const handleContactSupport = () => {
-    toast.info("Connecting you with our support team...");
-    // In a real app, this would open a chat or phone
-  };
+
 
   return (
     <motion.div
@@ -236,7 +531,7 @@ const OrderDetailsModal: React.FC<{
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
         className={`
-          w-full max-w-6xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col
+          w-full max-w-6xl h-[95vh] rounded-3xl shadow-2xl flex flex-col
           ${
             theme === "light"
               ? "bg-white text-gray-900"
@@ -244,10 +539,10 @@ const OrderDetailsModal: React.FC<{
           }
         `}
       >
-        {/* Header */}
+        {/* Header - Fixed */}
         <div
           className={`
-          flex items-center justify-between p-6 border-b
+          flex items-center justify-between p-6 border-b flex-shrink-0
           ${theme === "light" ? "border-gray-200" : "border-gray-700"}
         `}
         >
@@ -262,6 +557,15 @@ const OrderDetailsModal: React.FC<{
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDownloadPDF}
+              className="rounded-2xl"
+              title="Download PDF"
+            >
+              <Download className="w-5 h-5" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -289,377 +593,360 @@ const OrderDetailsModal: React.FC<{
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Order & Vehicle Info */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Order Status & Summary */}
-              <Card
-                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
-              >
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-full ${statusConfig.color}`}>
-                        <StatusIcon className="w-5 h-5 text-white" />
+   
+        <ScrollArea className="flex-1">
+          <div className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+             
+              <div className="lg:col-span-2 space-y-6">
+             
+                <Card
+                  className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-full ${statusConfig.color}`}>
+                          <StatusIcon className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg">Order Status</h3>
+                          <Badge
+                            className={`${statusConfig.color} text-white mt-1`}
+                          >
+                            {statusConfig.text}
+                          </Badge>
+                        </div>
                       </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-black text-green-600">
+                          {formatCurrency(order.totalAmount)}
+                        </p>
+                        <p className="text-sm opacity-70">
+                          {order.totalDays} day{order.totalDays !== 1 ? "s" : ""}{ " "}
+                          • {formatCurrency(order.dailyRate)}/day
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <h3 className="font-bold text-lg">Order Status</h3>
-                        <Badge
-                          className={`${statusConfig.color} text-white mt-1`}
-                        >
-                          {statusConfig.text}
-                        </Badge>
+                        <p className="font-semibold opacity-70">Order Date</p>
+                        <p>{formatDate(order.createdAt)}</p>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-black text-green-600">
-                        {formatCurrency(order.totalAmount)}
-                      </p>
-                      <p className="text-sm opacity-70">
-                        {order.totalDays} day{order.totalDays !== 1 ? "s" : ""}{" "}
-                        • {formatCurrency(order.dailyRate)}/day
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="font-semibold opacity-70">Order Date</p>
-                      <p>{formatDate(order.createdAt)}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold opacity-70">Payment Status</p>
-                      <Badge
-                        className={`${paymentStatusConfig.color} text-white`}
-                      >
-                        {paymentStatusConfig.text}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="font-semibold opacity-70">Payment Method</p>
-                      <p>{order.paymentMethod || "Credit Card"}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold opacity-70">Insurance</p>
-                      <p>
-                        {order.insuranceIncluded
-                          ? "Included ✓"
-                          : "Not Included"}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Vehicle Details */}
-              <Card
-                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
-              >
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                    <CarIcon className="w-5 h-5 text-blue-500" />
-                    Vehicle Information
-                  </h3>
-
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <img
-                      src={order.vehicle.image}
-                      alt={order.vehicle.name}
-                      className="w-48 h-32 rounded-xl object-cover flex-shrink-0"
-                    />
-
-                    <div className="flex-1">
-                      <h4 className="text-xl font-black mb-2">
-                        {order.vehicle.name}
-                      </h4>
-                      <p className="text-sm opacity-70 mb-3">
-                        {order.vehicle.brand} • {order.vehicle.model} •{" "}
-                        {order.vehicle.type}
-                      </p>
-
-                      <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-blue-500" />
-                          <span>{order.vehicle.seats} seats</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Fuel className="w-4 h-4 text-green-500" />
-                          <span>{order.vehicle.fuelType}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Gauge className="w-4 h-4 text-purple-500" />
-                          <span>{order.vehicle.transmission}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Navigation className="w-4 h-4 text-orange-500" />
-                          <span>{order.vehicle.mileage}</span>
-                        </div>
+                     
+                      <div>
+                        <p className="font-semibold opacity-70">Payment Method</p>
+                        <p>{order.paymentMethod || "CHAPA"}</p>
                       </div>
+                      
+                    </div>
+                  </CardContent>
+                </Card>
 
-                      {order.vehicle.features &&
-                        order.vehicle.features.length > 0 && (
-                          <div>
-                            <p className="font-semibold text-sm mb-2">
-                              Features:
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                              {order.vehicle.features
-                                .slice(0, 6)
-                                .map((feature, index) => (
-                                  <Badge
-                                    key={index}
-                                    variant="outline"
-                                    className="text-xs"
-                                  >
-                                    {feature}
-                                  </Badge>
-                                ))}
-                              {order.vehicle.features.length > 6 && (
-                                <Badge variant="outline" className="text-xs">
-                                  +{order.vehicle.features.length - 6} more
-                                </Badge>
-                              )}
-                            </div>
+               
+                <Card
+                  className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+                >
+                  <CardContent className="p-6">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                      <CarIcon className="w-5 h-5 text-blue-500" />
+                      Vehicle Information
+                    </h3>
+
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <img
+                        src={order.vehicle.image}
+                        alt={order.vehicle.name}
+                        className="w-48 h-32 rounded-xl object-cover flex-shrink-0"
+                      />
+
+                      <div className="flex-1">
+                        <h4 className="text-xl font-black mb-2">
+                          {order.vehicle.name}
+                        </h4>
+                        <p className="text-sm opacity-70 mb-3">
+                          {order.vehicle.brand} • {order.vehicle.model} •{" "}
+                          {order.vehicle.type}
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-blue-500" />
+                            <span>{order.vehicle.seats} seats</span>
                           </div>
-                        )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Rental Period & Locations */}
-              <Card
-                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
-              >
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-green-500" />
-                    Rental Schedule
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-semibold mb-3 text-blue-500">
-                        Pickup
-                      </h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span className="font-medium">
-                            {formatDate(order.startDate)}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <Fuel className="w-4 h-4 text-green-500" />
+                            <span>{order.vehicle.fuelType}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Gauge className="w-4 h-4 text-purple-500" />
+                            <span>{order.vehicle.transmission}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Navigation className="w-4 h-4 text-orange-500" />
+                            <span>{order.vehicle.mileage}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4" />
-                          <span>{order.pickupLocation}</span>
-                        </div>
+
+                        {order.vehicle.features &&
+                          order.vehicle.features.length > 0 && (
+                            <div>
+                              <p className="font-semibold text-sm mb-2">
+                                Features:
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {order.vehicle.features
+                                  .slice(0, 6)
+                                  .map((feature, index) => (
+                                    <Badge
+                                      key={index}
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      {feature}
+                                    </Badge>
+                                  ))}
+                                {order.vehicle.features.length > 6 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    +{order.vehicle.features.length - 6} more
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          )}
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
 
-                    <div>
-                      <h4 className="font-semibold mb-3 text-green-500">
-                        Drop-off
-                      </h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span className="font-medium">
-                            {formatDate(order.endDate)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4" />
-                          <span>{order.dropoffLocation}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+          
+                <Card
+                  className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+                >
+                  <CardContent className="p-6">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-green-500" />
+                      Rental Schedule
+                    </h3>
 
-                  <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Total Rental Period:</span>
-                      <span className="font-bold">
-                        {order.totalDays} day{order.totalDays !== 1 ? "s" : ""}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right Column - Customer & Actions */}
-            <div className="space-y-6">
-              {/* Customer Information */}
-              <Card
-                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
-              >
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                    <UserIcon className="w-5 h-5 text-purple-500" />
-                    Customer Information
-                  </h3>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <p className="font-semibold">{order.customerName}</p>
-                        <p className="text-sm opacity-70">Primary Driver</p>
+                        <h4 className="font-semibold mb-3 text-blue-500">
+                          Pickup
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            <span className="font-medium">
+                              {formatDate(order.startDate)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            <span>{order.pickupLocation}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-3 text-green-500">
+                          Drop-off
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            <span className="font-medium">
+                              {formatDate(order.endDate)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            <span>{order.dropoffLocation}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <MailIcon className="w-4 h-4" />
-                      <span className="text-sm">{order.customerEmail}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <PhoneIcon className="w-4 h-4" />
-                      <span className="text-sm">{order.customerPhone}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <CreditCardIcon className="w-4 h-4" />
-                      <span className="text-sm">
-                        License: {order.customerLicense}
-                      </span>
-                    </div>
-                  </div>
-
-                  {order.additionalDriver && (
-                    <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Users className="w-4 h-4 text-yellow-500" />
-                        <span className="font-semibold">
-                          Additional Driver Included
+                    <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <div className="flex items-center justify-between text-sm">
+                        <span>Total Rental Period:</span>
+                        <span className="font-bold">
+                          {order.totalDays} day{order.totalDays !== 1 ? "s" : ""}
                         </span>
                       </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
 
-              {/* Price Breakdown */}
-              <Card
-                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
-              >
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-4">Price Breakdown</h3>
+          
+              <div className="space-y-6">
+        
+                <Card
+                  className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+                >
+                  <CardContent className="p-6">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                      <UserIcon className="w-5 h-5 text-purple-500" />
+                      Customer Information
+                    </h3>
 
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Daily Rate ({order.totalDays} days)</span>
-                      <span>
-                        {formatCurrency(order.dailyRate * order.totalDays)}
-                      </span>
-                    </div>
-
-                    {order.insuranceIncluded && (
-                      <div className="flex justify-between">
-                        <span>Insurance Coverage</span>
-                        <span className="text-green-500">Included</span>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        <div>
+                          <p className="font-semibold">{order.customerName}</p>
+                          <p className="text-sm opacity-70">Primary Driver</p>
+                        </div>
                       </div>
-                    )}
+
+                      <div className="flex items-center gap-2">
+                        <MailIcon className="w-4 h-4" />
+                        <span className="text-sm">{order.customerEmail}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <PhoneIcon className="w-4 h-4" />
+                        <span className="text-sm">{order.customerPhone}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <CreditCardIcon className="w-4 h-4" />
+                        <span className="text-sm">
+                          License: {order.customerLicense}
+                        </span>
+                      </div>
+                    </div>
 
                     {order.additionalDriver && (
-                      <div className="flex justify-between">
-                        <span>Additional Driver</span>
-                        <span>{formatCurrency(500)}</span>
+                      <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Users className="w-4 h-4 text-yellow-500" />
+                          <span className="font-semibold">
+                            Additional Driver Included
+                          </span>
+                        </div>
                       </div>
                     )}
+                  </CardContent>
+                </Card>
 
-                    <div className="flex justify-between border-t pt-2 font-bold">
-                      <span>Total Amount</span>
-                      <span className="text-green-600">
-                        {formatCurrency(order.totalAmount)}
-                      </span>
+             
+                <Card
+                  className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+                >
+                  <CardContent className="p-6">
+                    <h3 className="font-bold text-lg mb-4">Price Breakdown</h3>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Daily Rate ({order.totalDays} days)</span>
+                        <span>
+                          {formatCurrency(order.dailyRate * order.totalDays)}
+                        </span>
+                      </div>
+
+                      {order.insuranceIncluded && (
+                        <div className="flex justify-between">
+                          <span>Insurance Coverage</span>
+                          <span className="text-green-500">Included</span>
+                        </div>
+                      )}
+
+                      {order.additionalDriver && (
+                        <div className="flex justify-between">
+                          <span>Additional Driver</span>
+                          <span>{formatCurrency(500)}</span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between border-t pt-2 font-bold">
+                        <span>Total Amount</span>
+                        <span className="text-green-600">
+                          {formatCurrency(order.totalAmount)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
-              {/* Quick Actions */}
-              <Card
-                className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
-              >
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
+              
+                <Card
+                  className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
+                >
+                  <CardContent className="p-6">
+                    <h3 className="font-bold text-lg mb-4">Quick Actions</h3>
 
-                  <div className="space-y-3">
-                    <Button
-                      onClick={handleContactSupport}
-                      className="w-full rounded-xl bg-blue-500 hover:bg-blue-600"
-                    >
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      Contact Support
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      onClick={handlePrint}
-                      className="w-full rounded-xl"
-                    >
-                      <Printer className="w-4 h-4 mr-2" />
-                      Print Receipt
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      onClick={handleShare}
-                      className="w-full rounded-xl"
-                    >
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Share Order
-                    </Button>
-
-                    {(order.status === "ACTIVE" ||
-                      order.status === "CONFIRMED") && (
+                    <div className="space-y-3">
                       <Button
-                        variant="outline"
-                        className="w-full rounded-xl text-red-500 border-red-200 hover:bg-red-50"
-                        onClick={() =>
-                          toast.info("Cancellation process started")
-                        }
+                        onClick={handleDownloadPDF}
+                        className="w-full rounded-xl bg-blue-500 hover:bg-blue-600"
                       >
-                        <XCircle className="w-4 h-4 mr-2" />
-                        Cancel Order
+                        <Download className="w-4 h-4 mr-2" />
+                        Download PDF
                       </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                   <Link to="/dashboard/contact">
+                    <Button
+                       
+                        variant="outline"
+                        className="w-full rounded-xl mt-3"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Contact Support
+                      </Button></Link>
+                     
 
-              {/* Support Information */}
-              <Card
-                className={
-                  theme === "light"
-                    ? "bg-blue-50 border-blue-200"
-                    : "bg-blue-900/20 border-blue-800"
-                }
-              >
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                    <Shield className="w-5 h-5 text-blue-500" />
-                    24/7 Support
-                  </h3>
+                   
 
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      <span>+1 (555) 123-4567</span>
+                      {(order.status === "ACTIVE" ||
+                        order.status === "CONFIRMED") && (
+                        <Button
+                          variant="outline"
+                          className="w-full rounded-xl text-red-500 border-red-200 hover:bg-red-50"
+                          onClick={() =>
+                            toast.info("Cancellation process started")
+                          }
+                        >
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Cancel Order
+                        </Button>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      <span>support@rentalcars.com</span>
+                  </CardContent>
+                </Card>
+
+                {/* Support Information */}
+                <Card
+                  className={
+                    theme === "light"
+                      ? "bg-blue-50 border-blue-200"
+                      : "bg-blue-900/20 border-blue-800"
+                  }
+                >
+                  <CardContent className="p-6">
+                    <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-blue-500" />
+                      24/7 Support
+                    </h3>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4" />
+                        <span>+1 (555) 123-4567</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4" />
+                        <span>support@rentalcars.com</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span>Available 24/7</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      <span>Available 24/7</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </ScrollArea>
@@ -741,6 +1028,10 @@ export default function Bookings() {
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
     setIsDetailsModalOpen(true);
+  };
+
+  const handleDownloadPDF = (order: Order) => {
+    downloadOrderPDF(order);
   };
 
   const filteredOrders = orders.filter((order) => {
@@ -1185,6 +1476,15 @@ export default function Bookings() {
                           </div>
 
                           <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="rounded-xl"
+                              onClick={() => handleDownloadPDF(order)}
+                            >
+                              <Download className="w-4 h-4 mr-1" />
+                              Download PDF
+                            </Button>
                             <Button
                               variant="outline"
                               size="sm"

@@ -18,7 +18,6 @@ import {
   Users,
   Fuel,
   Gauge,
-  Star,
   Heart,
   ArrowRight,
   CheckCircle,
@@ -75,7 +74,7 @@ interface Filters {
   selectedTypes: string[];
   selectedBrands: string[];
   priceRange: [number, number];
-  sortBy: "featured" | "price_asc" | "price_desc" | "rating_desc" | "popular";
+  sortBy: "featured" | "price_asc" | "price_desc" | "popular";
 }
 
 const API_BASE = "http://localhost:3000/api";
@@ -84,7 +83,7 @@ const initialFilters: Filters = {
   searchText: "",
   selectedTypes: [],
   selectedBrands: [],
-  priceRange: [0, 1000],
+  priceRange: [0, 10000],
   sortBy: "featured",
 };
 
@@ -160,7 +159,7 @@ export default function DVehicles() {
   const [error, setError] = useState<string | null>(null);
 
   const [filters, setFilters] = useState<Filters>(initialFilters);
-  const [maxPrice, setMaxPrice] = useState(1000);
+  const [maxPrice, setMaxPrice] = useState(10000);
   const {
     cart,
     addToCart,
@@ -172,36 +171,34 @@ export default function DVehicles() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [rentalDays, setRentalDays] = useState<{ [key: string]: number }>({});
 
-  const vehicleTypes: VehicleType[] = useMemo(
-    () => [
-      {
-        value: "City",
-        label: t("vehicles.city") || "City",
-        icon: <Car className="w-4 h-4" />,
-        color: "from-blue-500 to-cyan-500",
-      },
-      {
-        value: "Tour",
-        label: t("vehicles.tour") || "Tour",
-        icon: <Truck className="w-4 h-4" />,
-        color: "from-green-500 to-emerald-500",
-      },
-      {
-        value: "Vacation",
-        label: t("vehicles.vacation") || "Vacation",
-        icon: <Sparkles className="w-4 h-4" />,
-        color: "from-purple-500 to-pink-500",
-      },
-      {
-        value: "Bridal",
-        label: t("vehicles.bridal") || "Bridal",
-        icon: <TrendingUp className="w-4 h-4" />,
-        color: "from-red-500 to-orange-500",
-      },
+  // Dynamic vehicle types based on actual data
+  const vehicleTypes: VehicleType[] = useMemo(() => {
+    const uniqueTypes = Array.from(new Set(vehicles.map(v => v.type))).filter(Boolean);
     
-    ],
-    [t]
-  );
+    const typeConfigs: { [key: string]: { icon: React.ReactNode; color: string } } = {
+      "City": { icon: <Car className="w-4 h-4" />, color: "from-blue-500 to-cyan-500" },
+      "Tour": { icon: <Truck className="w-4 h-4" />, color: "from-green-500 to-emerald-500" },
+      "Vacation": { icon: <Sparkles className="w-4 h-4" />, color: "from-purple-500 to-pink-500" },
+      "Bridal": { icon: <TrendingUp className="w-4 h-4" />, color: "from-red-500 to-orange-500" },
+      "SUV": { icon: <Car className="w-4 h-4" />, color: "from-indigo-500 to-purple-500" },
+      "Sedan": { icon: <Car className="w-4 h-4" />, color: "from-gray-500 to-blue-500" },
+      "Luxury": { icon: <Sparkles className="w-4 h-4" />, color: "from-yellow-500 to-orange-500" },
+    };
+
+    return uniqueTypes.map(type => {
+      const config = typeConfigs[type] || { 
+        icon: <Car className="w-4 h-4" />, 
+        color: "from-gray-500 to-blue-500" 
+      };
+      
+      return {
+        value: type,
+        label: `${type.toUpperCase()}`,
+        icon: config.icon,
+        color: config.color
+      };
+    });
+  }, [vehicles, t]);
 
   const fetchVehicles = async (): Promise<Vehicle[]> => {
     try {
@@ -230,8 +227,8 @@ export default function DVehicles() {
       });
       setRentalDays(initialRentalDays);
 
-      const maxP = Math.max(...data.map((v) => v.pricePerDay || 0), 100);
-      const safeMaxPrice = Math.ceil(maxP / 100) * 100;
+      const maxP = Math.max(...data.map((v) => v.pricePerDay || 0), 1000);
+      const safeMaxPrice = Math.ceil(maxP / 1000) * 1000;
       setMaxPrice(safeMaxPrice);
       setFilters((prev) => ({ ...prev, priceRange: [0, safeMaxPrice] }));
     } catch (err) {
@@ -280,12 +277,10 @@ export default function DVehicles() {
           return (a.pricePerDay || 0) - (b.pricePerDay || 0);
         case "price_desc":
           return (b.pricePerDay || 0) - (a.pricePerDay || 0);
-        case "rating_desc":
-          return (b.rating || 0) - (a.rating || 0);
         case "popular":
           return (b.reviewCount || 0) - (a.reviewCount || 0);
         default:
-          return (b.rating || 0) - (a.rating || 0); // featured
+          return 0; // featured - no specific sorting
       }
     });
 
@@ -429,7 +424,6 @@ export default function DVehicles() {
       value: "price_desc",
       label: t("vehicles.priceHigh") || "Price: High to Low",
     },
-    { value: "rating_desc", label: t("vehicles.rating") || "Highest Rated" },
     { value: "popular", label: t("vehicles.popular") || "Most Popular" },
   ];
 
@@ -649,7 +643,7 @@ export default function DVehicles() {
                       ${theme === "light" ? "text-blue-600" : "text-blue-400"}
                     `}
                     >
-                      ${filters.priceRange[0]}
+                      ETB {filters.priceRange[0]}
                     </span>{" "}
                     -
                     <span
@@ -659,7 +653,7 @@ export default function DVehicles() {
                     `}
                     >
                       {" "}
-                      ${filters.priceRange[1]}
+                      ETB {filters.priceRange[1]}
                     </span>
                     {t("vehicles.perDay") || "/day"}
                   </Label>
@@ -686,9 +680,9 @@ export default function DVehicles() {
                       ${theme === "light" ? "text-gray-500" : "text-gray-400"}
                     `}
                     >
-                      <span>$0</span>
-                      <span>${Math.round(maxPrice / 2)}</span>
-                      <span>${maxPrice}</span>
+                      <span>ETB 0</span>
+                      <span>ETB {Math.round(maxPrice / 2)}</span>
+                      <span>ETB {maxPrice}</span>
                     </div>
                   </div>
                 </div>
@@ -842,24 +836,7 @@ export default function DVehicles() {
           )}
         </AnimatePresence>
 
-        {filteredAndSortedVehicles.length > 0 && (
-          <div className="text-center mt-12">
-            <Button
-              variant="outline"
-              className={`
-                rounded-2xl px-8 py-3 font-semibold
-                ${
-                  theme === "light"
-                    ? "border-blue-600 text-blue-600 hover:bg-blue-50"
-                    : "border-blue-400 text-blue-400 hover:bg-blue-900/20"
-                }
-              `}
-            >
-              {t("vehicles.loadMore") || "Load More Vehicles"}
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </div>
-        )}
+      
       </div>
 
       <div className="max-w-7xl mx-auto px-8 my-20">
@@ -1156,7 +1133,7 @@ const FloatingCart: React.FC<{
         )}
       </div>
       <div className="text-left">
-        <div className="text-sm font-semibold">${totalPrice}</div>
+        <div className="text-sm font-semibold">ETB {totalPrice}</div>
         <div className="text-xs opacity-80">View Cart</div>
       </div>
     </div>
@@ -1171,7 +1148,6 @@ interface EnhancedVehicleCardProps extends VehicleCardProps {
 const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
   vehicle,
   theme,
-
   onToggleFavorite,
   onAddToCart,
   isAddedToCart,
@@ -1190,8 +1166,6 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
     brand: vehicle.brand || "Unknown Brand",
     model: vehicle.model || "Unknown Model",
     pricePerDay: vehicle.pricePerDay || 0,
-    rating: vehicle.rating || 0,
-    reviewCount: vehicle.reviewCount || 0,
     seats: vehicle.seats || 4,
     fuelType: vehicle.fuelType || "Gasoline",
     transmission: vehicle.transmission || "Automatic",
@@ -1313,30 +1287,6 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
             {vehicleType?.label || safeVehicle.type}
           </span>
         </div>
-        <div
-          className={`
-          absolute bottom-3 left-3 rounded-full px-3 py-1 flex items-center gap-1 shadow-lg backdrop-blur-sm
-          ${theme === "light" ? "bg-white/90" : "bg-gray-800/90"}
-        `}
-        >
-          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-          <span
-            className={`
-            font-semibold text-sm
-            ${theme === "light" ? "text-gray-800" : "text-white"}
-          `}
-          >
-            {safeVehicle.rating > 0 ? safeVehicle.rating.toFixed(1) : "N/A"}
-          </span>
-          <span
-            className={`
-            text-sm
-            ${theme === "light" ? "text-gray-500" : "text-gray-400"}
-          `}
-          >
-            ({safeVehicle.reviewCount})
-          </span>
-        </div>
       </div>
 
       <div className="p-6">
@@ -1383,7 +1333,7 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
               ${theme === "light" ? "text-blue-600" : "text-blue-400"}
             `}
             >
-              ${safeVehicle.pricePerDay}
+              ETB {safeVehicle.pricePerDay}
             </span>
             <p
               className={`
@@ -1475,7 +1425,7 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
                 ${theme === "light" ? "text-green-600" : "text-green-400"}
               `}
               >
-                ${totalPrice}
+                ETB {totalPrice}
               </div>
               <div
                 className={`
@@ -1735,7 +1685,7 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
                                                         }
                                                     `}
                           >
-                            ${item.pricePerDay}/day
+                            ETB {item.pricePerDay}/day
                           </span>
                           <div
                             className={`px-2 py-1 rounded-full text-xs ${
@@ -1826,7 +1776,7 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
 
                       <div className="text-right min-w-[100px]">
                         <div className="text-xl font-black text-green-600">
-                          ${item.totalPrice}
+                          ETB {item.totalPrice}
                         </div>
                       </div>
 
@@ -1862,7 +1812,7 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
                 </p>
               </div>
               <span className="text-3xl font-black text-green-600">
-                ${totalPrice}
+                ETB {totalPrice}
               </span>
             </div>
             <Button
@@ -1882,6 +1832,7 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
     </motion.div>
   );
 };
+
 const NoVehiclesFound: React.FC<{
   theme: string;
   loadVehicles: () => void;

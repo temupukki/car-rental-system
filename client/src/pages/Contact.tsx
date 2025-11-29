@@ -38,7 +38,7 @@ export default function Contact() {
     {
       icon: "📍",
       title: t("contact.address") || "Address",
-      details: "Gondar, Maraki",
+      details: "University of Gondar",
       description: t("contact.addressDesc") || "Visit our main office",
       gradient: "from-green-500 to-emerald-500",
       bgColor: "bg-green-500/10",
@@ -104,7 +104,6 @@ export default function Contact() {
         body: JSON.stringify(formData),
       });
 
-
       if (response.ok) {
         toast.success("Message Sent Successfully!");
 
@@ -116,7 +115,6 @@ export default function Contact() {
           message: "",
         });
       } else {
-        
         toast.error("Failed to Send Message");
       }
     } catch (error) {
@@ -131,6 +129,20 @@ export default function Contact() {
     setActiveFAQ(activeFAQ === index ? null : index);
   };
 
+  // Function to open Google Maps with University of Gondar location
+  const openGoogleMaps = () => {
+    const address = "University of Gondar, Gondar, Ethiopia";
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    window.open(url, '_blank');
+  };
+
+  // Function to get directions
+  const getDirections = () => {
+    const address = "University of Gondar, Gondar, Ethiopia";
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+    window.open(url, '_blank');
+  };
+
   return (
     <div
       className={`
@@ -142,8 +154,7 @@ export default function Contact() {
       }
     `}
     >
-     
-     
+      {/* Hero Section */}
       <div className="relative h-[500px] rounded-b-3xl overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -204,10 +215,10 @@ export default function Contact() {
         </div>
       </div>
 
-   
+      {/* Main Content */}
       <section className="py-20 px-6 relative -mt-20">
         <div className="max-w-7xl mx-auto">
-       
+          {/* Contact Methods */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
             {contactMethods.map((method, index) => (
               <motion.div
@@ -299,11 +310,160 @@ export default function Contact() {
             ))}
           </div>
 
-         
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-           
+          {/* Map and Contact Form Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+            {/* Map Section */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className={`
+                rounded-3xl overflow-hidden backdrop-blur-sm border-2 relative
+                ${
+                  theme === "light"
+                    ? "bg-white/90 border-blue-200 shadow-2xl"
+                    : "bg-gray-800/90 border-blue-700 shadow-2xl"
+                }
+              `}
+            >
+              <div className="p-6">
+                <h2
+                  className={`
+                  text-3xl font-bold mb-4
+                  ${theme === "light" ? "text-gray-900" : "text-white"}
+                `}
+                >
+                  {t("contact.findUs") || "Find Us Here"}
+                </h2>
+                <p
+                  className={`mb-6 ${
+                    theme === "light" ? "text-gray-600" : "text-gray-400"
+                  }`}
+                >
+                  Visit our office at the University of Gondar
+                </p>
+
+                {/* Map Container */}
+                <div className="rounded-2xl overflow-hidden h-80 mb-6 relative">
+                  {/* Google Maps Iframe */}
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3940.755284553635!2d37.43230997599625!3d12.55473988752711!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1643a2cbf59d2d5f%3A0x5b4b7b0b5b4b7b0b!2sUniversity%20of%20Gondar!5e0!3m2!1sen!2set!4v1700000000000!5m2!1sen!2set"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, filter: theme === 'dark' ? 'invert(90%) hue-rotate(180deg)' : 'none' }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="University of Gondar Location"
+                  ></iframe>
+                  
+                  {/* Map Overlay with Info */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className={`
+                      rounded-2xl p-4 backdrop-blur-sm border
+                      ${
+                        theme === "light"
+                          ? "bg-white/90 border-gray-200"
+                          : "bg-gray-800/90 border-gray-600"
+                      }
+                    `}>
+                      <h3 className="font-bold text-lg mb-2 text-blue-600">
+                        University of Gondar
+                      </h3>
+                      <p className={`
+                        text-sm mb-3
+                        ${theme === "light" ? "text-gray-700" : "text-gray-300"}
+                      `}>
+                        Main Campus, Gondar, Ethiopia
+                      </p>
+                      <div className="flex gap-2">
+                        <motion.button
+                          onClick={getDirections}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`
+                            flex-1 py-2 px-4 rounded-xl font-semibold text-sm transition-all
+                            ${
+                              theme === "light"
+                                ? "bg-blue-600 text-white hover:bg-blue-700"
+                                : "bg-blue-700 text-white hover:bg-blue-600"
+                            }
+                          `}
+                        >
+                          Get Directions
+                        </motion.button>
+                        <motion.button
+                          onClick={openGoogleMaps}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`
+                            flex-1 py-2 px-4 rounded-xl font-semibold text-sm border transition-all
+                            ${
+                              theme === "light"
+                                ? "bg-white text-blue-600 border-blue-600 hover:bg-blue-50"
+                                : "bg-gray-700 text-blue-400 border-blue-400 hover:bg-gray-600"
+                            }
+                          `}
+                        >
+                          Open Map
+                        </motion.button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Location Details */}
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mt-1">
+                      <span className="text-blue-600 text-sm">📍</span>
+                    </div>
+                    <div>
+                      <h4 className={`
+                        font-semibold
+                        ${theme === "light" ? "text-gray-900" : "text-white"}
+                      `}>
+                        Main Office Location
+                      </h4>
+                      <p className={`
+                        text-sm
+                        ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                      `}>
+                        University of Gondar Main Campus<br />
+                        Near the Administration Building<br />
+                        Gondar, Ethiopia
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                      <span className="text-green-600 text-sm">🕒</span>
+                    </div>
+                    <div>
+                      <h4 className={`
+                        font-semibold
+                        ${theme === "light" ? "text-gray-900" : "text-white"}
+                      `}>
+                        Office Hours
+                      </h4>
+                      <p className={`
+                        text-sm
+                        ${theme === "light" ? "text-gray-600" : "text-gray-400"}
+                      `}>
+                        Monday - Friday: 8:00 AM - 6:00 PM<br />
+                        Saturday: 9:00 AM - 4:00 PM<br />
+                        Sunday: Closed
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Contact Form */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               className={`
@@ -315,7 +475,7 @@ export default function Contact() {
                 }
               `}
             >
-             
+              {/* Background decoration */}
               <div className="absolute inset-0 opacity-5">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-2xl"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500 rounded-full blur-2xl"></div>
@@ -549,131 +709,99 @@ export default function Contact() {
                 </form>
               </div>
             </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="space-y-8"
-            >
-              <div
-                className={`
-                rounded-3xl overflow-hidden backdrop-blur-sm border-2 relative
-                ${
-                  theme === "light"
-                    ? "bg-white/90 border-blue-200 shadow-2xl"
-                    : "bg-gray-800/90 border-blue-700 shadow-2xl"
-                }
-              `}
-              >
-                <div
-                  className="h-80 bg-cover bg-center relative"
-                  style={{ backgroundImage: "url('/show-room.jpg')" }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-6 left-6 text-white">
-                    <h3 className="text-2xl font-bold mb-2">
-                      {t("contact.visitUs") || "Visit Our Office"}
-                    </h3>
-                    <p className="text-blue-100 text-lg">
-                      Gondar, Maraki, Kebele 18
-                    </p>
-                    <p className="text-gray-300 mt-2">
-                      🕒 Mon - Fri: 2:00 AM - 11:00 AM LT
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className={`
-                rounded-3xl p-8 backdrop-blur-sm border-2
-                ${
-                  theme === "light"
-                    ? "bg-white/90 border-purple-200 shadow-2xl"
-                    : "bg-gray-800/90 border-purple-700 shadow-2xl"
-                }
-              `}
-              >
-                <h3
-                  className={`
-                  text-2xl font-bold mb-2
-                  ${theme === "light" ? "text-gray-900" : "text-white"}
-                `}
-                >
-                  {t("contact.faqTitle") || "Frequently Asked Questions"}
-                </h3>
-                <p
-                  className={`mb-6 ${
-                    theme === "light" ? "text-gray-600" : "text-gray-400"
-                  }`}
-                >
-                  Quick answers to common questions
-                </p>
-
-                <div className="space-y-4">
-                  {faqs.map((faq, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.5 }}
-                      className={`
-                        rounded-2xl p-4 border-2 transition-all duration-300 cursor-pointer
-                        ${
-                          theme === "light"
-                            ? "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:border-blue-300"
-                            : "bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-800 hover:border-blue-600"
-                        }
-                        ${activeFAQ === index ? "ring-2 ring-blue-500/30" : ""}
-                      `}
-                      onClick={() => toggleFAQ(index)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <h4
-                          className={`
-                          font-semibold text-lg
-                          ${theme === "light" ? "text-gray-900" : "text-white"}
-                        `}
-                        >
-                          {faq.question}
-                        </h4>
-                        <motion.span
-                          animate={{ rotate: activeFAQ === index ? 180 : 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="text-blue-500 text-xl"
-                        >
-                          ▼
-                        </motion.span>
-                      </div>
-                      <motion.div
-                        initial={false}
-                        animate={{
-                          height: activeFAQ === index ? "auto" : 0,
-                          opacity: activeFAQ === index ? 1 : 0,
-                        }}
-                        transition={{ duration: 0.3 }}
-                        className="overflow-hidden"
-                      >
-                        <p
-                          className={`
-                          mt-3 text-sm leading-relaxed
-                          ${
-                            theme === "light"
-                              ? "text-gray-600"
-                              : "text-gray-400"
-                          }
-                        `}
-                        >
-                          {faq.answer}
-                        </p>
-                      </motion.div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
           </div>
+
+          {/* FAQ Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className={`
+              rounded-3xl p-8 backdrop-blur-sm border-2
+              ${
+                theme === "light"
+                  ? "bg-white/90 border-purple-200 shadow-2xl"
+                  : "bg-gray-800/90 border-purple-700 shadow-2xl"
+              }
+            `}
+          >
+            <h3
+              className={`
+              text-2xl font-bold mb-2
+              ${theme === "light" ? "text-gray-900" : "text-white"}
+            `}
+            >
+              {t("contact.faqTitle") || "Frequently Asked Questions"}
+            </h3>
+            <p
+              className={`mb-6 ${
+                theme === "light" ? "text-gray-600" : "text-gray-400"
+              }`}
+            >
+              Quick answers to common questions
+            </p>
+
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  className={`
+                    rounded-2xl p-4 border-2 transition-all duration-300 cursor-pointer
+                    ${
+                      theme === "light"
+                        ? "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:border-blue-300"
+                        : "bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-800 hover:border-blue-600"
+                    }
+                    ${activeFAQ === index ? "ring-2 ring-blue-500/30" : ""}
+                  `}
+                  onClick={() => toggleFAQ(index)}
+                >
+                  <div className="flex items-center justify-between">
+                    <h4
+                      className={`
+                      font-semibold text-lg
+                      ${theme === "light" ? "text-gray-900" : "text-white"}
+                    `}
+                    >
+                      {faq.question}
+                    </h4>
+                    <motion.span
+                      animate={{ rotate: activeFAQ === index ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-blue-500 text-xl"
+                    >
+                      ▼
+                    </motion.span>
+                  </div>
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: activeFAQ === index ? "auto" : 0,
+                      opacity: activeFAQ === index ? 1 : 0,
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <p
+                      className={`
+                      mt-3 text-sm leading-relaxed
+                      ${
+                        theme === "light"
+                          ? "text-gray-600"
+                          : "text-gray-400"
+                      }
+                    `}
+                    >
+                      {faq.answer}
+                    </p>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>
