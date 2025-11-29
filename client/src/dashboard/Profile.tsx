@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState, useEffect, type JSX } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User,
@@ -7,37 +7,22 @@ import {
   Calendar,
   LogOut,
   Car,
-  Award,
-  CreditCard,
-  Gauge,
-  Clock,
   Shield,
   Eye,
   EyeOff,
-  ClipboardList,
-  Plus,
+  Edit3,
+  Save,
+  X,
 } from "lucide-react";
 import { authClient } from "../lib/auth-client";
-
-interface RentalStat {
-  label: string;
-  value: string | number;
-  icon: JSX.Element;
-  color: string;
-}
-
-interface LoyaltyBadge {
-  name: string;
-  description: string;
-  icon: JSX.Element;
-  date: string;
-}
+import { toast } from "sonner";
 
 interface UserSession {
   user?: {
+    id: string;
     name: string;
     email: string;
-    image?: string | null;
+    phone?: string;
     createdAt: string;
   };
 }
@@ -48,10 +33,6 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
-  const [rentalStats, setRentalStats] = useState<RentalStat[]>([]);
-  const [loyaltyBadges] = useState<LoyaltyBadge[]>([]);
-  const [reservations] = useState<any[]>([]);
-  const [paymentMethods] = useState<any[]>([]);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,6 +42,13 @@ export default function Profile() {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+  
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     async function fetchAllUserData() {
@@ -73,22 +61,10 @@ export default function Profile() {
 
         const sessionData = await sessionRes.json();
         setSession(sessionData);
-
+        
         if (sessionData.user) {
-          setRentalStats([
-            {
-              label: "Total Rentals",
-              value: "0",
-              icon: <Car className="w-5 h-5" />,
-              color: "from-red-500 to-pink-500",
-            },
-            {
-              label: "Rental Days",
-              value: "0",
-              icon: <Clock className="w-5 h-5" />,
-              color: "from-green-500 to-emerald-500",
-            },
-          ]);
+          setName(sessionData.user.name || "");
+          setPhone(sessionData.user.phone || "");
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -166,8 +142,107 @@ export default function Profile() {
     }
   };
 
-  const hasImage = session?.user?.image;
-  const canChangePassword = !hasImage;
+  const handleSaveName = async () => {
+    if (!session?.user?.id) return;
+
+    setSaveLoading(true);
+    setSaveError("");
+
+    try {
+      if (!name.trim()) {
+        setSaveError("Name is required");
+        setSaveLoading(false);
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3000/api/users/${session.user.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: name,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update name");
+      }
+
+      toast.success("Name updated successfully!");
+      setIsEditingName(false);
+      
+      setSession(prev => prev ? {
+        ...prev,
+        user: prev.user ? { ...prev.user, name } : undefined
+      } : null);
+    } catch (err: any) {
+      console.error("Error saving name:", err);
+      setSaveError(err.message || "Failed to update name");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleSavePhone = async () => {
+    if (!session?.user?.id) return;
+
+    setSaveLoading(true);
+    setSaveError("");
+
+    try {
+      const phoneRegex = /^\+?[\d\s-()]{10,}$/;
+      if (!phoneRegex.test(phone)) {
+        setSaveError("Invalid phone number format");
+        setSaveLoading(false);
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3000/api/users/${session.user.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          phone: phone,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update phone number");
+      }
+
+      toast.success("Phone number updated successfully!");
+      setIsEditingPhone(false);
+      
+      setSession(prev => prev ? {
+        ...prev,
+        user: prev.user ? { ...prev.user, phone } : undefined
+      } : null);
+    } catch (err: any) {
+      console.error("Error saving phone number:", err);
+      setSaveError(err.message || "Failed to update phone number");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleCancelEdit = (field: 'name' | 'phone') => {
+    if (field === 'name') {
+      setName(session?.user?.name || "");
+      setIsEditingName(false);
+    } else {
+      setPhone(session?.user?.phone || "");
+      setIsEditingPhone(false);
+    }
+    setSaveError("");
+  };
 
   const tabs = [
     {
@@ -176,24 +251,10 @@ export default function Profile() {
       icon: <User className="w-4 h-4" />,
     },
     {
-      id: "reservations",
-      label: "Reservations",
-      icon: <ClipboardList className="w-4 h-4" />,
+      id: "security",
+      label: "Security",
+      icon: <Shield className="w-4 h-4" />,
     },
-    {
-      id: "payment",
-      label: "Payment Methods",
-      icon: <CreditCard className="w-4 h-4" />,
-    },
-    ...(canChangePassword
-      ? [
-          {
-            id: "security",
-            label: "Security",
-            icon: <Shield className="w-4 h-4" />,
-          },
-        ]
-      : []),
   ];
 
   if (loading) {
@@ -277,23 +338,9 @@ export default function Profile() {
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 className="relative"
               >
-                {hasImage ? (
-                  <img
-                    src={hasImage}
-                    alt="Profile"
-                    className="w-24 h-24 rounded-2xl object-cover shadow-lg"
-                  />
-                ) : (
-                  <div className="w-24 h-24 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                    {session.user?.name?.charAt(0).toUpperCase() || "C"}
-                  </div>
-                )}
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 border-4 border-white rounded-full"
-                  title="Loyalty Member"
-                />
+                <div className="w-24 h-24 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                  {session.user?.name?.charAt(0).toUpperCase() || "C"}
+                </div>
               </motion.div>
 
               <div>
@@ -314,14 +361,6 @@ export default function Profile() {
                       ).toLocaleDateString()}
                     </span>
                   </div>
-                  {hasImage && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                      <span className="text-sm text-yellow-600">
-                        Loyalty Tier
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -359,99 +398,11 @@ export default function Profile() {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 space-y-6">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6"
-            >
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Gauge className="w-5 h-5 text-red-600" />
-                Renting History
-              </h2>
-              <div className="space-y-4">
-                {rentalStats.length > 0 ? (
-                  rentalStats.map((stat, index) => (
-                    <motion.div
-                      key={stat.label}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 + index * 0.1 }}
-                      className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`p-2 rounded-lg bg-gradient-to-r ${stat.color} text-white`}
-                        >
-                          {stat.icon}
-                        </div>
-                        <span className="font-medium text-gray-700">
-                          {stat.label}
-                        </span>
-                      </div>
-                      <span className="text-lg font-bold text-gray-900">
-                        {stat.value}
-                      </span>
-                    </motion.div>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-center py-4">
-                    No rental history yet. Start your first trip!
-                  </p>
-                )}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6"
-            >
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5 text-yellow-600" />
-                Loyalty Badges
-              </h2>
-              <div className="space-y-3">
-                {loyaltyBadges.length > 0 ? (
-                  loyaltyBadges.map((badge, index) => (
-                    <motion.div
-                      key={badge.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 + index * 0.1 }}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-yellow-50 border border-yellow-200"
-                    >
-                      <div className="p-2 bg-yellow-100 rounded-lg text-yellow-600">
-                        {badge.icon}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">
-                          {badge.name}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {badge.description}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {badge.date}
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-center py-4">
-                    No badges earned yet. Keep renting!
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          </div>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="lg:col-span-2 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8"
+            className="lg:col-span-3 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8"
           >
             <div className="flex overflow-x-auto pb-2 mb-8">
               {tabs.map((tab) => (
@@ -481,115 +432,141 @@ export default function Profile() {
                     Personal and Contact Information
                   </h3>
 
+                  {saveError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-red-50 border border-red-200 rounded-xl p-4"
+                    >
+                      <p className="text-red-700 text-sm">{saveError}</p>
+                    </motion.div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Full Name - Editable */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Full Name
                       </label>
-                      <div className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600">
-                        {session.user?.name || "Not provided"}
+                      <div className="relative">
+                        {isEditingName ? (
+                          <div className="space-y-2">
+                            <input
+                              type="text"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                              placeholder="Enter your full name"
+                            />
+                            <div className="flex gap-2">
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleSaveName}
+                                disabled={saveLoading}
+                                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                              >
+                                <Save className="w-4 h-4" />
+                                {saveLoading ? "Saving..." : "Save"}
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleCancelEdit('name')}
+                                className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg text-sm font-medium"
+                              >
+                                <X className="w-4 h-4" />
+                                Cancel
+                              </motion.button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600">
+                              {session.user?.name || "Not provided"}
+                            </div>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => setIsEditingName(true)}
+                              className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </motion.button>
+                          </div>
+                        )}
                       </div>
                     </div>
+
+                    {/* Email - Read Only */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address
+                        User Name
                       </label>
                       <div className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600">
                         {session.user?.email}
                       </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Driver's License ID
-                      </label>
-                      <div className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600">
-                        Not Set / Linked
-                      </div>
-                    </div>
+                 
+                    {/* Phone - Editable */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Primary Phone
                       </label>
-                      <div className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600">
-                        Not Set
+                      <div className="relative">
+                        {isEditingPhone ? (
+                          <div className="space-y-2">
+                            <input
+                              type="tel"
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                              placeholder="Enter your phone number"
+                            />
+                            <div className="flex gap-2">
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleSavePhone}
+                                disabled={saveLoading}
+                                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                              >
+                                <Save className="w-4 h-4" />
+                                {saveLoading ? "Saving..." : "Save"}
+                              </motion.button>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => handleCancelEdit('phone')}
+                                className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg text-sm font-medium"
+                              >
+                                <X className="w-4 h-4" />
+                                Cancel
+                              </motion.button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600">
+                              {session.user?.phone || "Not set"}
+                            </div>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => setIsEditingPhone(true)}
+                              className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </motion.button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </motion.div>
               )}
 
-              {activeTab === "reservations" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-6"
-                >
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    Active & Past Reservations
-                  </h3>
-                  {reservations.length > 0 ? (
-                    reservations.map((_reservation, index) => (
-                      <div
-                        key={index}
-                        className="bg-red-50 border border-red-200 rounded-xl p-6"
-                      ></div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 border border-dashed border-gray-300 rounded-xl bg-gray-50">
-                      <Car className="w-8 h-8 text-gray-400 mx-auto mb-3" />
-                      <p className="font-medium text-gray-700">
-                        No active or past reservations found.
-                      </p>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Ready to book your next ride?
-                      </p>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="mt-4 text-sm px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-medium"
-                      >
-                        Start a New Reservation
-                      </motion.button>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {activeTab === "payment" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-6"
-                >
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    Saved Payment Methods
-                  </h3>
-                  {paymentMethods.length > 0 ? (
-                    paymentMethods.map((_method, index) => (
-                      <div
-                        key={index}
-                        className="bg-green-50 border border-green-200 rounded-xl p-4"
-                      ></div>
-                    ))
-                  ) : (
-                    <div className="text-center py-4 border border-dashed border-gray-300 rounded-xl bg-gray-50">
-                      <CreditCard className="w-8 h-8 text-gray-400 mx-auto mb-3" />
-                      <p className="font-medium text-gray-700">
-                        No payment methods saved.
-                      </p>
-                    </div>
-                  )}
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-8 py-3 rounded-xl font-semibold border border-gray-300 hover:bg-gray-200 transition-colors"
-                  >
-                    <Plus className="w-5 h-5" /> Add New Payment Method
-                  </motion.button>
-                </motion.div>
-              )}
-
-              {activeTab === "security" && canChangePassword && (
+              {activeTab === "security" && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -698,15 +675,7 @@ export default function Profile() {
                     )}
 
                     {passwordSuccess && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-green-50 border border-green-200 rounded-xl p-4"
-                      >
-                        <p className="text-green-700 text-sm">
-                          {passwordSuccess}
-                        </p>
-                      </motion.div>
+                      toast.success('Password Changed Sucessfully')
                     )}
 
                     <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
@@ -749,31 +718,6 @@ export default function Profile() {
                       )}
                     </motion.button>
                   </form>
-                </motion.div>
-              )}
-
-              {activeTab === "security" && !canChangePassword && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-12"
-                >
-                  <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Password Management Not Available
-                  </h3>
-                  <p className="text-gray-600 mb-4 max-w-md mx-auto">
-                    Your account is managed through social authentication.
-                    Password changes are not available for social login
-                    accounts.
-                  </p>
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-4 max-w-md mx-auto">
-                    <p className="text-sm text-red-700">
-                      To manage your account security, please use the
-                      authentication provider (Google, GitHub, etc.) you used to
-                      sign up.
-                    </p>
-                  </div>
                 </motion.div>
               )}
             </div>
