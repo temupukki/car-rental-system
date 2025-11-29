@@ -97,6 +97,8 @@ const translations = {
   "home.cars.bmw.features.premium": "Premium",
   "home.cars.bmw.features.sport": "Sport Mode",
   "home.cars.bmw.features.leather": "Leather",
+  'services.tour':"Tour",
+  'services.vacation':'Vacation',
 
   "home.featuredCars.title": "Featured Vehicles",
   "home.featuredCars.subtitle": "Discover our handpicked selection of premium vehicles for every occasion and budget.",

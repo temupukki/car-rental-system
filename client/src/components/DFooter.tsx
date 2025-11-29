@@ -81,11 +81,12 @@ export default function DFooter() {
             `}>{t('footer.quickLinks')}</h4>
             <ul className="space-y-3">
               {[
-                { name: t('nav.home'), path: '/' },
-                { name: t('nav.services'), path: '/services' },
-                { name: t('nav.about'), path: '/about' },
-                { name: t('nav.contact'), path: '/contact' },
-                { name: t('footer.faq'), path: '/faq' },
+                { name: t('nav.dashboard'), path: '/dashboard' },
+                { name: t("nav.myBookings"), path: '/dashboard/bookings' },
+                
+            
+                { name: t('nav.contact'), path: '/dashboard/contact' },
+              
               ].map((link) => (
                 <li key={link.name}>
                   <Link
@@ -122,9 +123,13 @@ export default function DFooter() {
             <ul className="space-y-3">
               {[
                 t('services.luxury'),
-                t('services.suv'),
+                
                 t('services.business'),
-                t('services.leasing'),
+                t('services.vacation'),
+                t('services.tour'),
+                
+                
+                
         
                
               ].map((service) => (
@@ -229,28 +234,7 @@ export default function DFooter() {
               © {currentYear} EliteDrive Car Rental. {t('footer.rights')}
             </motion.p>
             
-            <div className="flex space-x-6">
-              {[
-                t('footer.privacy'),
-                t('footer.terms'),
-               
-              ].map((item) => (
-                <motion.a
-                  key={item}
-                  href="/privacy"
-                  whileHover={{ scale: 1.05 }}
-                  className={`
-                    text-sm transition-colors duration-300
-                    ${theme === 'light' 
-                      ? 'text-gray-600 hover:text-blue-600' 
-                      : 'text-gray-500 hover:text-cyan-400'
-                    }
-                  `}
-                >
-                  {item}
-                </motion.a>
-              ))}
-            </div>
+            
           </div>
         </div>
       </div>

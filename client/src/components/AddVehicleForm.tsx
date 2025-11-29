@@ -838,7 +838,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                       <div className="space-y-3">
                         <Label htmlFor="pricePerDay" className="font-semibold flex items-center gap-2">
                           <Sparkles className="w-4 h-4 text-green-500" />
-                          Price Per Day ($) *
+                          Price Per Day (ETB) *
                         </Label>
                         <Input
                           id="pricePerDay"
@@ -867,7 +867,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                           id="location"
                           value={formData.location}
                           onChange={(e) => handleInputChange('location', e.target.value)}
-                          placeholder="e.g., Downtown Branch"
+                          placeholder="e.g., Addis Ababa"
                           className={`
                             rounded-xl border-2
                             ${theme === 'light' 

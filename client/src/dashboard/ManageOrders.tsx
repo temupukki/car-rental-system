@@ -3,9 +3,8 @@ import { toast } from "sonner";
 
 type OrderStatus =
   | "PENDING"
-  | "CONFIRMED"
-  | "ACTIVE"
-  | "COMPLETED"
+  | "PAYMENT_COMPLETED"
+  | "TAKEN"
   | "CANCELLED";
 
 interface Vehicle {
@@ -159,12 +158,11 @@ const ManageOrders: React.FC = () => {
     switch (status) {
       case "PENDING":
         return "bg-yellow-100 text-yellow-800";
-      case "CONFIRMED":
+      case "PAYMENT_COMPLETED":
         return "bg-blue-100 text-blue-800";
-      case "ACTIVE":
+      case "TAKEN":
         return "bg-green-100 text-green-800";
-      case "COMPLETED":
-        return "bg-gray-100 text-gray-800";
+    
       case "CANCELLED":
         return "bg-red-100 text-red-800";
       default:
@@ -301,9 +299,8 @@ const ManageOrders: React.FC = () => {
               >
                 <option value="">All statuses</option>
                 <option value="PENDING">Pending</option>
-                <option value="CONFIRMED">Confirmed</option>
-                <option value="ACTIVE">Active</option>
-                <option value="COMPLETED">Completed</option>
+                <option value="PAYMENT_COMPLETED">Payment completed</option>
+                <option value="TAKEN">Taken</option>
                 <option value="CANCELLED">Cancelled</option>
               </select>
             </div>
@@ -364,17 +361,14 @@ const ManageOrders: React.FC = () => {
                 {orders?.filter((o) => o.status === "PENDING").length || 0}
               </span>
               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                Confirmed:{" "}
-                {orders?.filter((o) => o.status === "CONFIRMED").length || 0}
+                Payment Completed:{" "}
+                {orders?.filter((o) => o.status === "PAYMENT_COMPLETED").length || 0}
               </span>
               <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
-                Active:{" "}
-                {orders?.filter((o) => o.status === "ACTIVE").length || 0}
+                Taken:{" "}
+                {orders?.filter((o) => o.status === "TAKEN").length || 0}
               </span>
-              <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded">
-                Completed:{" "}
-                {orders?.filter((o) => o.status === "COMPLETED").length || 0}
-              </span>
+            
               <span className="bg-red-100 text-red-800 px-2 py-1 rounded">
                 Cancelled:{" "}
                 {orders?.filter((o) => o.status === "CANCELLED").length || 0}

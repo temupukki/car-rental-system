@@ -23,10 +23,9 @@ enum VehicleType {
 }
 
 enum OrderStatus {
+  PAYMENT_COMPLETED
   PENDING
-  CONFIRMED
-  ACTIVE
-  COMPLETED
+  TAKEN
   CANCELLED
 }
 
@@ -133,7 +132,7 @@ model Order {
   totalDays   Int
   dailyRate   Float
   totalAmount Float
-  status      OrderStatus @default(COMPLETED)
+  status      OrderStatus @default(PAYMENT_COMPLETED)
   customerName    String
   customerEmail   String
   customerPhone   String

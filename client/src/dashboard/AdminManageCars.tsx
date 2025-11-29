@@ -389,7 +389,7 @@ const AdminManageCars: React.FC = () => {
     }
   };
 
-  // Vehicle Type Functions
+ 
   const handleAddVehicleType = (type: string): void => {
     if (!type.trim()) {
       return;
@@ -433,7 +433,7 @@ const AdminManageCars: React.FC = () => {
     };
   };
 
-  // Close modal and reset states
+
   const closeModal = (): void => {
     setShowEditModal(false);
     setSelectedVehicle(null);
@@ -559,7 +559,7 @@ const AdminManageCars: React.FC = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900">
-                  ${stats.totalValue}
+                  ETB {stats.totalValue}
                 </p>
                 <p className="text-sm text-gray-600">Total Value</p>
               </div>
@@ -649,13 +649,13 @@ const AdminManageCars: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Price Range: ${priceRange[0]} - ${priceRange[1]}
+                Price Range: ETB {priceRange[0]} - ETB {priceRange[1]}
               </label>
               <input
                 type="range"
                 min="0"
-                max="1000"
-                step="10"
+                max="10000000"
+                step="100"
                 value={priceRange[1]}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setPriceRange([0, parseInt(e.target.value)])
@@ -776,7 +776,7 @@ const AdminManageCars: React.FC = () => {
                     <div className="grid grid-cols-3 gap-2 mb-4 text-xs text-gray-600">
                       <div className="flex items-center gap-1">
                         <DollarSign className="w-3 h-3" />
-                        <span>${vehicle.pricePerDay}/day</span>
+                        <span>ETB {vehicle.pricePerDay}/day</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Users className="w-3 h-3" />
@@ -849,7 +849,7 @@ const AdminManageCars: React.FC = () => {
                             -
                           </button>
                           <span className="text-sm font-semibold">
-                            ${vehicle.pricePerDay}
+                            ETB {vehicle.pricePerDay}
                           </span>
                           <button
                             onClick={() =>
@@ -1236,7 +1236,7 @@ const AdminManageCars: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Price Per Day ($) *
+                          Price Per Day (ETB) *
                         </label>
                         <input
                           type="number"

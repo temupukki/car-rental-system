@@ -101,7 +101,7 @@ router.post(
           licenseBackImage,
           pickupLocation,
           dropoffLocation,
-          status: "COMPLETED",
+          status: "PAYMENT_COMPLETED",
         },
         include: {
           vehicle: true,
@@ -137,7 +137,7 @@ router.patch(
         },
       });
 
-      if (status === "COMPLETED" || status === "CANCELLED") {
+      if (status === "PAYMENT_COMPLETED" || status === "CANCELLED") {
         await prisma.vehicle.update({
           where: { id: order.vehicleId },
           data: { isAvailable: true },

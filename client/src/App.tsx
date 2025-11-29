@@ -72,7 +72,23 @@ function App() {
               }
             />
               <Route
+              path="/dashboard/privacy"
+              element={
+                <MainLayout>
+                  <Privacy />
+                </MainLayout>
+              }
+            />
+              <Route
               path="/faq"
+              element={
+                <MainLayout>
+                  <FAQ />
+                </MainLayout>
+              }
+            />
+              <Route
+              path="/dashboard/faq"
               element={
                 <MainLayout>
                   <FAQ />

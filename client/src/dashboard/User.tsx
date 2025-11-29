@@ -260,12 +260,12 @@ const Userpage: React.FC = () => {
                 htmlFor="email-filter"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Email
+                User name
               </label>
               <input
                 id="email-filter"
                 type="text"
-                placeholder="Filter by email..."
+                placeholder="Filter by user name..."
                 value={emailFilter}
                 onChange={(e) => setEmailFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
@@ -472,7 +472,7 @@ const Userpage: React.FC = () => {
                     ID
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
+                    User name
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Role
