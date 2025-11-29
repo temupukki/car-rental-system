@@ -52,6 +52,9 @@ router.post(
         customerEmail,
         customerPhone,
         customerLicense,
+        licenseBackImage,
+        licenseFrontImage,
+       
         pickupLocation,
         dropoffLocation,
       } = req.body;
@@ -93,6 +96,9 @@ router.post(
           customerEmail,
           customerPhone,
           customerLicense,
+       
+          licenseFrontImage,
+          licenseBackImage,
           pickupLocation,
           dropoffLocation,
           status: "COMPLETED",

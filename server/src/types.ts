@@ -76,6 +76,9 @@ export interface CreateOrderInput {
   customerEmail: string;
   customerPhone: string;
   customerLicense?: string;
+  licenseExpiry:Date;
+  licenseFrontImage:string;
+  licenseBackImage:string;
   pickupLocation: string;
   dropoffLocation: string;
 }

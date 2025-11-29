@@ -6,6 +6,7 @@ import vehicleRoutes from './routes/vehicles';
 import orderRoutes from './routes/orders';
 import paymentRoutes from './routes/payment';
 import contactRoutes from './routes/contact';
+import driverLicenseRoutes from './routes/driver-licenses';
 import userRoutes from './routes/user';
 import prisma from "./lib/prisma";
 
@@ -48,6 +49,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/driver-licenses', driverLicenseRoutes);
 
 
 app.get("/api/health", (req: Request, res: Response) => {

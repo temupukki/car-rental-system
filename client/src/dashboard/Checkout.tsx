@@ -26,10 +26,15 @@ import {
   LogIn,
   Info,
   AlertCircle,
+  Upload,
+  Camera,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { apiService } from "@/services/api";
+import { supabase } from "@/lib/supabase";
 
+// Interfaces
 interface CartItem {
   id: string;
   name: string;
@@ -47,6 +52,16 @@ interface CartItem {
   reviewCount: number;
 }
 
+interface DriverLicense {
+  id?: string;
+  frontImage: string;
+  backImage: string;
+  licenseNumber: string;
+  expiryDate: string;
+  uploadedAt?: string;
+  userId?: string;
+}
+
 interface UserSession {
   id: string;
   name: string;
@@ -58,6 +73,7 @@ interface UserSession {
   role: string;
   createdAt: string;
   updatedAt: string;
+  driverLicense?: DriverLicense;
 }
 
 interface ApiResponse {
@@ -74,6 +90,7 @@ interface ApiResponse {
   user: UserSession;
 }
 
+// Enhanced API Service
 const enhancedApiService = {
   async createOrder(orderData: any): Promise<any> {
     try {
@@ -111,10 +128,13 @@ const enhancedApiService = {
         customerName: checkoutData.userInfo.name,
         customerEmail: checkoutData.userInfo.email,
         customerPhone: checkoutData.userInfo.phone,
-        customerLicense: "TO_BE_PROVIDED",
+        customerLicense: checkoutData.driverLicense?.licenseNumber || "TO_BE_PROVIDED",
+        licenseExpiry: checkoutData.driverLicense?.expiryDate,
+        licenseFrontImage: checkoutData.driverLicense?.frontImage,
+        licenseBackImage: checkoutData.driverLicense?.backImage,
         pickupLocation: checkoutData.userInfo.address || "Main Office",
         dropoffLocation: checkoutData.userInfo.address || "Main Office",
-        status: "PENDING",
+        status: "COMPLETED",
         vehicle: checkoutData.cartItems[0],
       };
 
@@ -146,6 +166,577 @@ const enhancedApiService = {
   },
 };
 
+// Driver License Upload Component
+interface DriverLicenseUploadProps {
+  theme: string;
+  licenseFiles: { front: File | null; back: File | null };
+  onFilesChange: (files: { front: File | null; back: File | null }) => void;
+  driverLicense: DriverLicense | null;
+  onLicenseSave: (license: DriverLicense) => void;
+  uploading: boolean;
+  onUploadingChange: (uploading: boolean) => void;
+  userId: string;
+  licenseStep: 'upload' | 'details';
+  onLicenseStepChange: (step: 'upload' | 'details') => void;
+  licenseDetails: { licenseNumber: string; expiryDate: string };
+  onLicenseDetailsChange: (details: { licenseNumber: string; expiryDate: string }) => void;
+  previewUrls: { front: string; back: string };
+  onPreviewUrlsChange: (urls: { front: string; back: string }) => void;
+}
+
+function DriverLicenseUpload({
+  theme,
+  licenseFiles,
+  onFilesChange,
+  driverLicense,
+  onLicenseSave,
+  uploading,
+  onUploadingChange,
+  userId,
+  licenseStep,
+  onLicenseStepChange,
+  licenseDetails,
+  onLicenseDetailsChange,
+  previewUrls,
+  onPreviewUrlsChange,
+}: DriverLicenseUploadProps) {
+
+  // Supabase upload function with bucket name "driver-license"
+  const uploadFileToSupabase = async (file: File, type: 'front' | 'back'): Promise<string> => {
+    try {
+      console.log("📤 Starting Supabase file upload...");
+
+      if (!file) {
+        throw new Error("No file provided for upload");
+      }
+
+      // Check if Supabase is configured
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (!supabaseUrl || supabaseUrl.includes("placeholder")) {
+        throw new Error(
+          "Supabase is not configured. Please check your environment variables."
+        );
+      }
+
+      // BUCKET NAME: "driver-license"
+      const bucketName = "driver license";
+      const fileExtension = file.name.split('.').pop();
+      const filePath = `${userId}/${type}_${Date.now()}.${fileExtension}`;
+
+      console.log("📁 Uploading file to Supabase:", {
+        bucketName,
+        filePath,
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+      });
+
+      // Upload file to Supabase storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("❌ Supabase upload error:", uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      console.log("✅ File uploaded successfully:", uploadData);
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(filePath);
+
+      console.log("🔗 Public URL generated:", publicUrlData.publicUrl);
+
+      return publicUrlData.publicUrl;
+    } catch (error: any) {
+      console.error("❌ Supabase upload failed:", error);
+      throw new Error(`File upload failed: ${error.message}`);
+    }
+  };
+
+  // Save driver license to database API
+  const saveDriverLicenseToDB = async (licenseData: any): Promise<any> => {
+    try {
+      console.log("💾 Saving driver license to database:", licenseData);
+
+      const response = await fetch('http://localhost:3000/api/driver-licenses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(licenseData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save license to database');
+      }
+
+      const result = await response.json();
+      console.log("✅ License saved to database:", result);
+      return result;
+    } catch (error: any) {
+      console.error("❌ Database save error:", error);
+      throw new Error(`Database save failed: ${error.message}`);
+    }
+  };
+
+  const handleFileSelect = (type: 'front' | 'back', file: File) => {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    onFilesChange({ ...licenseFiles, [type]: file });
+    
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    onPreviewUrlsChange({ ...previewUrls, [type]: previewUrl });
+  };
+
+  const removeFile = (type: 'front' | 'back') => {
+    onFilesChange({ ...licenseFiles, [type]: null });
+    if (previewUrls[type] && previewUrls[type].startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrls[type]);
+    }
+    onPreviewUrlsChange({ ...previewUrls, [type]: '' });
+  };
+
+  const handleUpload = async () => {
+    if (!licenseFiles.front || !licenseFiles.back) {
+      toast.error('Please upload both front and back of your driver\'s license');
+      return;
+    }
+
+    try {
+      onUploadingChange(true);
+      toast.info('Uploading license images to secure storage...');
+      
+      // Upload both images to Supabase
+      console.log("🔄 Uploading license images to Supabase...");
+      
+      const [frontImageUrl, backImageUrl] = await Promise.all([
+        uploadFileToSupabase(licenseFiles.front, 'front'),
+        uploadFileToSupabase(licenseFiles.back, 'back')
+      ]);
+
+      console.log("✅ License images uploaded to Supabase:", {
+        frontImageUrl,
+        backImageUrl
+      });
+
+      // Store the Supabase URLs in previewUrls for the details step
+      onPreviewUrlsChange({
+        front: frontImageUrl,
+        back: backImageUrl
+      });
+      
+      onLicenseStepChange('details');
+      toast.success('License images uploaded successfully! Please enter license details.');
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error(error.message || 'Failed to upload license images');
+    } finally {
+      onUploadingChange(false);
+    }
+  };
+
+  const handleSaveLicense = async () => {
+    if (!licenseDetails.licenseNumber || !licenseDetails.expiryDate) {
+      toast.error('Please fill in all license details');
+      return;
+    }
+
+    // Validate expiry date
+    const expiry = new Date(licenseDetails.expiryDate);
+    const today = new Date();
+    if (expiry <= today) {
+      toast.error('License must not be expired');
+      return;
+    }
+
+    // Validate license number format (basic validation)
+    if (licenseDetails.licenseNumber.length < 5) {
+      toast.error('Please enter a valid license number');
+      return;
+    }
+
+    try {
+      onUploadingChange(true);
+      toast.info('Saving license information...');
+
+      // Prepare license data
+      const licenseData = {
+        frontImage: previewUrls.front, // Supabase URL
+        backImage: previewUrls.back,   // Supabase URL
+        licenseNumber: licenseDetails.licenseNumber.toUpperCase(),
+        expiryDate: licenseDetails.expiryDate,
+      };
+
+      console.log("💾 Saving license to database:", licenseData);
+
+      // Save to database via API
+      const savedLicense = await saveDriverLicenseToDB(licenseData);
+
+      // Update local state
+      onLicenseSave({
+        id: savedLicense.data?.id,
+        frontImage: previewUrls.front,
+        backImage: previewUrls.back,
+        licenseNumber: licenseDetails.licenseNumber,
+        expiryDate: licenseDetails.expiryDate,
+        uploadedAt: new Date().toISOString(),
+      });
+
+      toast.success('Driver\'s license verified and saved successfully!');
+    } catch (error: any) {
+      console.error('❌ Failed to save license:', error);
+      toast.error(error.message || 'Failed to save license details');
+    } finally {
+      onUploadingChange(false);
+    }
+  };
+
+  // Cleanup preview URLs on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(previewUrls).forEach(url => {
+        if (url && url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      {licenseStep === 'upload' && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Front License Upload */}
+            <div className="space-y-4">
+              <h3 className={`font-bold flex items-center gap-2 ${
+                theme === 'light' ? 'text-gray-800' : 'text-white'
+              }`}>
+                <Camera className="w-4 h-4" />
+                Front of License
+              </h3>
+              
+              <div
+                className={`
+                  border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all
+                  ${
+                    licenseFiles.front
+                      ? theme === 'light'
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-green-500 bg-green-900/20'
+                      : theme === 'light'
+                      ? 'border-gray-300 bg-gray-50 hover:border-gray-400'
+                      : 'border-gray-600 bg-gray-700 hover:border-gray-500'
+                  }
+                `}
+                onClick={() => document.getElementById('front-upload')?.click()}
+              >
+                <input
+                  id="front-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && handleFileSelect('front', e.target.files[0])}
+                />
+                
+                {licenseFiles.front ? (
+                  <div className="space-y-3">
+                    <img
+                      src={previewUrls.front}
+                      alt="Front of license"
+                      className="w-32 h-20 mx-auto object-cover rounded-lg"
+                    />
+                    <p className="text-sm text-green-600 font-medium">
+                      Front uploaded ✓
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile('front');
+                      }}
+                      className="rounded-xl"
+                    >
+                      <X className="w-3 h-3 mr-1" />
+                      Change
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Upload className="w-8 h-8 mx-auto text-gray-400" />
+                    <div>
+                      <p className={`font-medium ${
+                        theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+                      }`}>
+                        Upload Front
+                      </p>
+                      <p className={`text-xs ${
+                        theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+                      }`}>
+                        JPG, PNG (max 5MB)
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Back License Upload */}
+            <div className="space-y-4">
+              <h3 className={`font-bold flex items-center gap-2 ${
+                theme === 'light' ? 'text-gray-800' : 'text-white'
+              }`}>
+                <Camera className="w-4 h-4" />
+                Back of License
+              </h3>
+              
+              <div
+                className={`
+                  border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all
+                  ${
+                    licenseFiles.back
+                      ? theme === 'light'
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-green-500 bg-green-900/20'
+                      : theme === 'light'
+                      ? 'border-gray-300 bg-gray-50 hover:border-gray-400'
+                      : 'border-gray-600 bg-gray-700 hover:border-gray-500'
+                  }
+                `}
+                onClick={() => document.getElementById('back-upload')?.click()}
+              >
+                <input
+                  id="back-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && handleFileSelect('back', e.target.files[0])}
+                />
+                
+                {licenseFiles.back ? (
+                  <div className="space-y-3">
+                    <img
+                      src={previewUrls.back}
+                      alt="Back of license"
+                      className="w-32 h-20 mx-auto object-cover rounded-lg"
+                    />
+                    <p className="text-sm text-green-600 font-medium">
+                      Back uploaded ✓
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile('back');
+                      }}
+                      className="rounded-xl"
+                    >
+                      <X className="w-3 h-3 mr-1" />
+                      Change
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Upload className="w-8 h-8 mx-auto text-gray-400" />
+                    <div>
+                      <p className={`font-medium ${
+                        theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+                      }`}>
+                        Upload Back
+                      </p>
+                      <p className={`text-xs ${
+                        theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+                      }`}>
+                        JPG, PNG (max 5MB)
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Button
+            onClick={handleUpload}
+            disabled={!licenseFiles.front || !licenseFiles.back || uploading}
+            className="w-full rounded-2xl py-3"
+          >
+            {uploading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Uploading to Secure Storage...
+              </div>
+            ) : (
+              <>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload License Images
+              </>
+            )}
+          </Button>
+
+          {/* Upload Info Notice */}
+          <div className={`
+            p-4 rounded-2xl
+            ${
+              theme === 'light'
+                ? 'bg-blue-50 border border-blue-200'
+                : 'bg-blue-900/20 border border-blue-800'
+            }
+          `}>
+            <div className="flex items-start gap-3">
+              <Shield className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className={`
+                  text-sm font-semibold
+                  ${theme === 'light' ? 'text-blue-800' : 'text-blue-400'}
+                `}>
+                  Secure Storage
+                </p>
+                <p className={`
+                  text-sm mt-1
+                  ${theme === 'light' ? 'text-blue-700' : 'text-blue-300'}
+                `}>
+                  Your driver's license images are securely stored in our encrypted cloud storage.
+                  Only authorized personnel can access these documents for verification purposes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {licenseStep === 'details' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label className={`
+                block font-semibold
+                ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
+              `}>
+                License Number *
+              </Label>
+              <Input
+                value={licenseDetails.licenseNumber}
+                onChange={(e) => onLicenseDetailsChange({
+                  ...licenseDetails,
+                  licenseNumber: e.target.value.toUpperCase()
+                })}
+                className={`
+                  rounded-xl transition-all duration-200
+                  ${
+                    theme === 'light'
+                      ? 'bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                      : 'bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400'
+                  }
+                `}
+                placeholder="e.g., DL123456789"
+                maxLength={20}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className={`
+                block font-semibold
+                ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}
+              `}>
+                Expiry Date *
+              </Label>
+              <Input
+                type="date"
+                value={licenseDetails.expiryDate}
+                onChange={(e) => onLicenseDetailsChange({
+                  ...licenseDetails,
+                  expiryDate: e.target.value
+                })}
+                min={new Date().toISOString().split('T')[0]}
+                className={`
+                  rounded-xl transition-all duration-200
+                  ${
+                    theme === 'light'
+                      ? 'bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                      : 'bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400'
+                  }
+                `}
+              />
+            </div>
+          </div>
+
+          {/* License Images Preview */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="text-center">
+              <p className="text-sm font-medium mb-2">Front of License</p>
+              <img
+                src={previewUrls.front}
+                alt="Front of license"
+                className="w-full h-32 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
+              />
+              <p className="text-xs text-gray-500 mt-1">Stored securely in cloud</p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium mb-2">Back of License</p>
+              <img
+                src={previewUrls.back}
+                alt="Back of license"
+                className="w-full h-32 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
+              />
+              <p className="text-xs text-gray-500 mt-1">Stored securely in cloud</p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <Button
+              onClick={() => onLicenseStepChange('upload')}
+              variant="outline"
+              className="flex-1 rounded-2xl"
+            >
+              Back to Upload
+            </Button>
+            <Button
+              onClick={handleSaveLicense}
+              disabled={uploading}
+              className="flex-1 rounded-2xl bg-green-500 hover:bg-green-600"
+            >
+              {uploading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Saving to Database...
+                </div>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Save License Details
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Main Checkout Component
 export default function CheckoutPage() {
   const { theme } = useTheme();
   const { t } = useLanguage();
@@ -155,7 +746,6 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editedUser, setEditedUser] = useState<UserSession | null>(null);
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("chapa");
   const [rentalDates, setRentalDates] = useState({
@@ -167,26 +757,51 @@ export default function CheckoutPage() {
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
 
+  // Driver's License State
+  const [driverLicense, setDriverLicense] = useState<DriverLicense | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [licenseStep, setLicenseStep] = useState<'upload' | 'details'>('upload');
+  const [licenseFiles, setLicenseFiles] = useState<{
+    front: File | null;
+    back: File | null;
+  }>({ front: null, back: null });
+  const [licenseDetails, setLicenseDetails] = useState({
+    licenseNumber: '',
+    expiryDate: '',
+  });
+  const [previewUrls, setPreviewUrls] = useState<{ front: string; back: string }>({
+    front: '',
+    back: '',
+  });
+
+  // Form state for ALL editable fields
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: ''
+  });
+
   const validatePhoneNumber = (phone: string): boolean => {
     const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
     const phoneRegex = /^(09|07)\d{8}$/;
     return phoneRegex.test(cleanPhone);
   };
 
-  const handlePhoneChange = (phone: string) => {
-    setEditedUser((prev) => (prev ? { ...prev, phone } : null));
-    if (phoneError && phone.length > 0) {
+  const handleFormChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'phone' && phoneError && value.length > 0) {
       setPhoneError(null);
     }
   };
 
   const validateForm = (): boolean => {
-    if (!editedUser?.name || !editedUser?.email) {
+    if (!formData.name || !formData.email) {
       toast.error("Please fill in all required fields (name and email)");
       return false;
     }
 
-    const currentPhone = editedUser.phone;
+    const currentPhone = formData.phone;
     if (!currentPhone) {
       toast.error("Phone number is required");
       return false;
@@ -194,6 +809,20 @@ export default function CheckoutPage() {
 
     if (!validatePhoneNumber(currentPhone)) {
       toast.error("Phone number must be in 09xxxxxxxx or 07xxxxxxxx format");
+      return false;
+    }
+
+    // Add driver's license validation
+    if (!driverLicense) {
+      toast.error("Please upload and verify your driver's license");
+      return false;
+    }
+
+    // Validate license expiry
+    const expiry = new Date(driverLicense.expiryDate);
+    const today = new Date();
+    if (expiry <= today) {
+      toast.error("Your driver's license has expired. Please upload a valid license.");
       return false;
     }
 
@@ -232,16 +861,21 @@ export default function CheckoutPage() {
     }
   }, []);
 
+  // Fetch user data from /api/me - FIXED VERSION
   useEffect(() => {
     async function fetchMe() {
       try {
+        console.log("🔄 Fetching user data from /api/me...");
         const res = await fetch("http://localhost:3000/api/me", {
           credentials: "include",
         });
 
-        if (!res.ok) throw new Error("Failed to fetch /api/me");
+        if (!res.ok) {
+          throw new Error(`Failed to fetch /api/me: ${res.status} ${res.statusText}`);
+        }
 
         const data = await res.json();
+        console.log("✅ User data received:", data);
         setSession(data);
 
         if (data && data.user) {
@@ -252,20 +886,33 @@ export default function CheckoutPage() {
             emailVerified: data.user.emailVerified,
             image: data.user.image,
             role: data.user.role,
-            phone:data.user.phone,
+            phone: data.user.phone,
             createdAt: data.user.createdAt,
             updatedAt: data.user.updatedAt,
-         
-            address: data.user.image ,
+            address: data.user.address, // FIXED: was data.user.image
           };
           setUserSession(userData);
-          setEditedUser(userData);
+          
+          // Auto-fill ALL form data from API response
+          setFormData({
+            name: data.user.name || '',
+            email: data.user.email || '',
+            phone: data.user.phone || '',
+            address: data.user.address || ''
+          });
+          
+          console.log("✅ Form data populated:", {
+            name: data.user.name,
+            email: data.user.email,
+            phone: data.user.phone,
+            address: data.user.address
+          });
         }
-      } catch (err) {
-        console.error("Error fetching /api/me:", err);
+      } catch (err: any) {
+        console.error("❌ Error fetching /api/me:", err);
         setSession(null);
         setUserSession(null);
-        setError("Please log in to continue with checkout");
+        setError("Please log in to continue with checkout: " + err.message);
       } finally {
         setLoading(false);
       }
@@ -332,28 +979,36 @@ export default function CheckoutPage() {
   };
 
   const saveUserInfo = async () => {
-    if (!editedUser) return;
-
     try {
-      if (!editedUser.phone) {
+      if (!formData.name || !formData.email) {
+        toast.error("Name and email are required");
+        return;
+      }
+
+      if (!formData.phone) {
         toast.error("Phone number is required");
         return;
       }
 
-      if (!validatePhoneNumber(editedUser.phone)) {
+      if (!validatePhoneNumber(formData.phone)) {
         toast.error("Phone number must be in 09xxxxxxxx or 07xxxxxxxx format");
         return;
       }
 
-      console.log("💾 Saving user info with phone:", editedUser.phone);
+      console.log("💾 Saving user info:", formData);
 
-      const updatedUserSession = {
-        ...userSession,
-        ...editedUser,
-        phone: editedUser.phone,
-      };
+      // Update user session with new data
+      if (userSession) {
+        const updatedUserSession = {
+          ...userSession,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address
+        };
+        setUserSession(updatedUserSession);
+      }
 
-      setUserSession(updatedUserSession);
       setError(null);
       setPhoneError(null);
       toast.success("Profile updated successfully!");
@@ -363,10 +1018,9 @@ export default function CheckoutPage() {
     }
   };
 
-  // Simplified handleCheckout function - no vehicle checks, just process payment
   const handleCheckout = async (): Promise<void> => {
     try {
-      if (!userSession || !editedUser) {
+      if (!userSession) {
         toast.error("Please complete your profile information");
         return;
       }
@@ -377,7 +1031,7 @@ export default function CheckoutPage() {
 
       console.log("🔄 Starting direct payment process...");
 
-      const finalPhone = editedUser.phone;
+      const finalPhone = formData.phone;
 
       if (!finalPhone) {
         toast.error(
@@ -395,12 +1049,12 @@ export default function CheckoutPage() {
 
       const userData: any = {
         id: userSession.id,
-        name: editedUser.name,
-        email: editedUser.email,
+        name: formData.name,
+        email: formData.email,
         emailVerified: userSession.emailVerified,
         image: userSession.image,
         phone: finalPhone,
-        address: editedUser.address,
+        address: formData.address,
         role: userSession.role,
         createdAt: userSession.createdAt,
         updatedAt: userSession.updatedAt,
@@ -418,6 +1072,7 @@ export default function CheckoutPage() {
             endDate: rentalDates.endDate,
             totalDays: totals.totalDays,
           },
+          driverLicense: driverLicense,
         }
       );
 
@@ -651,15 +1306,14 @@ export default function CheckoutPage() {
                         ${theme === "light" ? "text-blue-700" : "text-blue-300"}
                       `}
                       >
-                        Update your information below. Phone number is required
-                        for booking confirmation.
+                        Update your information below. All fields are editable.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name Field - NON EDITABLE */}
+                  {/* Name Field - EDITABLE */}
                   <div className="space-y-2">
                     <Label
                       className={`
@@ -672,15 +1326,14 @@ export default function CheckoutPage() {
                     <div className="relative">
                       <User className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                       <Input
-                        value={editedUser?.name || ""}
-                        readOnly
-                        disabled
+                        value={formData.name}
+                        onChange={(e) => handleFormChange('name', e.target.value)}
                         className={`
-                          pl-10 rounded-xl transition-all duration-200 opacity-70
+                          pl-10 rounded-xl transition-all duration-200
                           ${
                             theme === "light"
-                              ? "bg-gray-100 border-gray-300"
-                              : "bg-gray-600 border-gray-500"
+                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
                           }
                         `}
                         placeholder="Enter your full name"
@@ -688,11 +1341,11 @@ export default function CheckoutPage() {
                     </div>
                     <p className="text-xs text-gray-500 flex items-center gap-1">
                       <Info className="w-3 h-3" />
-                      Name cannot be changed during checkout
+                      Fetched from your profile
                     </p>
                   </div>
 
-                  {/* Email Field - NON EDITABLE */}
+                  {/* Email Field - EDITABLE */}
                   <div className="space-y-2">
                     <Label
                       className={`
@@ -700,21 +1353,20 @@ export default function CheckoutPage() {
                       ${theme === "light" ? "text-gray-700" : "text-gray-300"}
                     `}
                     >
-                    User Name *
+                      Email Address *
                     </Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                       <Input
                         type="email"
-                        value={editedUser?.email || ""}
-                        readOnly
-                        disabled
+                        value={formData.email}
+                        onChange={(e) => handleFormChange('email', e.target.value)}
                         className={`
-                          pl-10 rounded-xl transition-all duration-200 opacity-70
+                          pl-10 rounded-xl transition-all duration-200
                           ${
                             theme === "light"
-                              ? "bg-gray-100 border-gray-300"
-                              : "bg-gray-600 border-gray-500"
+                              ? "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              : "bg-gray-700 border-gray-600 focus:border-blue-400 focus:ring-blue-400"
                           }
                         `}
                         placeholder="your.email@example.com"
@@ -722,11 +1374,11 @@ export default function CheckoutPage() {
                     </div>
                     <p className="text-xs text-gray-500 flex items-center gap-1">
                       <Info className="w-3 h-3" />
-                      Email cannot be changed during checkout
+                      Fetched from your profile
                     </p>
                   </div>
 
-                  {/* Phone Field - Always Editable */}
+                  {/* Phone Field - Editable */}
                   <div className="space-y-2">
                     <Label
                       className={`
@@ -740,12 +1392,8 @@ export default function CheckoutPage() {
                       <Phone className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                       <Input
                         type="tel"
-                        value={editedUser?.phone || ""}
-                         onChange={(e) =>
-                          setEditedUser((prev) =>
-                            prev ? { ...prev, phone: e.target.value } : null
-                          )
-                        }
+                        value={formData.phone}
+                        onChange={(e) => handleFormChange('phone', e.target.value)}
                         className={`
                           pl-10 rounded-xl transition-all duration-200
                           ${
@@ -762,7 +1410,7 @@ export default function CheckoutPage() {
                         placeholder="09XXXXXXXX or 07XXXXXXXX"
                       />
                     </div>
-                    {!editedUser?.phone ? (
+                    {!formData.phone ? (
                       <p className="text-xs text-red-500 flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
                         Phone number is required for booking confirmation
@@ -779,7 +1427,7 @@ export default function CheckoutPage() {
                     )}
                   </div>
 
-                  {/* Address Field */}
+                  {/* Address Field - Editable */}
                   <div className="space-y-2">
                     <Label
                       className={`
@@ -792,12 +1440,8 @@ export default function CheckoutPage() {
                     <div className="relative">
                       <MapPin className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                       <Input
-                        value={editedUser?.address || ""}
-                        onChange={(e) =>
-                          setEditedUser((prev) =>
-                            prev ? { ...prev, image: e.target.value } : null
-                          )
-                        }
+                        value={formData.address}
+                        onChange={(e) => handleFormChange('address', e.target.value)}
                         className={`
                           pl-10 rounded-xl transition-all duration-200
                           ${
@@ -809,7 +1453,7 @@ export default function CheckoutPage() {
                         placeholder="123 Main St, City, State 12345"
                       />
                     </div>
-                    {!editedUser?.address && (
+                    {!formData.address && (
                       <p
                         className={`
                         text-xs
@@ -1093,15 +1737,144 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                {/* Driver's License Upload Section */}
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className={`
+                      text-lg font-bold flex items-center gap-2
+                      ${theme === 'light' ? 'text-gray-800' : 'text-white'}
+                    `}>
+                      <Shield className="w-5 h-5 text-blue-500" />
+                      Driver's License Verification
+                    </h3>
+                    {driverLicense && (
+                      <Badge className="bg-green-500 text-white">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
+
+                  {!driverLicense ? (
+                    <>
+                      <div className={`
+                        mb-6 p-4 rounded-2xl
+                        ${
+                          theme === 'light'
+                            ? 'bg-yellow-50 border border-yellow-200'
+                            : 'bg-yellow-900/20 border border-yellow-800'
+                        }
+                      `}>
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className={`
+                              text-sm font-semibold
+                              ${theme === 'light' ? 'text-yellow-800' : 'text-yellow-400'}
+                            `}>
+                              License Required for Vehicle Rental
+                            </p>
+                            <p className={`
+                              text-sm mt-1
+                              ${theme === 'light' ? 'text-yellow-700' : 'text-yellow-300'}
+                            `}>
+                              You must upload a valid driver's license to proceed with vehicle rental.
+                              Both front and back sides are required for verification.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <DriverLicenseUpload
+                        theme={theme}
+                        licenseFiles={licenseFiles}
+                        onFilesChange={setLicenseFiles}
+                        driverLicense={driverLicense}
+                        onLicenseSave={setDriverLicense}
+                        uploading={uploading}
+                        onUploadingChange={setUploading}
+                        userId={userSession?.id || ''}
+                        licenseStep={licenseStep}
+                        onLicenseStepChange={setLicenseStep}
+                        licenseDetails={licenseDetails}
+                        onLicenseDetailsChange={setLicenseDetails}
+                        previewUrls={previewUrls}
+                        onPreviewUrlsChange={setPreviewUrls}
+                      />
+                    </>
+                  ) : (
+                    <div className={`
+                      p-6 rounded-2xl
+                      ${
+                        theme === 'light'
+                          ? 'bg-green-50 border border-green-200'
+                          : 'bg-green-900/20 border border-green-800'
+                      }
+                    `}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <CheckCircle className="w-8 h-8 text-green-500" />
+                          <div>
+                            <h4 className={`
+                              font-bold
+                              ${theme === 'light' ? 'text-green-800' : 'text-green-400'}
+                            `}>
+                              License Verified
+                            </h4>
+                            <p className={`
+                              text-sm
+                              ${theme === 'light' ? 'text-green-700' : 'text-green-300'}
+                            `}>
+                              License {driverLicense.licenseNumber} • Expires {new Date(driverLicense.expiryDate).toLocaleDateString()}
+                            </p>
+                            <p className="text-xs text-green-600 mt-1">
+                              ✓ Stored securely in cloud storage
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setDriverLicense(null);
+                            setLicenseFiles({ front: null, back: null });
+                            setLicenseStep('upload');
+                            setLicenseDetails({ licenseNumber: '', expiryDate: '' });
+                            // Cleanup preview URLs
+                            Object.values(previewUrls).forEach(url => {
+                              if (url && url.startsWith('blob:')) {
+                                URL.revokeObjectURL(url);
+                              }
+                            });
+                            setPreviewUrls({ front: '', back: '' });
+                          }}
+                          className="rounded-2xl"
+                        >
+                          <X className="w-4 h-4 mr-2" />
+                          Change License
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <Button
                   onClick={() => {
                     if (validateForm()) {
                       setCheckoutStep(2);
                     }
                   }}
-                  className="w-full mt-6 rounded-2xl py-3 text-lg font-bold bg-blue-500 hover:bg-blue-600 text-white"
+                  disabled={!driverLicense}
+                  className={`w-full mt-6 rounded-2xl py-3 text-lg font-bold ${
+                    driverLicense 
+                      ? "bg-blue-500 hover:bg-blue-600 text-white" 
+                      : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                  }`}
                 >
-                  Continue to Payment
+                  {!driverLicense ? (
+                    "Upload License to Continue"
+                  ) : (
+                    "Continue to Payment"
+                  )}
                 </Button>
               </motion.div>
             )}

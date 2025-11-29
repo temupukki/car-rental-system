@@ -19,6 +19,7 @@ interface Vehicle {
 }
 
 interface User {
+  id: string;
   name: string;
   email: string;
   phone?: string;
@@ -33,13 +34,15 @@ interface Order {
   totalDays: number;
   dailyRate: number;
   totalAmount: number;
+  status: OrderStatus;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
   customerLicense: string;
+  licenseFrontImage: string;
+  licenseBackImage: string;
   pickupLocation: string;
   dropoffLocation: string;
-  status: OrderStatus;
   createdAt: string;
   updatedAt: string;
   vehicle: Vehicle;
@@ -655,6 +658,12 @@ const ManageOrders: React.FC = () => {
                           {formatDateTime(selectedOrder.createdAt)}
                         </p>
                       </div>
+                      <div>
+                        <label className="text-xs text-gray-500">Updated</label>
+                        <p className="text-sm text-gray-900">
+                          {formatDateTime(selectedOrder.updatedAt)}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
@@ -715,13 +724,52 @@ const ManageOrders: React.FC = () => {
                       </p>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500">License</label>
+                      <label className="text-xs text-gray-500">Customer License</label>
                       <p className="text-sm text-gray-900 font-mono">
-                        {selectedOrder.customerLicense}
+                        {selectedOrder.customerLicense || "Not provided"}
                       </p>
                     </div>
                   </div>
                 </div>
+
+                {selectedOrder.licenseFrontImage && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 mb-2">
+                      License Images
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {selectedOrder.licenseFrontImage && (
+                        <div>
+                          <label className="text-xs text-gray-500">
+                            Front License
+                          </label>
+                          <div className="mt-1">
+                            <img
+                              src={selectedOrder.licenseFrontImage}
+                              alt="License Front"
+                              className="w-full h-32 object-cover rounded border border-gray-300"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {selectedOrder.licenseBackImage && (
+                        <div>
+                          <label className="text-xs text-gray-500">
+                            Back License
+                          </label>
+                          <div className="mt-1">
+                            <img
+                              src={selectedOrder.licenseBackImage}
+                              alt="License Back"
+                              className="w-full h-32 object-cover rounded border border-gray-300"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 mb-2">
                     Vehicle Information
@@ -737,24 +785,16 @@ const ManageOrders: React.FC = () => {
                     </div>
                     <div>
                       <label className="text-xs text-gray-500">
-                        Availability
+                        Daily Price
                       </label>
-                      <p className="text-sm">
-                        <span
-                          className={`font-medium px-2 py-1 rounded-full text-xs ${
-                            selectedOrder.vehicle.isAvailable
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {selectedOrder.vehicle.isAvailable
-                            ? "Available"
-                            : "Not Available"}
-                        </span>
+                      <p className="text-sm text-gray-900">
+                        {formatCurrency(selectedOrder.vehicle.pricePerDay)}
                       </p>
                     </div>
+                    
                   </div>
                 </div>
+
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 mb-2">
                     Location Information
@@ -778,6 +818,7 @@ const ManageOrders: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 mb-2">
                     Rental Period
@@ -788,13 +829,38 @@ const ManageOrders: React.FC = () => {
                         Start Date
                       </label>
                       <p className="text-sm text-gray-900">
-                        {formatDate(selectedOrder.startDate)}
+                        {formatDateTime(selectedOrder.startDate)}
                       </p>
                     </div>
                     <div>
                       <label className="text-xs text-gray-500">End Date</label>
                       <p className="text-sm text-gray-900">
-                        {formatDate(selectedOrder.endDate)}
+                        {formatDateTime(selectedOrder.endDate)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   
+                    <div>
+                      <label className="text-xs text-gray-500">Full Name</label>
+                      <p className="text-sm text-gray-900">
+                        {selectedOrder.user.name}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500">User name</label>
+                      <p className="text-sm text-gray-900">
+                        {selectedOrder.user.email}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500">User Phone</label>
+                      <p className="text-sm text-gray-900">
+                        {selectedOrder.user.phone || "Not provided"}
                       </p>
                     </div>
                   </div>

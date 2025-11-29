@@ -24,7 +24,9 @@ import {
   Zap,
   Package,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'sonner';
@@ -53,7 +55,7 @@ interface Vehicle {
   updatedAt: string;
 }
 
-type VehicleType = 'City' | 'Vacation' | 'Tour' | 'Bridal' ;
+type VehicleType = string;
 
 interface CreateVehicleInput {
   name: string;
@@ -124,6 +126,12 @@ const transmissionTypes: string[] = [
   "CVT"
 ];
 
+const commonVehicleTypes: string[] = [
+  'City', 'Vacation', 'Tour', 'Bridal', 'SUV', 'Luxury', 'Sports', 
+  'Electric', 'Van', 'Truck', 'Convertible', 'Motorcycle', 'Bus',
+  'Minivan', 'Crossover', 'Hatchback', 'Sedan', 'Coupe', 'Wagon'
+];
+
 const commonFeatures: string[] = [
   "Air Conditioning",
   "GPS Navigation",
@@ -157,11 +165,12 @@ interface StockStatus {
 export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }) => {
   const { theme } = useTheme();
   const [loading, setLoading] = useState<boolean>(false);
-  const [activeSection, setActiveSection] = useState<string>('basic');
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const totalSteps = 5;
   
   const [formData, setFormData] = useState<CreateVehicleInput>({
     name: '',
-    type: 'City',
+    type: '',
     brand: '',
     model: '',
     year: new Date().getFullYear(),
@@ -174,10 +183,11 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     mileage: 'Unlimited',
     features: [],
     location: '',
-    stock: 1,
+    stock: 0, // Changed to 0 by default - user must set manually
   });
 
   const [customFeature, setCustomFeature] = useState<string>('');
+  const [customVehicleType, setCustomVehicleType] = useState<string>('');
 
   const handleInputChange = (field: keyof CreateVehicleInput, value: any): void => {
     setFormData(prev => ({
@@ -222,8 +232,100 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     }
   };
 
+  const handleAddVehicleType = (type: string): void => {
+    if (!type.trim()) {
+      toast.warning('Please enter a vehicle type');
+      return;
+    }
+
+    handleInputChange('type', type);
+    setCustomVehicleType('');
+  };
+
+  const handleRemoveVehicleType = (): void => {
+    handleInputChange('type', '');
+  };
+
+  const handleAddCommonVehicleType = (type: string): void => {
+    handleInputChange('type', type);
+  };
+
+  const validateCurrentStep = (): boolean => {
+    switch (currentStep) {
+      case 1: // Basic Information
+        if (!formData.name.trim() || !formData.brand.trim() || !formData.model.trim() || !formData.type.trim()) {
+          toast.error('Missing required fields', {
+            description: 'Please fill in vehicle name, brand, model, and type'
+          });
+          return false;
+        }
+        if (formData.year < 2000 || formData.year > new Date().getFullYear() + 1) {
+          toast.error('Invalid year', {
+            description: `Year must be between 2000 and ${new Date().getFullYear() + 1}`
+          });
+          return false;
+        }
+        return true;
+
+      case 2: // Specifications
+        if (formData.pricePerDay <= 0) {
+          toast.error('Invalid price', {
+            description: 'Price per day must be greater than 0'
+          });
+          return false;
+        }
+        if (formData.seats < 1 || formData.seats > 20) {
+          toast.error('Invalid seat count', {
+            description: 'Seats must be between 1 and 20'
+          });
+          return false;
+        }
+        return true;
+
+      case 3: // Media
+        if (!formData.image.trim()) {
+          toast.error('Missing main image', {
+            description: 'Please provide a main image URL'
+          });
+          return false;
+        }
+        return true;
+
+      case 4: // Features
+        // Features are optional, so always valid
+        return true;
+
+      case 5: // Inventory
+        if (formData.stock === undefined || formData.stock < 0) {
+          toast.error('Invalid stock quantity', {
+            description: 'Stock must be 0 or greater'
+          });
+          return false;
+        }
+        // Don't require stock to be > 0 - user can set 0 if they want
+        return true;
+
+      default:
+        return true;
+    }
+  };
+
+  const handleNextStep = (): void => {
+    if (validateCurrentStep()) {
+      if (currentStep < totalSteps) {
+        setCurrentStep(currentStep + 1);
+      }
+    }
+  };
+
+  const handlePreviousStep = (): void => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   const validateForm = (): boolean => {
-    const requiredFields: (keyof CreateVehicleInput)[] = ['name', 'brand', 'model', 'image'];
+    const requiredFields: (keyof CreateVehicleInput)[] = ['name', 'brand', 'model', 'image', 'type'];
     const missingFields = requiredFields.filter(field => !formData[field]);
     
     if (missingFields.length > 0) {
@@ -262,6 +364,16 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     
     if (!validateForm()) return;
 
+    // Additional validation for stock - show warning but allow submission
+    if (formData.stock === 0) {
+      const userConfirmed = window.confirm(
+        'You are setting stock to 0. This vehicle will be marked as unavailable. Do you want to continue?'
+      );
+      if (!userConfirmed) {
+        return;
+      }
+    }
+
     const submitToast = toast.loading('Adding your vehicle to the fleet...', {
       duration: Infinity,
     });
@@ -275,21 +387,21 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
         ...formData,
         images,
         mileage: formData.mileage || 'Unlimited',
-        stock: formData.stock || 1,
-        isAvailable: (formData.stock || 0) > 0
+        stock: formData.stock || 0, // Use the manually set stock
+        isAvailable: (formData.stock || 0) > 0 // Set availability based on manual stock
       };
 
       const result = await apiService.createVehicle(vehicleData);
       
       toast.dismiss(submitToast);
       toast.success('Vehicle Added Successfully! 🎉', {
-        description: `${result.name} is now available for rental. Stock: ${result.stock} units`,
+        description: `${result.name} is now ${result.isAvailable ? 'available' : 'unavailable'} for rental. Stock: ${result.stock} units`,
         duration: 5000,
       });
 
       setFormData({
         name: '',
-        type: 'City',
+        type: '',
         brand: '',
         model: '',
         year: new Date().getFullYear(),
@@ -302,8 +414,11 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
         mileage: 'Unlimited',
         features: [],
         location: '',
-        stock: 1,
+        stock: 0, // Reset to 0
       });
+
+      setCustomVehicleType('');
+      setCurrentStep(1);
 
       if (onVehicleAdded) {
         onVehicleAdded(result);
@@ -325,7 +440,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
   const handleClearForm = (): void => {
     setFormData({
       name: '',
-      type: 'City',
+      type: '',
       brand: '',
       model: '',
       year: new Date().getFullYear(),
@@ -338,9 +453,11 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
       mileage: 'Unlimited',
       features: [],
       location: '',
-      stock: 1,
+      stock: 0, // Reset to 0
     });
     setCustomFeature('');
+    setCustomVehicleType('');
+    setCurrentStep(1);
     
     toast.info('Form cleared', {
       description: 'All fields have been reset',
@@ -388,7 +505,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
     }
   };
 
-  const SectionIndicator: React.FC = () => (
+  const StepIndicator: React.FC = () => (
     <div className="flex justify-center mb-8">
       <div className={`
         flex items-center gap-2 px-6 py-3 rounded-2xl backdrop-blur-sm
@@ -397,33 +514,56 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
           : 'bg-gray-800/80 border border-gray-700'
         }
       `}>
-        {['basic', 'specs', 'media', 'features', 'inventory'].map((section, index) => (
-          <React.Fragment key={section}>
+        {[1, 2, 3, 4, 5].map((step, index) => (
+          <React.Fragment key={step}>
             <button
-              onClick={() => setActiveSection(section)}
+              onClick={() => setCurrentStep(step)}
               className={`
-                px-4 py-2 rounded-xl text-sm font-medium transition-all
-                ${activeSection === section
+                flex items-center justify-center w-10 h-10 rounded-xl text-sm font-medium transition-all
+                ${currentStep >= step
                   ? theme === 'light'
                     ? 'bg-blue-500 text-white shadow-lg'
                     : 'bg-blue-600 text-white shadow-lg'
                   : theme === 'light'
-                    ? 'text-gray-600 hover:text-gray-800'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'text-gray-600 hover:text-gray-800 bg-gray-100'
+                    : 'text-gray-400 hover:text-white bg-gray-700'
                 }
+                ${currentStep === step ? 'ring-2 ring-blue-300 ring-offset-2' : ''}
               `}
             >
-              {section.charAt(0).toUpperCase() + section.slice(1)}
+              {step}
             </button>
             {index < 4 && (
               <div className={`
-                w-1 h-1 rounded-full
-                ${theme === 'light' ? 'bg-gray-300' : 'bg-gray-600'}
+                w-8 h-1 rounded-full transition-all
+                ${currentStep > step
+                  ? theme === 'light' ? 'bg-blue-500' : 'bg-blue-400'
+                  : theme === 'light' ? 'bg-gray-300' : 'bg-gray-600'
+                }
               `} />
             )}
           </React.Fragment>
         ))}
       </div>
+    </div>
+  );
+
+  const StepLabels: React.FC = () => (
+    <div className="flex justify-between mb-2 px-4">
+      {['Basic', 'Specs', 'Media', 'Features', 'Inventory'].map((label, index) => (
+        <span
+          key={label}
+          className={`
+            text-xs font-medium transition-all
+            ${currentStep === index + 1
+              ? theme === 'light' ? 'text-blue-600 font-bold' : 'text-blue-400 font-bold'
+              : theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+            }
+          `}
+        >
+          {label}
+        </span>
+      ))}
     </div>
   );
 
@@ -470,17 +610,20 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
               mt-3 text-lg relative
               ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
             `}>
-              Expand your rental fleet with a new vehicle
+              Step {currentStep} of {totalSteps} - Expand your rental fleet
             </p>
           </CardHeader>
 
           <CardContent className="p-6">
-            <SectionIndicator />
+            <div className="mb-8">
+              <StepLabels />
+              <StepIndicator />
+            </div>
             
             <form onSubmit={handleSubmit} className="space-y-8">
               <AnimatePresence mode="wait">
-                {/* Basic Information */}
-                {(activeSection === 'basic') && (
+                {/* Step 1: Basic Information */}
+                {(currentStep === 1) && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -510,34 +653,29 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="type" className="font-semibold">
-                          Vehicle Type *
+                        <Label htmlFor="year" className="font-semibold">
+                          Year *
                         </Label>
-                        <Select 
-                          value={formData.type} 
-                          onValueChange={(value: VehicleType) => handleInputChange('type', value)}
-                        >
-                          <SelectTrigger className={`
+                        <Input
+                          id="year"
+                          type="number"
+                          min="2000"
+                          max={new Date().getFullYear() + 1}
+                          value={formData.year}
+                          onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
+                          className={`
                             rounded-xl border-2
                             ${theme === 'light' 
                               ? 'bg-white border-gray-200 focus:border-blue-500' 
                               : 'bg-gray-700 border-gray-600 focus:border-blue-500'
                             }
-                          `}>
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="City">City</SelectItem>
-                            <SelectItem value="Vacation">Vacation</SelectItem>
-                            <SelectItem value="Tour">Tour</SelectItem>
-                            <SelectItem value="Bridal">Bridal</SelectItem>
-                            
-                          </SelectContent>
-                        </Select>
+                          `}
+                          required
+                        />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-3">
                         <Label htmlFor="brand" className="font-semibold">
                           Brand *
@@ -577,33 +715,119 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                           required
                         />
                       </div>
+                    </div>
 
-                      <div className="space-y-3">
-                        <Label htmlFor="year" className="font-semibold">
-                          Year *
-                        </Label>
-                        <Input
-                          id="year"
-                          type="number"
-                          min="2000"
-                          max={new Date().getFullYear() + 1}
-                          value={formData.year}
-                          onChange={(e) => handleInputChange('year', parseInt(e.target.value))}
-                          className={`
-                            rounded-xl border-2
-                            ${theme === 'light' 
-                              ? 'bg-white border-gray-200 focus:border-blue-500' 
-                              : 'bg-gray-700 border-gray-600 focus:border-blue-500'
-                            }
-                          `}
-                          required
-                        />
+                    {/* Vehicle Type Section - Similar to Features */}
+                    <div className="space-y-4">
+                      <Label className="font-semibold flex items-center gap-2 text-lg">
+                        <Car className="w-5 h-5 text-blue-500" />
+                        Vehicle Type *
+                      </Label>
+                      
+                      <div className="space-y-4">
+                        {/* Custom Vehicle Type Input */}
+                        <div className="flex gap-2">
+                          <Input
+                            value={customVehicleType}
+                            onChange={(e) => setCustomVehicleType(e.target.value)}
+                            placeholder="Enter custom vehicle type"
+                            className={`
+                              rounded-xl border-2
+                              ${theme === 'light' 
+                                ? 'bg-white border-gray-200 focus:border-blue-500' 
+                                : 'bg-gray-700 border-gray-600 focus:border-blue-500'
+                              }
+                            `}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddVehicleType(customVehicleType);
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => handleAddVehicleType(customVehicleType)}
+                            className="whitespace-nowrap"
+                          >
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add Type
+                          </Button>
+                        </div>
+
+                        <div>
+                          <Label className="text-sm font-medium mb-3 block">
+                            Common Vehicle Types:
+                          </Label>
+                          <div className="flex flex-wrap gap-2">
+                            {commonVehicleTypes.map(type => (
+                              <Button
+                                key={type}
+                                type="button"
+                                variant={formData.type === type ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleAddCommonVehicleType(type)}
+                                className={`
+                                  text-xs transition-all
+                                  ${formData.type === type 
+                                    ? 'bg-blue-500 hover:bg-blue-600' 
+                                    : ''
+                                  }
+                                `}
+                              >
+                                {type}
+                                {formData.type === type && (
+                                  <CheckCircle className="w-3 h-3 ml-1" />
+                                )}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {formData.type && (
+                          <div className="space-y-3">
+                            <Label className="text-sm font-medium">
+                              Selected Vehicle Type:
+                            </Label>
+                            <div className="flex flex-wrap gap-2">
+                              <motion.div
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className={`
+                                  inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium
+                                  border-2 transition-all cursor-pointer hover:scale-105
+                                  ${theme === 'light'
+                                    ? 'bg-blue-50 text-blue-800 border-blue-300 hover:bg-blue-100'
+                                    : 'bg-blue-900/50 text-blue-200 border-blue-600 hover:bg-blue-900/70'
+                                  }
+                                `}
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                                {formData.type}
+                                <button
+                                  type="button"
+                                  onClick={handleRemoveVehicleType}
+                                  className={`
+                                    hover:scale-110 transition-transform p-1 rounded
+                                    ${theme === 'light' 
+                                      ? 'hover:bg-red-100 hover:text-red-600' 
+                                      : 'hover:bg-red-900/50 hover:text-red-400'
+                                    }
+                                  `}
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </motion.div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
                 )}
 
-                {(activeSection === 'specs') && (
+                {/* Step 2: Specifications */}
+                {(currentStep === 2) && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -754,7 +978,8 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                   </motion.div>
                 )}
 
-                {(activeSection === 'media') && (
+                {/* Step 3: Media */}
+                {(currentStep === 3) && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -823,7 +1048,8 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                   </motion.div>
                 )}
 
-                {(activeSection === 'features') && (
+                {/* Step 4: Features */}
+                {(currentStep === 4) && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -938,7 +1164,8 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                   </motion.div>
                 )}
 
-                {(activeSection === 'inventory') && (
+                {/* Step 5: Inventory */}
+                {(currentStep === 5) && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -963,7 +1190,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                               type="number"
                               min="0"
                               value={formData.stock}
-                              onChange={(e) => handleInputChange('stock', parseInt(e.target.value))}
+                              onChange={(e) => handleInputChange('stock', parseInt(e.target.value) || 0)}
                               placeholder="Enter number of units"
                               className={`
                                 rounded-xl border-2 text-lg font-semibold
@@ -978,7 +1205,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                               text-sm
                               ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}
                             `}>
-                              Number of available units for this vehicle model
+                              Set to 0 if vehicle is currently unavailable
                             </p>
                           </div>
 
@@ -1071,7 +1298,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                               Quick Stock Actions:
                             </Label>
                             <div className="flex flex-wrap gap-2">
-                              {[1, 3, 5, 10].map(quantity => (
+                              {[0, 1, 3, 5, 10].map(quantity => (
                                 <Button
                                   key={quantity}
                                   type="button"
@@ -1108,48 +1335,56 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                 </Button>
                 
                 <div className="flex items-center gap-4">
-                  <div className="flex gap-2">
-                    {['basic', 'specs', 'media', 'features', 'inventory'].map((section) => (
-                      <button
-                        key={section}
-                        type="button"
-                        onClick={() => setActiveSection(section)}
-                        className={`
-                          w-3 h-3 rounded-full transition-all
-                          ${activeSection === section
-                            ? theme === 'light'
-                              ? 'bg-blue-500'
-                              : 'bg-blue-400'
-                            : theme === 'light'
-                              ? 'bg-gray-300'
-                              : 'bg-gray-600'
-                          }
-                        `}
-                      />
-                    ))}
-                  </div>
+                  {currentStep > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handlePreviousStep}
+                      disabled={loading}
+                      className="rounded-xl"
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Previous
+                    </Button>
+                  )}
                   
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className={`
-                      rounded-xl min-w-[160px] font-semibold text-lg py-3
-                      bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600
-                      text-white shadow-lg hover:shadow-xl transition-all
-                    `}
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-                        Adding...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-5 h-5 mr-2" />
-                        Add Vehicle
-                      </>
-                    )}
-                  </Button>
+                  {currentStep < totalSteps ? (
+                    <Button
+                      type="button"
+                      onClick={handleNextStep}
+                      disabled={loading}
+                      className={`
+                        rounded-xl min-w-[120px] font-semibold text-lg py-3
+                        bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600
+                        text-white shadow-lg hover:shadow-xl transition-all
+                      `}
+                    >
+                      Next
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className={`
+                        rounded-xl min-w-[160px] font-semibold text-lg py-3
+                        bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600
+                        text-white shadow-lg hover:shadow-xl transition-all
+                      `}
+                    >
+                      {loading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
+                          Adding...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-5 h-5 mr-2" />
+                          Add Vehicle
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </div>
               </div>
             </form>

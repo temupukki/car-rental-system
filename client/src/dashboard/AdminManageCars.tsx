@@ -31,12 +31,10 @@ const fuelTypes: string[] = [
 
 const transmissionTypes: string[] = ["Automatic", "Manual", "CVT"];
 
-const vehicleTypes: VehicleType[] = [
-  "City",
-  "Tour",
-  "Vacation",
-  "Bridal",
-
+const commonVehicleTypes: string[] = [
+  'City', 'Vacation', 'Tour', 'Bridal', 'SUV', 'Luxury', 'Sports', 
+  'Electric', 'Van', 'Truck', 'Convertible', 'Motorcycle', 'Bus',
+  'Minivan', 'Crossover', 'Hatchback', 'Sedan', 'Coupe', 'Wagon'
 ];
 
 interface StockStatus {
@@ -63,6 +61,7 @@ const AdminManageCars: React.FC = () => {
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
   const [newFeature, setNewFeature] = useState<string>("");
   const [newImageUrl, setNewImageUrl] = useState<string>("");
+  const [customVehicleType, setCustomVehicleType] = useState<string>("");
   const [stats, setStats] = useState({
     total: 0,
     available: 0,
@@ -318,6 +317,7 @@ const AdminManageCars: React.FC = () => {
         setAdditionalImages([]);
         setNewFeature("");
         setNewImageUrl("");
+        setCustomVehicleType("");
         fetchVehicles();
       } else {
         setError(result.error || "Failed to update vehicle");
@@ -334,6 +334,7 @@ const AdminManageCars: React.FC = () => {
     setSelectedVehicle({ ...vehicle });
     setImagePreview(vehicle.image);
     setAdditionalImages(vehicle.images || []);
+    setCustomVehicleType("");
     setShowEditModal(true);
   };
 
@@ -352,6 +353,7 @@ const AdminManageCars: React.FC = () => {
       setImagePreview(value);
     }
   };
+
   const handleAddAdditionalImage = (): void => {
     if (newImageUrl.trim()) {
       setAdditionalImages((prev) => [...prev, newImageUrl.trim()]);
@@ -385,6 +387,23 @@ const AdminManageCars: React.FC = () => {
         prev ? { ...prev, features: updatedFeatures } : null
       );
     }
+  };
+
+  // Vehicle Type Functions
+  const handleAddVehicleType = (type: string): void => {
+    if (!type.trim()) {
+      return;
+    }
+    handleEditVehicleChange("type", type);
+    setCustomVehicleType("");
+  };
+
+  const handleRemoveVehicleType = (): void => {
+    handleEditVehicleChange("type", "");
+  };
+
+  const handleAddCommonVehicleType = (type: string): void => {
+    handleEditVehicleChange("type", type);
   };
 
   const clearError = (): void => {
@@ -422,6 +441,7 @@ const AdminManageCars: React.FC = () => {
     setAdditionalImages([]);
     setNewFeature("");
     setNewImageUrl("");
+    setCustomVehicleType("");
   };
 
   if (loading) {
@@ -588,7 +608,7 @@ const AdminManageCars: React.FC = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Types</option>
-                {vehicleTypes.map((type) => (
+                {commonVehicleTypes.map((type) => (
                   <option key={type} value={type}>
                     {type}
                   </option>
@@ -1084,30 +1104,6 @@ const AdminManageCars: React.FC = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Type *
-                        </label>
-                        <select
-                          value={selectedVehicle.type}
-                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                            handleEditVehicleChange(
-                              "type",
-                              e.target.value as VehicleType
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          required
-                        >
-                          <option value="">Select Type</option>
-                          {vehicleTypes.map((type) => (
-                            <option key={type} value={type}>
-                              {type}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
                           Brand *
                         </label>
                         <input
@@ -1134,6 +1130,106 @@ const AdminManageCars: React.FC = () => {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           required
                         />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Year *
+                        </label>
+                        <input
+                          type="number"
+                          min="1900"
+                          max="2030"
+                          value={selectedVehicle.year}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange(
+                              "year",
+                              parseInt(e.target.value)
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Vehicle Type Section - Custom Input */}
+                    <div className="space-y-4">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Vehicle Type *
+                      </label>
+                      
+                      <div className="space-y-4">
+                        {/* Custom Vehicle Type Input */}
+                        <div className="flex gap-2">
+                          <input
+                            value={customVehicleType}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                              setCustomVehicleType(e.target.value)
+                            }
+                            placeholder="Enter custom vehicle type"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            onKeyPress={(e: React.KeyboardEvent) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleAddVehicleType(customVehicleType);
+                              }
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleAddVehicleType(customVehicleType)}
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap"
+                          >
+                            Add Type
+                          </button>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium mb-3 block">
+                            Common Vehicle Types:
+                          </label>
+                          <div className="flex flex-wrap gap-2">
+                            {commonVehicleTypes.map(type => (
+                              <button
+                                key={type}
+                                type="button"
+                                onClick={() => handleAddCommonVehicleType(type)}
+                                className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                                  selectedVehicle.type === type 
+                                    ? 'bg-blue-500 text-white' 
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                }`}
+                              >
+                                {type}
+                                {selectedVehicle.type === type && (
+                                  <CheckCircle className="w-3 h-3 ml-1 inline" />
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {selectedVehicle.type && (
+                          <div className="space-y-3">
+                            <label className="text-sm font-medium">
+                              Selected Vehicle Type:
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-800 border border-blue-200">
+                                <CheckCircle className="w-4 h-4" />
+                                {selectedVehicle.type}
+                                <button
+                                  type="button"
+                                  onClick={handleRemoveVehicleType}
+                                  className="text-blue-600 hover:text-blue-800 font-bold text-lg leading-none ml-2"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -1181,26 +1277,6 @@ const AdminManageCars: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Year *
-                        </label>
-                        <input
-                          type="number"
-                          min="1900"
-                          max="2030"
-                          value={selectedVehicle.year}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            handleEditVehicleChange(
-                              "year",
-                              parseInt(e.target.value)
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
                           Seats *
                         </label>
                         <input
@@ -1232,6 +1308,25 @@ const AdminManageCars: React.FC = () => {
                             handleEditVehicleChange(
                               "doors",
                               parseInt(e.target.value) || 0
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Mileage (MPG)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={selectedVehicle.mileage || ""}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            handleEditVehicleChange(
+                              "mileage",
+                              parseFloat(e.target.value) || 0
                             )
                           }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -1284,40 +1379,19 @@ const AdminManageCars: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Mileage (MPG)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          value={selectedVehicle.mileage || ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            handleEditVehicleChange(
-                              "mileage",
-                              parseFloat(e.target.value) || 0
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Location
-                        </label>
-                        <input
-                          type="text"
-                          value={selectedVehicle.location || ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            handleEditVehicleChange("location", e.target.value)
-                          }
-                          placeholder="Enter vehicle location"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedVehicle.location || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleEditVehicleChange("location", e.target.value)
+                        }
+                        placeholder="Enter vehicle location"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
                     </div>
 
                     <div>

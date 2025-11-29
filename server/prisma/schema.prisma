@@ -98,7 +98,7 @@ model Verification {
 model Vehicle {
   id          String      @id @default(cuid())
   name        String
-  type        VehicleType
+  type        String
   brand       String
   model       String
   year        Int
@@ -133,13 +133,19 @@ model Order {
   totalDays   Int
   dailyRate   Float
   totalAmount Float
-  status      OrderStatus @default(PENDING)
+  status      OrderStatus @default(COMPLETED)
   customerName    String
   customerEmail   String
   customerPhone   String
   customerLicense String?
+  licenseFrontImage String?
+  licenseBackImage  String?
   pickupLocation  String
   dropoffLocation String
+ 
+
+ 
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
