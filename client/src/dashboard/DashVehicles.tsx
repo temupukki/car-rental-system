@@ -38,6 +38,7 @@ import {
   Minus,
   Package,
   AlertTriangle,
+  LifeBuoy,
 } from "lucide-react";
 
 import { useLanguage } from "../components/LanguageContext";
@@ -63,7 +64,7 @@ interface VehicleCardProps {
   t: (key: string) => string | undefined;
 }
 
-interface CartItem extends Vehicle {
+interface RentalItem extends Vehicle {
   quantity: number;
   rentalDays: number;
   totalPrice: number;
@@ -87,11 +88,24 @@ const initialFilters: Filters = {
   sortBy: "featured",
 };
 
-const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+// Cart persistence with localStorage
+const useRentalCart = () => {
+  const [rentalCart, setRentalCart] = useState<RentalItem[]>(() => {
+    // Load cart from localStorage on initial render
+    if (typeof window !== "undefined") {
+      const savedCart = localStorage.getItem("vehicleRentalCart");
+      return savedCart ? JSON.parse(savedCart) : [];
+    }
+    return [];
+  });
 
-  const addToCart = useCallback((vehicle: Vehicle, days: number = 1) => {
-    setCart((prevCart) => {
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("vehicleRentalCart", JSON.stringify(rentalCart));
+  }, [rentalCart]);
+
+  const addToRentalCart = useCallback((vehicle: Vehicle, days: number = 1) => {
+    setRentalCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === vehicle.id);
       if (existingItem) {
         return prevCart.map((item) =>
@@ -117,7 +131,7 @@ const useCart = () => {
   }, []);
 
   const updateRentalDays = useCallback((id: string, days: number) => {
-    setCart((prevCart) =>
+    setRentalCart((prevCart) =>
       prevCart.map((item) =>
         item.id === id
           ? {
@@ -130,21 +144,26 @@ const useCart = () => {
     );
   }, []);
 
-  const removeFromCart = useCallback((id: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  const removeFromRentalCart = useCallback((id: string) => {
+    setRentalCart((prevCart) => prevCart.filter((item) => item.id !== id));
   }, []);
 
-  const getTotalItems = useMemo(() => cart.length, [cart]);
+  const clearRentalCart = useCallback(() => {
+    setRentalCart([]);
+  }, []);
+
+  const getTotalItems = useMemo(() => rentalCart.length, [rentalCart]);
   const getTotalPrice = useMemo(
-    () => cart.reduce((sum, item) => sum + item.totalPrice, 0),
-    [cart]
+    () => rentalCart.reduce((sum, item) => sum + item.totalPrice, 0),
+    [rentalCart]
   );
 
   return {
-    cart,
-    addToCart,
+    rentalCart,
+    addToRentalCart,
     updateRentalDays,
-    removeFromCart,
+    removeFromRentalCart,
+    clearRentalCart,
     getTotalItems,
     getTotalPrice,
   };
@@ -161,14 +180,14 @@ export default function DVehicles() {
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [maxPrice, setMaxPrice] = useState(10000);
   const {
-    cart,
-    addToCart,
+    rentalCart,
+    addToRentalCart,
     updateRentalDays,
-    removeFromCart,
+    removeFromRentalCart,
     getTotalItems,
     getTotalPrice,
-  } = useCart();
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  } = useRentalCart();
+  const [isRentalCartOpen, setIsRentalCartOpen] = useState(false);
   const [rentalDays, setRentalDays] = useState<{ [key: string]: number }>({});
 
   // Dynamic vehicle types based on actual data
@@ -296,7 +315,7 @@ export default function DVehicles() {
     console.log("Toggle favorite:", id);
   };
 
-  const handleAddToCart = async (vehicle: Vehicle): Promise<void> => {
+  const handleAddToRentalCart = async (vehicle: Vehicle): Promise<void> => {
     try {
       const days = rentalDays[vehicle.id] || 1;
 
@@ -310,9 +329,9 @@ export default function DVehicles() {
         return;
       }
 
-      const existingCartItem = cart.find((item) => item.id === vehicle.id);
-      if (existingCartItem) {
-        toast.error("Vehicle is already in your cart");
+      const existingRentalItem = rentalCart.find((item) => item.id === vehicle.id);
+      if (existingRentalItem) {
+        toast.error("Vehicle is already in your rental cart");
         return;
       }
 
@@ -334,7 +353,7 @@ export default function DVehicles() {
       const stockResult = await stockResponse.json();
 
       if (stockResult.success) {
-        addToCart(vehicle, days);
+        addToRentalCart(vehicle, days);
 
         setVehicles((prev) =>
           prev.map((v) =>
@@ -342,17 +361,17 @@ export default function DVehicles() {
           )
         );
 
-        toast.success("Vehicle added to cart!");
+        toast.success("Vehicle added to rental cart!");
       } else {
-        toast.error(stockResult.error || "Failed to add to cart");
+        toast.error(stockResult.error || "Failed to add to rental cart");
       }
     } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error("Failed to add to cart");
+      console.error("Error adding to rental cart:", error);
+      toast.error("Failed to add to rental cart");
     }
   };
 
-  const handleRemoveFromCart = async (vehicleId: string): Promise<void> => {
+  const handleRemoveFromRentalCart = async (vehicleId: string): Promise<void> => {
     try {
       const stockResponse = await fetch(
         `${API_BASE}/vehicles/${vehicleId}/stock`,
@@ -372,9 +391,9 @@ export default function DVehicles() {
       const stockResult = await stockResponse.json();
 
       if (stockResult.success) {
-        const removedItem = cart.find((item) => item.id === vehicleId);
+        const removedItem = rentalCart.find((item) => item.id === vehicleId);
 
-        removeFromCart(vehicleId);
+        removeFromRentalCart(vehicleId);
 
         if (removedItem) {
           setVehicles((prev) =>
@@ -384,13 +403,13 @@ export default function DVehicles() {
           );
         }
 
-        toast.success("Vehicle removed from cart");
+        toast.success("Vehicle removed from rental cart");
       } else {
-        toast.error(stockResult.error || "Failed to remove from cart");
+        toast.error(stockResult.error || "Failed to remove from rental cart");
       }
     } catch (error) {
-      console.error("Error removing from cart:", error);
-      toast.error("Failed to remove from cart");
+      console.error("Error removing from rental cart:", error);
+      toast.error("Failed to remove from rental cart");
     }
   };
 
@@ -400,8 +419,8 @@ export default function DVehicles() {
       [vehicleId]: Math.max(1, newDays),
     }));
 
-    const cartItem = cart.find((item) => item.id === vehicleId);
-    if (cartItem) {
+    const rentalItem = rentalCart.find((item) => item.id === vehicleId);
+    if (rentalItem) {
       updateRentalDays(vehicleId, newDays);
     }
   };
@@ -498,19 +517,19 @@ export default function DVehicles() {
         </div>
       </div>
 
-      <FloatingCart
+      <FloatingRentalCart
         itemCount={getTotalItems}
         totalPrice={getTotalPrice}
-        onClick={() => setIsCartOpen(true)}
+        onClick={() => setIsRentalCartOpen(true)}
         theme={theme}
       />
 
-      <CartModal
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cart={cart}
+      <RentalCartModal
+        isOpen={isRentalCartOpen}
+        onClose={() => setIsRentalCartOpen(false)}
+        rentalCart={rentalCart}
         updateRentalDays={updateRentalDays}
-        removeFromCart={handleRemoveFromCart}
+        removeFromRentalCart={handleRemoveFromRentalCart}
         theme={theme}
         t={t}
       />
@@ -821,8 +840,8 @@ export default function DVehicles() {
                     theme={theme}
                     onBookNow={handleBookNow}
                     onToggleFavorite={toggleFavorite}
-                    onAddToCart={handleAddToCart}
-                    isAddedToCart={cart.some((item) => item.id === vehicle.id)}
+                    onAddToCart={handleAddToRentalCart}
+                    isAddedToCart={rentalCart.some((item) => item.id === vehicle.id)}
                     vehicleTypes={vehicleTypes}
                     t={t}
                     rentalDays={rentalDays[vehicle.id] || 1}
@@ -1101,7 +1120,7 @@ const ErrorScreen: React.FC<{
   </div>
 );
 
-const FloatingCart: React.FC<{
+const FloatingRentalCart: React.FC<{
   itemCount: number;
   totalPrice: number;
   onClick: () => void;
@@ -1134,7 +1153,7 @@ const FloatingCart: React.FC<{
       </div>
       <div className="text-left">
         <div className="text-sm font-semibold">ETB {totalPrice}</div>
-        <div className="text-xs opacity-80">View Cart</div>
+        <div className="text-xs opacity-80">View Rental Cart</div>
       </div>
     </div>
   </motion.button>
@@ -1535,7 +1554,7 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
             {isAddedToCart ? (
               <>
                 <CheckCircle className="w-4 h-4 mr-2" />
-                Added
+                Added to Rental
               </>
             ) : !stockStatus.available || safeVehicle.stock === 0 ? (
               <>
@@ -1544,8 +1563,8 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
               </>
             ) : (
               <>
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Add to Cart
+                <LifeBuoy className="w-4 h-4 mr-2" />
+                Add to Rental Cart
               </>
             )}
           </Button>
@@ -1555,27 +1574,27 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
   );
 };
 
-interface EnhancedCartModalProps {
+interface EnhancedRentalCartModalProps {
   isOpen: boolean;
   onClose: () => void;
-  cart: CartItem[];
+  rentalCart: RentalItem[];
   updateRentalDays: (id: string, days: number) => void;
-  removeFromCart: (id: string) => void;
+  removeFromRentalCart: (id: string) => void;
   theme: string;
   t: (key: string) => string | undefined;
 }
 
-const CartModal: React.FC<EnhancedCartModalProps> = ({
+const RentalCartModal: React.FC<EnhancedRentalCartModalProps> = ({
   isOpen,
   onClose,
-  cart,
+  rentalCart,
   updateRentalDays,
-  removeFromCart,
+  removeFromRentalCart,
   theme,
 }) => {
   const totalPrice = useMemo(
-    () => cart.reduce((sum, item) => sum + item.totalPrice, 0),
-    [cart]
+    () => rentalCart.reduce((sum, item) => sum + item.totalPrice, 0),
+    [rentalCart]
   );
 
   const handleDaysChange = (id: string, newDays: number) => {
@@ -1621,9 +1640,9 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
           <h2 className="text-3xl font-black flex items-center gap-3">
             <ShoppingCart className="w-8 h-8 text-blue-500" />
             Your Rental Cart
-            {cart.length > 0 && (
+            {rentalCart.length > 0 && (
               <Badge className="bg-blue-500 text-white text-lg py-1 px-3">
-                {cart.length}
+                {rentalCart.length}
               </Badge>
             )}
           </h2>
@@ -1639,21 +1658,21 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
 
         <div className="flex-1 overflow-y-auto p-8">
           <AnimatePresence>
-            {cart.length === 0 ? (
+            {rentalCart.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-12"
               >
                 <Zap className="w-16 h-16 mx-auto mb-4 text-yellow-500" />
-                <p className="text-2xl font-black mb-2">Your cart is empty</p>
+                <p className="text-2xl font-black mb-2">Your rental cart is empty</p>
                 <p className="text-gray-500 text-lg">
-                  Add some amazing vehicles to start your journey
+                  Add some amazing vehicles to start your rental journey
                 </p>
               </motion.div>
             ) : (
               <div className="space-y-6">
-                {cart.map((item) => (
+                {rentalCart.map((item) => (
                   <motion.div
                     key={item.id}
                     initial={{ opacity: 0, x: -20 }}
@@ -1783,7 +1802,7 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromRentalCart(item.id)}
                         className="w-10 h-10 text-red-500 hover:bg-red-500/10 rounded-2xl"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -1796,7 +1815,7 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
           </AnimatePresence>
         </div>
 
-        {cart.length > 0 && (
+        {rentalCart.length > 0 && (
           <div
             className={`p-8 border-t ${
               theme === "light" ? "border-gray-200" : "border-gray-700"
@@ -1804,11 +1823,11 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
           >
             <div className="flex justify-between items-center mb-6">
               <div>
-                <span className="text-2xl font-black">Total:</span>
+                <span className="text-2xl font-black">Total Rental:</span>
                 <p className="text-sm text-gray-500">
-                  {cart.length} vehicle{cart.length !== 1 ? "s" : ""} •{" "}
-                  {cart.reduce((sum, item) => sum + item.rentalDays, 0)} total
-                  days
+                  {rentalCart.length} vehicle{rentalCart.length !== 1 ? "s" : ""} •{" "}
+                  {rentalCart.reduce((sum, item) => sum + item.rentalDays, 0)} total
+                  rental days
                 </p>
               </div>
               <span className="text-3xl font-black text-green-600">
@@ -1817,14 +1836,14 @@ const CartModal: React.FC<EnhancedCartModalProps> = ({
             </div>
             <Button
               onClick={() => {
-                localStorage.setItem("vehicleRentalCart", JSON.stringify(cart));
+                // Cart is already persisted in localStorage via the hook
                 window.location.href = "/dashboard/checkout";
-                toast.success("Proced to checkout page");
+                toast.success("Proceeding to checkout page");
               }}
               className="w-full rounded-2xl py-4 text-lg font-black bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl flex items-center justify-center"
             >
               <DollarSign className="w-6 h-6 mr-3" />
-              Proceed to Checkout ({cart.length})
+              Proceed to Checkout ({rentalCart.length})
             </Button>
           </div>
         )}
