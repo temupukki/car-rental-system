@@ -26,6 +26,7 @@ const translations = {
     "nav.myBookings":"My Bookings",
     'nav.admin': 'Admin',
     'user.roles.administrator':'Admin',
+    'user.roles.customer':'User',
     'user.profile':'Profile',
     
 
@@ -1150,6 +1151,7 @@ const translations = {
       "አዎ፣ ነጭ ገንዘብ እና የሞባይል ክፍያ አማራጮችን እንቀበላለን። ሆኖም ከፍ ያለ የደህንነት ተቀማጭ ገንዘብ ሊጠየቅ ይችላል።",
 
     // Delivery Questions - Amharic
+     'user.roles.customer':'ደምበኛ',
     "faq.q17": "ተሽከርካሪዎችን ትጨምራላችሁ?",
     "faq.a17":
       "አዎ፣ በከተማ ማዕከሎች ውስጥ ነፃ መጫኛ እናቀርባለን። ለአውሮፕላን ማረፊያዎች፣ ሆቴሎች ወይም ልዩ አድራሻዎች መጫኛ በትንሽ ክፍያ ይገኛል።",

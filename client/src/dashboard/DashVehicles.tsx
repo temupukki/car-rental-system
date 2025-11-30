@@ -39,6 +39,7 @@ import {
   Package,
   AlertTriangle,
   LifeBuoy,
+  Timer,
 } from "lucide-react";
 
 import { useLanguage } from "../components/LanguageContext";
@@ -68,6 +69,8 @@ interface RentalItem extends Vehicle {
   quantity: number;
   rentalDays: number;
   totalPrice: number;
+  addedAt: string; // ISO timestamp
+  expiresAt: string; // ISO timestamp (30 minutes from addedAt)
 }
 
 interface Filters {
@@ -88,13 +91,27 @@ const initialFilters: Filters = {
   sortBy: "featured",
 };
 
-// Cart persistence with localStorage
+// Cart persistence with localStorage and expiration
 const useRentalCart = () => {
   const [rentalCart, setRentalCart] = useState<RentalItem[]>(() => {
     // Load cart from localStorage on initial render
     if (typeof window !== "undefined") {
       const savedCart = localStorage.getItem("vehicleRentalCart");
-      return savedCart ? JSON.parse(savedCart) : [];
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        // Filter out expired items on load
+        const now = new Date();
+        const validItems = parsedCart.filter((item: RentalItem) => 
+          new Date(item.expiresAt) > now
+        );
+        
+        // If any items were expired, update localStorage
+        if (validItems.length !== parsedCart.length) {
+          localStorage.setItem("vehicleRentalCart", JSON.stringify(validItems));
+        }
+        
+        return validItems;
+      }
     }
     return [];
   });
@@ -104,7 +121,62 @@ const useRentalCart = () => {
     localStorage.setItem("vehicleRentalCart", JSON.stringify(rentalCart));
   }, [rentalCart]);
 
+  // Function to restore stock for expired items
+  const restoreStockForExpiredItems = useCallback(async (expiredItems: RentalItem[]) => {
+    for (const item of expiredItems) {
+      try {
+        const stockResponse = await fetch(
+          `${API_BASE}/vehicles/${item.id}/stock`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              stock: 1,
+              operation: "increment",
+            }),
+          }
+        );
+
+        const stockResult = await stockResponse.json();
+        if (!stockResult.success) {
+          console.error(`Failed to restore stock for vehicle ${item.id}:`, stockResult.error);
+        }
+      } catch (error) {
+        console.error(`Error restoring stock for vehicle ${item.id}:`, error);
+      }
+    }
+  }, []);
+
+  // Check for expired items every minute
+  useEffect(() => {
+    const checkExpiredItems = async () => {
+      const now = new Date();
+      const validItems = rentalCart.filter(item => new Date(item.expiresAt) > now);
+      const expiredItems = rentalCart.filter(item => new Date(item.expiresAt) <= now);
+      
+      if (expiredItems.length > 0) {
+        // Restore stock for expired items
+        await restoreStockForExpiredItems(expiredItems);
+        
+        // Update cart state
+        setRentalCart(validItems);
+        
+        // Show notification
+        toast.error(`${expiredItems.length} rental cart item(s) have expired and were removed`);
+      }
+    };
+
+    const interval = setInterval(checkExpiredItems, 60000); 
+    return () => clearInterval(interval);
+  }, [rentalCart, restoreStockForExpiredItems]);
+
   const addToRentalCart = useCallback((vehicle: Vehicle, days: number = 1) => {
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 60 * 60 * 1000); 
+
     setRentalCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === vehicle.id);
       if (existingItem) {
@@ -114,6 +186,8 @@ const useRentalCart = () => {
                 ...item,
                 rentalDays: days,
                 totalPrice: (vehicle.pricePerDay || 0) * days,
+                addedAt: now.toISOString(),
+                expiresAt: expiresAt.toISOString(),
               }
             : item
         );
@@ -125,6 +199,8 @@ const useRentalCart = () => {
           quantity: 1,
           rentalDays: days,
           totalPrice: (vehicle.pricePerDay || 0) * days,
+          addedAt: now.toISOString(),
+          expiresAt: expiresAt.toISOString(),
         },
       ];
     });
@@ -144,19 +220,89 @@ const useRentalCart = () => {
     );
   }, []);
 
-  const removeFromRentalCart = useCallback((id: string) => {
-    setRentalCart((prevCart) => prevCart.filter((item) => item.id !== id));
-  }, []);
+  const removeFromRentalCart = useCallback(async (id: string, restoreStock: boolean = true) => {
+    if (restoreStock) {
+      const itemToRemove = rentalCart.find(item => item.id === id);
+      if (itemToRemove) {
+        try {
+          const stockResponse = await fetch(
+            `${API_BASE}/vehicles/${id}/stock`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({
+                stock: 1,
+                operation: "increment",
+              }),
+            }
+          );
 
-  const clearRentalCart = useCallback(() => {
+          const stockResult = await stockResponse.json();
+          if (!stockResult.success) {
+            console.error(`Failed to restore stock for vehicle ${id}:`, stockResult.error);
+          }
+        } catch (error) {
+          console.error(`Error restoring stock for vehicle ${id}:`, error);
+        }
+      }
+    }
+
+    setRentalCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  }, [rentalCart]);
+
+  const clearRentalCart = useCallback(async () => {
+    // Restore stock for all items when clearing cart
+    for (const item of rentalCart) {
+      try {
+        const stockResponse = await fetch(
+          `${API_BASE}/vehicles/${item.id}/stock`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              stock: 1,
+              operation: "increment",
+            }),
+          }
+        );
+
+        const stockResult = await stockResponse.json();
+        if (!stockResult.success) {
+          console.error(`Failed to restore stock for vehicle ${item.id}:`, stockResult.error);
+        }
+      } catch (error) {
+        console.error(`Error restoring stock for vehicle ${item.id}:`, error);
+      }
+    }
+
     setRentalCart([]);
-  }, []);
+  }, [rentalCart]);
 
   const getTotalItems = useMemo(() => rentalCart.length, [rentalCart]);
   const getTotalPrice = useMemo(
     () => rentalCart.reduce((sum, item) => sum + item.totalPrice, 0),
     [rentalCart]
   );
+
+  // Get time remaining for cart expiration
+  const getTimeRemaining = useCallback(() => {
+    if (rentalCart.length === 0) return null;
+    
+    const now = new Date();
+    const earliestExpiration = rentalCart.reduce((earliest, item) => {
+      const itemExpires = new Date(item.expiresAt);
+      return earliest < itemExpires ? earliest : itemExpires;
+    }, new Date(rentalCart[0].expiresAt));
+    
+    const timeRemaining = earliestExpiration.getTime() - now.getTime();
+    return timeRemaining > 0 ? timeRemaining : 0;
+  }, [rentalCart]);
 
   return {
     rentalCart,
@@ -166,6 +312,7 @@ const useRentalCart = () => {
     clearRentalCart,
     getTotalItems,
     getTotalPrice,
+    getTimeRemaining,
   };
 };
 
@@ -186,9 +333,22 @@ export default function DVehicles() {
     removeFromRentalCart,
     getTotalItems,
     getTotalPrice,
+    getTimeRemaining,
   } = useRentalCart();
   const [isRentalCartOpen, setIsRentalCartOpen] = useState(false);
   const [rentalDays, setRentalDays] = useState<{ [key: string]: number }>({});
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+
+  // Update time remaining every second
+  useEffect(() => {
+    const updateTimer = () => {
+      setTimeRemaining(getTimeRemaining());
+    };
+
+    updateTimer(); // Initial update
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [getTimeRemaining]);
 
   // Dynamic vehicle types based on actual data
   const vehicleTypes: VehicleType[] = useMemo(() => {
@@ -361,7 +521,7 @@ export default function DVehicles() {
           )
         );
 
-        toast.success("Vehicle added to rental cart!");
+        toast.success("Vehicle added to rental cart! Reservation expires in 1 hour.");
       } else {
         toast.error(stockResult.error || "Failed to add to rental cart");
       }
@@ -373,40 +533,16 @@ export default function DVehicles() {
 
   const handleRemoveFromRentalCart = async (vehicleId: string): Promise<void> => {
     try {
-      const stockResponse = await fetch(
-        `${API_BASE}/vehicles/${vehicleId}/stock`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            stock: 1,
-            operation: "increment",
-          }),
-        }
+      await removeFromRentalCart(vehicleId, true);
+
+      // Update local vehicles state to reflect stock increase
+      setVehicles((prev) =>
+        prev.map((v) =>
+          v.id === vehicleId ? { ...v, stock: v.stock + 1 } : v
+        )
       );
 
-      const stockResult = await stockResponse.json();
-
-      if (stockResult.success) {
-        const removedItem = rentalCart.find((item) => item.id === vehicleId);
-
-        removeFromRentalCart(vehicleId);
-
-        if (removedItem) {
-          setVehicles((prev) =>
-            prev.map((v) =>
-              v.id === vehicleId ? { ...v, stock: v.stock + 1 } : v
-            )
-          );
-        }
-
-        toast.success("Vehicle removed from rental cart");
-      } else {
-        toast.error(stockResult.error || "Failed to remove from rental cart");
-      }
+      toast.success("Vehicle removed from rental cart");
     } catch (error) {
       console.error("Error removing from rental cart:", error);
       toast.error("Failed to remove from rental cart");
@@ -423,6 +559,15 @@ export default function DVehicles() {
     if (rentalItem) {
       updateRentalDays(vehicleId, newDays);
     }
+  };
+
+  const formatTimeRemaining = (milliseconds: number) => {
+    if (milliseconds <= 0) return "Expired";
+    
+    const minutes = Math.floor(milliseconds / 60000);
+    const seconds = Math.floor((milliseconds % 60000) / 1000);
+    
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -520,6 +665,7 @@ export default function DVehicles() {
       <FloatingRentalCart
         itemCount={getTotalItems}
         totalPrice={getTotalPrice}
+        timeRemaining={timeRemaining}
         onClick={() => setIsRentalCartOpen(true)}
         theme={theme}
       />
@@ -530,6 +676,7 @@ export default function DVehicles() {
         rentalCart={rentalCart}
         updateRentalDays={updateRentalDays}
         removeFromRentalCart={handleRemoveFromRentalCart}
+        timeRemaining={timeRemaining}
         theme={theme}
         t={t}
       />
@@ -1123,41 +1270,65 @@ const ErrorScreen: React.FC<{
 const FloatingRentalCart: React.FC<{
   itemCount: number;
   totalPrice: number;
+  timeRemaining: number | null;
   onClick: () => void;
   theme: string;
-}> = ({ itemCount, totalPrice, onClick, theme }) => (
-  <motion.button
-    initial={{ scale: 0, opacity: 0 }}
-    animate={{ scale: 1, opacity: 1 }}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={onClick}
-    className={`fixed bottom-8 right-8 z-50 p-4 rounded-2xl shadow-2xl transition-all duration-300 ${
-      theme === "light"
-        ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-        : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
-    }`}
-  >
-    <div className="flex items-center gap-3">
-      <div className="relative">
-        <ShoppingCart className="w-6 h-6" />
-        {itemCount > 0 && (
-          <motion.span
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold border-2 border-white"
-          >
-            {itemCount}
-          </motion.span>
-        )}
+}> = ({ itemCount, totalPrice, timeRemaining, onClick, theme }) => {
+  const formatTimeRemaining = (milliseconds: number) => {
+    if (milliseconds <= 0) return "Expired";
+    
+    const minutes = Math.floor(milliseconds / 60000);
+    const seconds = Math.floor((milliseconds % 60000) / 1000);
+    
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const getTimerColor = () => {
+    if (!timeRemaining || timeRemaining <= 0) return "text-red-500";
+    if (timeRemaining <= 5 * 60 * 1000) return "text-orange-500"; // 5 minutes
+    return "text-green-500";
+  };
+
+  return (
+    <motion.button
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onClick}
+      className={`fixed bottom-8 right-8 z-50 p-4 rounded-2xl shadow-2xl transition-all duration-300 ${
+        theme === "light"
+          ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+          : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <ShoppingCart className="w-6 h-6" />
+          {itemCount > 0 && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold border-2 border-white"
+            >
+              {itemCount}
+            </motion.span>
+          )}
+        </div>
+        <div className="text-left">
+          <div className="text-sm font-semibold">ETB {totalPrice}</div>
+          <div className="text-xs opacity-80">View Rental Cart</div>
+          {timeRemaining !== null && timeRemaining > 0 && itemCount > 0 && (
+            <div className={`text-xs font-semibold ${getTimerColor()} flex items-center gap-1 mt-1`}>
+              <Timer className="w-3 h-3" />
+              {formatTimeRemaining(timeRemaining)}
+            </div>
+          )}
+        </div>
       </div>
-      <div className="text-left">
-        <div className="text-sm font-semibold">ETB {totalPrice}</div>
-        <div className="text-xs opacity-80">View Rental Cart</div>
-      </div>
-    </div>
-  </motion.button>
-);
+    </motion.button>
+  );
+};
 
 interface EnhancedVehicleCardProps extends VehicleCardProps {
   rentalDays: number;
@@ -1580,6 +1751,7 @@ interface EnhancedRentalCartModalProps {
   rentalCart: RentalItem[];
   updateRentalDays: (id: string, days: number) => void;
   removeFromRentalCart: (id: string) => void;
+  timeRemaining: number | null;
   theme: string;
   t: (key: string) => string | undefined;
 }
@@ -1590,12 +1762,28 @@ const RentalCartModal: React.FC<EnhancedRentalCartModalProps> = ({
   rentalCart,
   updateRentalDays,
   removeFromRentalCart,
+  timeRemaining,
   theme,
 }) => {
   const totalPrice = useMemo(
     () => rentalCart.reduce((sum, item) => sum + item.totalPrice, 0),
     [rentalCart]
   );
+
+  const formatTimeRemaining = (milliseconds: number) => {
+    if (milliseconds <= 0) return "Expired";
+    
+    const minutes = Math.floor(milliseconds / 60000);
+    const seconds = Math.floor((milliseconds % 60000) / 1000);
+    
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const getTimerColor = () => {
+    if (!timeRemaining || timeRemaining <= 0) return "text-red-500";
+    if (timeRemaining <= 5 * 60 * 1000) return "text-orange-500"; // 5 minutes
+    return "text-green-500";
+  };
 
   const handleDaysChange = (id: string, newDays: number) => {
     if (newDays >= 1 && newDays <= 30) {
@@ -1637,15 +1825,24 @@ const RentalCartModal: React.FC<EnhancedRentalCartModalProps> = ({
             theme === "light" ? "border-gray-200" : "border-gray-700"
           }`}
         >
-          <h2 className="text-3xl font-black flex items-center gap-3">
-            <ShoppingCart className="w-8 h-8 text-blue-500" />
-            Your Rental Cart
-            {rentalCart.length > 0 && (
-              <Badge className="bg-blue-500 text-white text-lg py-1 px-3">
-                {rentalCart.length}
-              </Badge>
+          <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-black flex items-center gap-3">
+              <ShoppingCart className="w-8 h-8 text-blue-500" />
+              Your Rental Cart
+              {rentalCart.length > 0 && (
+                <Badge className="bg-blue-500 text-white text-lg py-1 px-3">
+                  {rentalCart.length}
+                </Badge>
+              )}
+            </h2>
+            {timeRemaining !== null && timeRemaining > 0 && rentalCart.length > 0 && (
+              <div className={`flex items-center gap-2 ${getTimerColor()} font-semibold`}>
+                <Timer className="w-5 h-5" />
+                <span className="text-lg">{formatTimeRemaining(timeRemaining)}</span>
+                <span className="text-sm opacity-80">remaining</span>
+              </div>
             )}
-          </h2>
+          </div>
           <Button
             variant="ghost"
             size="icon"
@@ -1821,6 +2018,20 @@ const RentalCartModal: React.FC<EnhancedRentalCartModalProps> = ({
               theme === "light" ? "border-gray-200" : "border-gray-700"
             }`}
           >
+            {timeRemaining !== null && timeRemaining > 0 && (
+              <div className={`mb-4 p-3 rounded-xl border ${getTimerColor().replace('text', 'border')} ${getTimerColor().replace('text', 'bg')} bg-opacity-10`}>
+                <div className="flex items-center justify-center gap-2">
+                  <Timer className="w-4 h-4" />
+                  <span className={`font-semibold ${getTimerColor()}`}>
+                    Reservation expires in {formatTimeRemaining(timeRemaining)}
+                  </span>
+                </div>
+                <p className="text-sm text-center text-gray-500 mt-1">
+                  Complete checkout before time runs out to secure your vehicles
+                </p>
+              </div>
+            )}
+
             <div className="flex justify-between items-center mb-6">
               <div>
                 <span className="text-2xl font-black">Total Rental:</span>

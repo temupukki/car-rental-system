@@ -166,7 +166,7 @@ const enhancedApiService = {
   },
 };
 
-// Driver License Upload Component
+
 interface DriverLicenseUploadProps {
   theme: string;
   licenseFiles: { front: File | null; back: File | null };
@@ -260,32 +260,7 @@ function DriverLicenseUpload({
     }
   };
 
-  // Save driver license to database API
-  const saveDriverLicenseToDB = async (licenseData: any): Promise<any> => {
-    try {
-      console.log("💾 Saving driver license to database:", licenseData);
 
-      const response = await fetch('http://localhost:3000/api/driver-licenses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(licenseData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save license to database');
-      }
-
-      const result = await response.json();
-      console.log("✅ License saved to database:", result);
-      return result;
-    } catch (error: any) {
-      console.error("❌ Database save error:", error);
-      throw new Error(`Database save failed: ${error.message}`);
-    }
-  };
 
   const handleFileSelect = (type: 'front' | 'back', file: File) => {
     // Validate file type
@@ -388,12 +363,7 @@ function DriverLicenseUpload({
 
       console.log("💾 Saving license to database:", licenseData);
 
-      // Save to database via API
-      const savedLicense = await saveDriverLicenseToDB(licenseData);
-
-      // Update local state
       onLicenseSave({
-        id: savedLicense.data?.id,
         frontImage: previewUrls.front,
         backImage: previewUrls.back,
         licenseNumber: licenseDetails.licenseNumber,
@@ -410,7 +380,7 @@ function DriverLicenseUpload({
     }
   };
 
-  // Cleanup preview URLs on unmount
+  
   useEffect(() => {
     return () => {
       Object.values(previewUrls).forEach(url => {
@@ -735,7 +705,7 @@ function DriverLicenseUpload({
   );
 }
 
-// Main Checkout Component
+
 export default function CheckoutPage() {
   const { theme } = useTheme();
   const { t } = useLanguage();
@@ -1676,7 +1646,7 @@ export default function CheckoutPage() {
                               }
                             `}
                             >
-                              ${item.pricePerDay}/day
+                              ETB {item.pricePerDay}/day
                             </p>
                           </div>
                         </div>
@@ -2188,7 +2158,7 @@ export default function CheckoutPage() {
                       </div>
                       <div className="text-right">
                         <div className="text-sm font-bold text-green-600">
-                          ${item.totalPrice}
+                          ETB {item.totalPrice}
                         </div>
                       </div>
                     </div>
@@ -2196,7 +2166,7 @@ export default function CheckoutPage() {
                 </div>
               </ScrollArea>
 
-              {/* Rental Period Summary */}
+             
               <div
                 className={`
                 mb-4 p-4 rounded-2xl
@@ -2283,7 +2253,7 @@ export default function CheckoutPage() {
                       theme === "light" ? "text-gray-800" : "text-white"
                     }
                   >
-                    ${totals.subtotal.toFixed(2)}
+                    ETB {totals.subtotal.toFixed(2)}
                   </span>
                 </div>
 
@@ -2300,7 +2270,7 @@ export default function CheckoutPage() {
                       theme === "light" ? "text-gray-800" : "text-white"
                     }
                   >
-                    ${totals.tax.toFixed(2)}
+                    ETB {totals.tax.toFixed(2)}
                   </span>
                 </div>
 
@@ -2317,7 +2287,7 @@ export default function CheckoutPage() {
                       theme === "light" ? "text-gray-800" : "text-white"
                     }
                   >
-                    ${totals.serviceFee.toFixed(2)}
+                    ETB {totals.serviceFee.toFixed(2)}
                   </span>
                 </div>
 
@@ -2331,7 +2301,7 @@ export default function CheckoutPage() {
                       Total
                     </span>
                     <span className="text-green-600">
-                      ${totals.total.toFixed(2)}
+                      ETB{totals.total.toFixed(2)}
                     </span>
                   </div>
                 </div>

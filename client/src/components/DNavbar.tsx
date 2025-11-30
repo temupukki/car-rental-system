@@ -1,14 +1,12 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import {
-   Car,
- 
+  Car,
   Phone,
   User,
   LayoutDashboard,
   ChevronDown,
- 
   Shield,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
@@ -16,6 +14,7 @@ import LanguageToggle from "./LanguageToggle";
 import { useTheme } from "./ThemeContext";
 import { useLanguage } from "./LanguageContext";
 
+// --- useSession Hook (kept as is) ---
 const useSession = () => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -44,16 +43,76 @@ const useSession = () => {
 
   return { session, loading };
 };
+// -------------------------------------
 
 export default function DNavbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { session, loading } = useSession();
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { t } = useLanguage() as { t: (key: string) => string };
+
+  // Determine if the current user is an Admin
+  const isAdmin = session?.user?.role === "ADMIN";
+
+  /**
+   * 🚨 UPDATED: ADMIN ROUTE GUARD LOGIC 🚨
+   * If the user is an Admin, they can ONLY access:
+   * 1. Any path starting with '/dashboard/admin' (e.g., /dashboard/admin, /dashboard/admin/users)
+   * 2. The '/dashboard/profile' path.
+   * Any other path in the '/dashboard' area will redirect them to '/dashboard/admin'.
+   */
+  useEffect(() => {
+    // Wait until loading is complete
+    if (loading) return;
+
+    // 1. Define the allowed paths for the Admin
+    const allowedAdminPaths = [
+      "/dashboard/profile",
+      "/dashboard/admin",
+      "/dashboard/admin/user",
+      "/dashboard/admin/orders",
+      "/dashboard/admin/manage",
+      // Add any other specific admin pages here
+    ];
+
+    // 2. Check if the current user is an Admin
+    if (isAdmin) {
+      const currentPath = location.pathname;
+
+      // Check if the current path is NOT on the allowed list AND starts with '/dashboard'
+      const isTryingToAccessForbidden =
+        currentPath.startsWith("/dashboard") &&
+        !allowedAdminPaths.some((allowedPath) =>
+          currentPath.startsWith(allowedPath)
+        );
+
+      if (isTryingToAccessForbidden) {
+        console.warn(
+          "Admin attempting to access a forbidden path. Redirecting to /dashboard/admin."
+        );
+        navigate("/dashboard/admin"); // Redirect to the primary admin dashboard
+      }
+      return; // Stop here for Admins
+    }
+
+    // 3. (Previous Logic) NON-ADMIN user check for '/dashboard/admin' access
+    // This handles a standard user trying to access ANY admin path.
+    const isTryingToAccessAdmin = location.pathname.startsWith(
+      "/dashboard/admin"
+    );
+
+    if (session && !isAdmin && isTryingToAccessAdmin) {
+      console.warn(
+        "Unauthorized NON-ADMIN attempt to access admin page. Redirecting to /dashboard."
+      );
+      navigate("/dashboard"); // Redirect non-admins to the general dashboard
+    }
+  }, [location.pathname, session, isAdmin, loading, navigate]); // Depend on relevant states
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,6 +142,7 @@ export default function DNavbar() {
     return null;
   }
 
+  // --- Navigation Items Definitions (Kept as is for structure, but ADMIN links are now filtered) ---
   const guestNavItems = [
     { path: "/", label: t("nav.home"), icon: <Car className="w-4 h-4" /> },
     {
@@ -114,16 +174,32 @@ export default function DNavbar() {
       path: "/dashboard/bookings",
       label: t("nav.myBookings"),
     },
-     {
+    {
       path: "/dashboard/contact",
       label: t("nav.contact"),
     },
   ];
 
+  // Whitelisted Admin Navigation Items (used in the UI, but the redirect logic is the guard)
   const adminNavItems = [
     {
       path: "/dashboard/admin",
       label: t("nav.admin"),
+      icon: <Shield className="w-4 h-4" />,
+    },
+    {
+      path: "/dashboard/admin/user",
+      label: "Manage user",
+      icon: <Shield className="w-4 h-4" />,
+    },
+    {
+      path: "/dashboard/admin/orders",
+      label: "Manage Orders",
+      icon: <Shield className="w-4 h-4" />,
+    },
+    {
+      path: "/dashboard/admin/manage",
+      label: "Manage Cars",
       icon: <Shield className="w-4 h-4" />,
     },
   ];
@@ -133,17 +209,25 @@ export default function DNavbar() {
 
     const userRole = session.user?.role;
 
-    let navItems = [...baseUserNavItems];
-
+    // Admin now ONLY sees Admin-related links
     if (userRole === "ADMIN") {
-      navItems = [...navItems, ...adminNavItems];
+      // You might also want to include a link to /dashboard/profile here for convenience
+      return [
+        ...adminNavItems,
+        {
+          path: "/dashboard/profile",
+          label: t("user.profile"),
+          icon: <User className="w-4 h-4" />,
+        },
+      ];
     }
 
-    return navItems;
+    return [...baseUserNavItems];
   };
 
   const navItems = getUserNavItems();
 
+  // --- Helper Functions (Kept as is) ---
   const getUserInitials = (name: string) => {
     if (!name) return "U";
     return name
@@ -178,10 +262,11 @@ export default function DNavbar() {
     }
   };
 
-  const isAdmin = session?.user?.role === "ADMIN";
   const userRoleDisplay = getUserRoleDisplay();
+  // -------------------------------------
 
   if (loading) {
+    // ... Loading UI (Kept as is)
     return (
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
@@ -227,6 +312,7 @@ export default function DNavbar() {
     );
   }
 
+  // ... Main Navbar UI (Kept as is)
   return (
     <>
       <motion.nav
@@ -265,9 +351,9 @@ export default function DNavbar() {
               >
                 <h1
                   className={`
-                  text-xl font-bold
-                  ${theme === "light" ? "text-gray-900" : "text-white"}
-                `}
+                    text-xl font-bold
+                    ${theme === "light" ? "text-gray-900" : "text-white"}
+                  `}
                 >
                   {t("company.name")}
                 </h1>
@@ -449,12 +535,15 @@ export default function DNavbar() {
                               <User className="w-4 h-4 text-blue-600" />
                             </div>
                             <div>
-                              <p className="font-medium">{t("user.profile")}</p>
+                              <p className="font-medium">
+                                {t("user.profile")}
+                              </p>
                             </div>
                           </Link>
 
+                          {/* Only show /dashboard or /dashboard/admin link based on role */}
                           <Link
-                            to="/dashboard"
+                            to={isAdmin ? "/dashboard/admin" : "/dashboard"}
                             onClick={() => setIsUserDropdownOpen(false)}
                             className={`
                               flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group
@@ -475,11 +564,15 @@ export default function DNavbar() {
                               }
                             `}
                             >
-                              <LayoutDashboard className="w-4 h-4 text-green-600" />
+                              {isAdmin ? (
+                                <Shield className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <LayoutDashboard className="w-4 h-4 text-green-600" />
+                              )}
                             </div>
                             <div>
                               <p className="font-medium">
-                                {t("nav.dashboard")}
+                                {isAdmin ? t("nav.admin") : t("nav.dashboard")}
                               </p>
                             </div>
                           </Link>
@@ -557,6 +650,7 @@ export default function DNavbar() {
         </div>
       </motion.nav>
 
+      {/* Mobile Menu UI (Kept as is) */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -592,7 +686,7 @@ export default function DNavbar() {
                       to={item.path}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`
-                        block py-3 px-4 font-medium rounded-lg transition-all duration-200  items-center gap-3 mx-2
+                        block py-3 px-4 font-medium rounded-lg transition-all duration-200  items-center gap-3 mx-2
                         ${
                           location.pathname === item.path
                             ? theme === "light"

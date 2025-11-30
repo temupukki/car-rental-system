@@ -62,9 +62,9 @@ export default function Home() {
   const cars = [
     {
       id: 1,
-      name: t("home.cars.camry.name") || "Toyota Camry",
-      type: t("home.cars.camry.type") || "Sedan",
-      price: t("home.cars.camry.price") || "$45/day",
+      name:  "Toyota Camry",
+      type:  "Sedan",
+      price:   "ETB 2900/day",
       image: "/camry.avif",
       features: [
         t("home.cars.camry.features.seats") || "5 Seats",
@@ -77,7 +77,7 @@ export default function Home() {
       id: 2,
       name: t("home.cars.crv.name") || "Honda CR-V",
       type: t("home.cars.crv.type") || "SUV",
-      price: t("home.cars.crv.price") || "$65/day",
+      price: "ETB 3500/day",
       image: "/honda.png",
       features: [
         t("home.cars.crv.features.seats") || "7 Seats",
@@ -90,7 +90,7 @@ export default function Home() {
       id: 3,
       name: t("home.cars.bmw.name") || "BMW 3 Series",
       type: t("home.cars.bmw.type") || "Luxury",
-      price: t("home.cars.bmw.price") || "$89/day",
+      price:  "ETB 1900/day",
       image: "bmw.jfif",
       features: [
         t("home.cars.bmw.features.premium") || "Premium",

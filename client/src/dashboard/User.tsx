@@ -483,9 +483,7 @@ const Userpage: React.FC = () => {
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Updated At
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                 
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -574,14 +572,7 @@ const Userpage: React.FC = () => {
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(user.updatedAt)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => deleteUser(user.id)}
-                          className="text-red-600 hover:text-red-900 transition-colors text-xs"
-                        >
-                          Delete
-                        </button>
-                      </td>
+                     
                     </tr>
                   ))
                 )}
