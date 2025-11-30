@@ -394,10 +394,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
       const result = await apiService.createVehicle(vehicleData);
       
       toast.dismiss(submitToast);
-      toast.success('Vehicle Added Successfully! 🎉', {
-        description: `${result.name} is now ${result.isAvailable ? 'available' : 'unavailable'} for rental. Stock: ${result.stock} units`,
-        duration: 5000,
-      });
+      toast.success('Vehicle Added Successfully! 🎉');
 
       setFormData({
         name: '',
@@ -717,7 +714,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                       </div>
                     </div>
 
-                    {/* Vehicle Type Section - Similar to Features */}
+                
                     <div className="space-y-4">
                       <Label className="font-semibold flex items-center gap-2 text-lg">
                         <Car className="w-5 h-5 text-blue-500" />
@@ -1164,7 +1161,7 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
                   </motion.div>
                 )}
 
-                {/* Step 5: Inventory */}
+            
                 {(currentStep === 5) && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}

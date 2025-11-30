@@ -1,6 +1,3 @@
-// components/OrdersPage.tsx
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -88,12 +85,12 @@ interface Order {
   customerLicense: string;
   pickupLocation: string;
   dropoffLocation: string;
-  status: "PENDING" | "CONFIRMED" | "ACTIVE" | "COMPLETED" | "CANCELLED";
+  status: string;
   createdAt: string;
   updatedAt: string;
   vehicle: Vehicle;
   user?: OrderUser;
-  paymentStatus: "PENDING" | "PAID" | "REFUNDED" | "FAILED";
+
   paymentMethod?: string;
   insuranceIncluded: boolean;
   additionalDriver: boolean;
@@ -119,9 +116,7 @@ interface ApiResponse<T> {
   error?: string;
 }
 
-
 const apiService = {
- 
   async getUserOrders(userId: string): Promise<ApiResponse<Order[]>> {
     try {
       const response = await fetch(
@@ -148,9 +143,7 @@ const apiService = {
   },
 };
 
-
 const generateOrderPDF = (order: Order) => {
-  
   const printContent = `
     <!DOCTYPE html>
     <html>
@@ -259,12 +252,11 @@ const generateOrderPDF = (order: Order) => {
           </div>
           <div>
             <strong>Status:</strong><br>
-            <span class="badge badge-${order.status.toLowerCase()}">${order.status}</span>
+            <span class="badge badge-${order.status.toLowerCase()}">${
+    order.status
+  }</span>
           </div>
-          <div>
-            <strong>Payment Status:</strong><br>
-            <span class="badge badge-${order.paymentStatus.toLowerCase()}">${order.paymentStatus}</span>
-          </div>
+       
         </div>
       </div>
 
@@ -286,8 +278,10 @@ const generateOrderPDF = (order: Order) => {
           </div>
           <div>
             <strong>Additional Services:</strong><br>
-            Insurance: ${order.insuranceIncluded ? 'Included ✓' : 'Not Included'}<br>
-            Additional Driver: ${order.additionalDriver ? 'Yes ✓' : 'No'}
+            Insurance: ${
+              order.insuranceIncluded ? "Included ✓" : "Not Included"
+            }<br>
+            Additional Driver: ${order.additionalDriver ? "Yes ✓" : "No"}
           </div>
         </div>
       </div>
@@ -297,7 +291,9 @@ const generateOrderPDF = (order: Order) => {
         <div class="grid-2">
           <div>
             <strong>Vehicle:</strong> ${order.vehicle.name}<br>
-            <strong>Brand/Model:</strong> ${order.vehicle.brand} ${order.vehicle.model}<br>
+            <strong>Brand/Model:</strong> ${order.vehicle.brand} ${
+    order.vehicle.model
+  }<br>
             <strong>Type:</strong> ${order.vehicle.type}<br>
             <strong>Seats:</strong> ${order.vehicle.seats}<br>
           </div>
@@ -305,7 +301,9 @@ const generateOrderPDF = (order: Order) => {
             <strong>Fuel Type:</strong> ${order.vehicle.fuelType}<br>
             <strong>Transmission:</strong> ${order.vehicle.transmission}<br>
             <strong>Mileage:</strong> ${order.vehicle.mileage}<br>
-            <strong>Features:</strong> ${order.vehicle.features?.slice(0, 3).join(', ')}...
+            <strong>Features:</strong> ${order.vehicle.features
+              ?.slice(0, 3)
+              .join(", ")}...
           </div>
         </div>
       </div>
@@ -325,7 +323,9 @@ const generateOrderPDF = (order: Order) => {
           </div>
         </div>
         <div style="margin-top: 15px; padding: 10px; background: #f0f9ff; border-radius: 5px;">
-          <strong>Total Rental Period:</strong> ${order.totalDays} day${order.totalDays !== 1 ? 's' : ''}
+          <strong>Total Rental Period:</strong> ${order.totalDays} day${
+    order.totalDays !== 1 ? "s" : ""
+  }
         </div>
       </div>
 
@@ -333,21 +333,31 @@ const generateOrderPDF = (order: Order) => {
         <div class="section-title">Price Breakdown</div>
         <div style="max-width: 500px;">
           <div class="detail-row">
-            <span class="detail-label">Daily Rate (${order.totalDays} days × ${order.dailyRate} ETB):</span>
+            <span class="detail-label">Daily Rate (${order.totalDays} days × ${
+    order.dailyRate
+  } ETB):</span>
             <span>${(order.dailyRate * order.totalDays).toFixed(2)} ETB</span>
           </div>
-          ${order.insuranceIncluded ? `
+          ${
+            order.insuranceIncluded
+              ? `
           <div class="detail-row">
             <span class="detail-label">Insurance Coverage:</span>
             <span style="color: #10b981;">Included</span>
           </div>
-          ` : ''}
-          ${order.additionalDriver ? `
+          `
+              : ""
+          }
+          ${
+            order.additionalDriver
+              ? `
           <div class="detail-row">
             <span class="detail-label">Additional Driver:</span>
             <span>500.00 ETB</span>
           </div>
-          ` : ''}
+          `
+              : ""
+          }
           <div class="detail-row total-row">
             <span class="detail-label">TOTAL AMOUNT:</span>
             <span>${order.totalAmount.toFixed(2)} ETB</span>
@@ -373,11 +383,11 @@ const generateOrderPDF = (order: Order) => {
     </html>
   `;
 
-  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  const printWindow = window.open("", "_blank", "width=800,height=600");
   if (printWindow) {
     printWindow.document.write(printContent);
     printWindow.document.close();
-    
+
     // Wait for content to load then print
     printWindow.onload = () => {
       printWindow.focus();
@@ -388,12 +398,10 @@ const generateOrderPDF = (order: Order) => {
   }
 };
 
-
 const downloadOrderPDF = (order: Order) => {
   toast.loading("Generating PDF...");
-  
+
   setTimeout(() => {
-   
     const printContent = `
       <!DOCTYPE html>
       <html>
@@ -419,9 +427,17 @@ const downloadOrderPDF = (order: Order) => {
           <div class="section-title">Order Details</div>
           <p><strong>Vehicle:</strong> ${order.vehicle.name}</p>
           <p><strong>Customer:</strong> ${order.customerName}</p>
-          <p><strong>Period:</strong> ${new Date(order.startDate).toLocaleDateString()} to ${new Date(order.endDate).toLocaleDateString()}</p>
+          <p><strong>Order Status:</strong> ${order.status}</p>
+
+          <p><strong>Period:</strong> ${new Date(
+            order.startDate
+          ).toLocaleDateString()} to ${new Date(
+      order.endDate
+    ).toLocaleDateString()}</p>
           <p><strong>Total Days:</strong> ${order.totalDays}</p>
-          <p class="total"><strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)} ETB</p>
+          <p class="total"><strong>Total Amount:</strong> ${order.totalAmount.toFixed(
+            2
+          )} ETB</p>
         </div>
         
         <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px;">
@@ -430,19 +446,18 @@ const downloadOrderPDF = (order: Order) => {
       </body>
       </html>
     `;
-    
-    const printWindow = window.open('', '_blank');
+
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(printContent);
       printWindow.document.close();
       printWindow.print();
     }
-    
+
     toast.dismiss();
     toast.success("PDF generated successfully!");
   }, 1000);
 };
-
 
 const OrderDetailsModal: React.FC<{
   order: Order;
@@ -470,27 +485,24 @@ const OrderDetailsModal: React.FC<{
 
   const getStatusConfig = (status: string) => {
     const config = {
-      PENDING: { color: "bg-yellow-500", text: "Pending", icon: Clock },
-      CONFIRMED: { color: "bg-blue-500", text: "Confirmed", icon: CheckCircle },
-      ACTIVE: { color: "bg-green-500", text: "Active", icon: Car },
-      COMPLETED: { color: "bg-gray-500", text: "Completed", icon: CheckCircle },
+      PAYMENT_COMPLETED: {
+        color: "bg-green-500",
+        text: "Payment completed",
+        icon: CheckCircle,
+      },
+      TAKEN: { color: "bg-blue-500", text: "Car Delivered", icon: Clock },
+      RETURNED: {
+        color: "bg-yellow-500",
+        text: "Car Returned",
+        icon: CheckCircle,
+      },
       CANCELLED: { color: "bg-red-500", text: "Cancelled", icon: XCircle },
     };
-    return config[status as keyof typeof config] || config.PENDING;
-  };
-
-  const getPaymentStatusConfig = (status: string) => {
-    const config = {
-      PENDING: { color: "bg-yellow-500", text: "Pending" },
-      PAID: { color: "bg-green-500", text: "Paid" },
-      REFUNDED: { color: "bg-blue-500", text: "Refunded" },
-      FAILED: { color: "bg-red-500", text: "Failed" },
-    };
-    return config[status as keyof typeof config] || config.PENDING;
+    return config[status as keyof typeof config] || config.PAYMENT_COMPLETED;
   };
 
   const statusConfig = getStatusConfig(order.status);
-  const paymentStatusConfig = getPaymentStatusConfig(order.paymentStatus);
+
   const StatusIcon = statusConfig.icon;
 
   const handlePrint = () => {
@@ -514,8 +526,6 @@ const OrderDetailsModal: React.FC<{
       toast.success("Order link copied to clipboard!");
     }
   };
-
-
 
   return (
     <motion.div
@@ -593,20 +603,19 @@ const OrderDetailsModal: React.FC<{
           </div>
         </div>
 
-   
         <ScrollArea className="flex-1">
           <div className="p-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-             
               <div className="lg:col-span-2 space-y-6">
-             
                 <Card
                   className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
                 >
                   <CardContent className="p-6">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-full ${statusConfig.color}`}>
+                        <div
+                          className={`p-2 rounded-full ${statusConfig.color}`}
+                        >
                           <StatusIcon className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -623,8 +632,9 @@ const OrderDetailsModal: React.FC<{
                           {formatCurrency(order.totalAmount)}
                         </p>
                         <p className="text-sm opacity-70">
-                          {order.totalDays} day{order.totalDays !== 1 ? "s" : ""}{ " "}
-                          • {formatCurrency(order.dailyRate)}/day
+                          {order.totalDays} day
+                          {order.totalDays !== 1 ? "s" : ""} •{" "}
+                          {formatCurrency(order.dailyRate)}/day
                         </p>
                       </div>
                     </div>
@@ -634,17 +644,17 @@ const OrderDetailsModal: React.FC<{
                         <p className="font-semibold opacity-70">Order Date</p>
                         <p>{formatDate(order.createdAt)}</p>
                       </div>
-                     
+
                       <div>
-                        <p className="font-semibold opacity-70">Payment Method</p>
+                        <p className="font-semibold opacity-70">
+                          Payment Method
+                        </p>
                         <p>{order.paymentMethod || "CHAPA"}</p>
                       </div>
-                      
                     </div>
                   </CardContent>
                 </Card>
 
-               
                 <Card
                   className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
                 >
@@ -720,7 +730,6 @@ const OrderDetailsModal: React.FC<{
                   </CardContent>
                 </Card>
 
-          
                 <Card
                   className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
                 >
@@ -772,7 +781,8 @@ const OrderDetailsModal: React.FC<{
                       <div className="flex items-center justify-between text-sm">
                         <span>Total Rental Period:</span>
                         <span className="font-bold">
-                          {order.totalDays} day{order.totalDays !== 1 ? "s" : ""}
+                          {order.totalDays} day
+                          {order.totalDays !== 1 ? "s" : ""}
                         </span>
                       </div>
                     </div>
@@ -780,9 +790,7 @@ const OrderDetailsModal: React.FC<{
                 </Card>
               </div>
 
-          
               <div className="space-y-6">
-        
                 <Card
                   className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
                 >
@@ -832,7 +840,6 @@ const OrderDetailsModal: React.FC<{
                   </CardContent>
                 </Card>
 
-             
                 <Card
                   className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
                 >
@@ -871,7 +878,6 @@ const OrderDetailsModal: React.FC<{
                   </CardContent>
                 </Card>
 
-              
                 <Card
                   className={theme === "light" ? "bg-gray-50" : "bg-gray-700"}
                 >
@@ -886,18 +892,15 @@ const OrderDetailsModal: React.FC<{
                         <Download className="w-4 h-4 mr-2" />
                         Download PDF
                       </Button>
-                   <Link to="/dashboard/contact">
-                    <Button
-                       
-                        variant="outline"
-                        className="w-full rounded-xl mt-3"
-                      >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Contact Support
-                      </Button></Link>
-                     
-
-                   
+                      <Link to="/dashboard/contact">
+                        <Button
+                          variant="outline"
+                          className="w-full rounded-xl mt-3"
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Contact Support
+                        </Button>
+                      </Link>
 
                       {(order.status === "ACTIVE" ||
                         order.status === "CONFIRMED") && (
@@ -981,8 +984,6 @@ export default function Bookings() {
 
         const userData = await res.json();
         setUserSession(userData.user);
-
-        // Fetch user orders with proper typing
         if (userData.user) {
           const ordersResponse: ApiResponse<Order[]> =
             await apiService.getUserOrders(userData.user.id);
@@ -995,7 +996,7 @@ export default function Bookings() {
       } catch (err) {
         console.error("Error fetching orders:", err);
         toast.error("Failed to load orders");
-        setOrders([]); // Set empty array on error
+        setOrders([]);
       } finally {
         setLoading(false);
       }
@@ -1175,8 +1176,6 @@ export default function Bookings() {
             )}
           </div>
         </motion.div>
-
-        {/* Filters and Search */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1205,10 +1204,10 @@ export default function Bookings() {
                 `}
               >
                 <option value="all">All Status</option>
-                <option value="PENDING">Pending</option>
-                <option value="CONFIRMED">Confirmed</option>
-                <option value="ACTIVE">Active</option>
-                <option value="COMPLETED">Completed</option>
+                <option value="PAYMENT_COMPLETED">Payment completed</option>
+                <option value="TAKEN">Cars in hand</option>
+                <option value="RETURNED">Returned</option>
+
                 <option value="CANCELLED">Cancelled</option>
               </select>
             </div>
@@ -1295,7 +1294,6 @@ export default function Bookings() {
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex flex-col lg:flex-row gap-6">
-                      {/* Vehicle Image */}
                       <div className="flex-shrink-0">
                         <img
                           src={order.vehicle.image}
@@ -1304,7 +1302,6 @@ export default function Bookings() {
                         />
                       </div>
 
-                      {/* Order Details */}
                       <div className="flex-1">
                         <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
                           <div>
@@ -1333,7 +1330,24 @@ export default function Bookings() {
                               {order.vehicle.brand} • {order.vehicle.model} •{" "}
                               {order.vehicle.type}
                             </p>
-                            {getStatusBadge(order.status)}
+                            <span
+                              className={`
+    px-3 py-1 rounded-full text-sm font-medium
+    ${
+      order.status === "RETURNED"
+        ? "bg-yellow-100 text-yellow-700"
+        : order.status === "PAYMENT_COMPLETED"
+        ? "bg-green-100 text-green-700"
+        : order.status === "TAKEN"
+        ? "bg-green-100 text-blue-700"
+        : order.status === "CANCELLED"
+        ? "bg-red-100 text-red-700"
+        : "bg-gray-100 text-gray-700"
+    }
+  `}
+                            >
+                              {order.status}
+                            </span>
                           </div>
 
                           <div className="text-right mt-2 md:mt-0">
@@ -1366,7 +1380,6 @@ export default function Bookings() {
                           </div>
                         </div>
 
-                        {/* Order Meta Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4 text-blue-500" />
@@ -1457,7 +1470,6 @@ export default function Bookings() {
                           </div>
                         </div>
 
-                        {/* Order Actions */}
                         <div className="flex flex-wrap gap-2 justify-between items-center">
                           <div>
                             <p
@@ -1570,14 +1582,14 @@ export default function Bookings() {
                   text-2xl font-bold text-green-600
                 `}
                 >
-                  {orders.filter((o) => o.status === "COMPLETED").length}
+                  {orders.filter((o) => o.status === "PAYMENT_COMPLETED").length}
                 </p>
                 <p
                   className={
                     theme === "light" ? "text-blue-700" : "text-blue-300"
                   }
                 >
-                  Completed
+                 Payment Completed
                 </p>
               </div>
               <div className="text-center">
@@ -1588,7 +1600,7 @@ export default function Bookings() {
                 >
                   {
                     orders.filter(
-                      (o) => o.status === "ACTIVE" || o.status === "CONFIRMED"
+                      (o) => o.status === "TAKEN" 
                     ).length
                   }
                 </p>
@@ -1597,9 +1609,10 @@ export default function Bookings() {
                     theme === "light" ? "text-blue-700" : "text-blue-300"
                   }
                 >
-                  Active
+                  Taken
                 </p>
               </div>
+              
               <div className="text-center">
                 <p
                   className={`

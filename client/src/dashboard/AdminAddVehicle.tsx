@@ -28,23 +28,8 @@ const AdminAddVehicle: React.FC = () => {
     navigate(-1);
   };
 
-  const handleViewAllVehicles = () => {
-    toast.loading('Loading vehicles...', {
-      duration: 1000,
-    });
-    setTimeout(() => {
-      navigate('/admin/vehicles');
-    }, 1000);
-  };
 
-  const handleManageOrders = () => {
-    toast.loading('Loading orders...', {
-      duration: 1000,
-    });
-    setTimeout(() => {
-      navigate('/admin/orders');
-    }, 1000);
-  };
+
 
   return (
     <div className={`
@@ -84,24 +69,12 @@ const AdminAddVehicle: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={handleViewAllVehicles}
-              >
-                View All Vehicles
-              </Button>
-              <Button
-                onClick={handleManageOrders}
-              >
-                Manage Orders
-              </Button>
-            </div>
+          
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
+ 
       <div className="py-8">
         <AddVehicleForm onVehicleAdded={handleVehicleAdded} />
       </div>

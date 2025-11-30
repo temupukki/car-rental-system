@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-type OrderStatus =
-  | "PENDING"
-  | "PAYMENT_COMPLETED"
-  | "TAKEN"
-  | "CANCELLED";
+type OrderStatus = "RETURNED" | "PAYMENT_COMPLETED" | "TAKEN" | "CANCELLED";
 
 interface Vehicle {
   id: string;
@@ -156,13 +152,13 @@ const ManageOrders: React.FC = () => {
 
   const getStatusBadgeColor = (status: OrderStatus) => {
     switch (status) {
-      case "PENDING":
+      case "RETURNED":
         return "bg-yellow-100 text-yellow-800";
       case "PAYMENT_COMPLETED":
         return "bg-blue-100 text-blue-800";
       case "TAKEN":
         return "bg-green-100 text-green-800";
-    
+
       case "CANCELLED":
         return "bg-red-100 text-red-800";
       default:
@@ -298,9 +294,10 @@ const ManageOrders: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="">All statuses</option>
-                <option value="PENDING">Pending</option>
+
                 <option value="PAYMENT_COMPLETED">Payment completed</option>
                 <option value="TAKEN">Taken</option>
+                <option value="RETURNED">Returned</option>
                 <option value="CANCELLED">Cancelled</option>
               </select>
             </div>
@@ -356,19 +353,19 @@ const ManageOrders: React.FC = () => {
               orders
             </p>
             <div className="flex gap-1 text-xs flex-wrap">
-              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                Pending:{" "}
-                {orders?.filter((o) => o.status === "PENDING").length || 0}
-              </span>
               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
                 Payment Completed:{" "}
-                {orders?.filter((o) => o.status === "PAYMENT_COMPLETED").length || 0}
+                {orders?.filter((o) => o.status === "PAYMENT_COMPLETED")
+                  .length || 0}
               </span>
               <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
-                Taken:{" "}
-                {orders?.filter((o) => o.status === "TAKEN").length || 0}
+                Taken: {orders?.filter((o) => o.status === "TAKEN").length || 0}
               </span>
-            
+              <span className="bg-red-100 text-red-800 px-2 py-1 rounded">
+                Returned:{" "}
+                {orders?.filter((o) => o.status === "RETURNED").length || 0}
+              </span>
+
               <span className="bg-red-100 text-red-800 px-2 py-1 rounded">
                 Cancelled:{" "}
                 {orders?.filter((o) => o.status === "CANCELLED").length || 0}
@@ -462,10 +459,9 @@ const ManageOrders: React.FC = () => {
                     }
                     className="text-xs px-2 py-1 rounded border border-gray-300 focus:ring-1 focus:ring-blue-500"
                   >
-                    <option value="PENDING">PENDING</option>
-                    <option value="CONFIRMED">CONFIRMED</option>
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="PAYMENT_COMPLETED">PAYMENT COMPLETED</option>
+                    <option value="TAKEN">TAKEN</option>
+                    <option value="RETURNED">RETURNED</option>
                     <option value="CANCELLED">CANCELLED</option>
                   </select>
                 </div>
@@ -571,10 +567,10 @@ const ManageOrders: React.FC = () => {
                             order.status
                           )}`}
                         >
-                          <option value="PENDING">PENDING</option>
-                          <option value="CONFIRMED">CONFIRMED</option>
-                          <option value="ACTIVE">ACTIVE</option>
-                          <option value="COMPLETED">COMPLETED</option>
+                          <option value="PAYMENT_COMPLETED">PENDING</option>
+                          <option value="TAKEN">TAKEN</option>
+                          <option value="RETURNED">RETURNED</option>
+
                           <option value="CANCELLED">CANCELLED</option>
                         </select>
                       </td>
@@ -718,7 +714,9 @@ const ManageOrders: React.FC = () => {
                       </p>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500">Customer License</label>
+                      <label className="text-xs text-gray-500">
+                        Customer License
+                      </label>
                       <p className="text-sm text-gray-900 font-mono">
                         {selectedOrder.customerLicense || "Not provided"}
                       </p>
@@ -785,7 +783,6 @@ const ManageOrders: React.FC = () => {
                         {formatCurrency(selectedOrder.vehicle.pricePerDay)}
                       </p>
                     </div>
-                    
                   </div>
                 </div>
 
@@ -836,9 +833,7 @@ const ManageOrders: React.FC = () => {
                 </div>
 
                 <div>
-                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   
                     <div>
                       <label className="text-xs text-gray-500">Full Name</label>
                       <p className="text-sm text-gray-900">
@@ -852,7 +847,9 @@ const ManageOrders: React.FC = () => {
                       </p>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500">User Phone</label>
+                      <label className="text-xs text-gray-500">
+                        User Phone
+                      </label>
                       <p className="text-sm text-gray-900">
                         {selectedOrder.user.phone || "Not provided"}
                       </p>

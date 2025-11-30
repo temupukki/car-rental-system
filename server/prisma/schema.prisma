@@ -26,6 +26,7 @@ enum OrderStatus {
   PAYMENT_COMPLETED
   PENDING
   TAKEN
+  RETURNED
   CANCELLED
 }
 
