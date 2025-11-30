@@ -9,7 +9,6 @@ import {
 import { motion } from "framer-motion";
 import {
   Car,
- 
   MapPin,
   Wallet,
   Shield,
@@ -21,6 +20,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "../components/ThemeContext";
 import { useLanguage } from "../components/LanguageContext";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const { theme } = useTheme();
@@ -266,7 +266,7 @@ export default function Home() {
                         }
                       `}
                     >
-                      {t("home.bookingCard.buttonLoggedIn") || "Sign Up to Book"}
+                      {t("home.bookingCard.buttonLoggedIn") || "Start Booking"}
                     </motion.button>
                   </a>
                 </CardContent>
@@ -392,16 +392,18 @@ export default function Home() {
             ))}
           </div>
 
-          <Button className={`
-            mt-8 rounded-2xl px-8 py-3 text-lg w-fit
-            ${theme === 'light'
-              ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-              : 'bg-gradient-to-r from-blue-700 to-purple-700 hover:from-blue-800 hover:to-purple-800 text-white'
-            }
-          `}>
-            {t("home.whyChoose.button") || "Explore Features"}
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <a href="/dashboard/vehicles">
+            <Button className={`
+              mt-8 rounded-2xl px-8 py-3 text-lg w-fit
+              ${theme === 'light'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+                : 'bg-gradient-to-r from-blue-700 to-purple-700 hover:from-blue-800 hover:to-purple-800 text-white'
+              }
+            `}>
+              {t("home.whyChoose.button") || "Explore Features"}
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </a>
         </motion.div>
       </div>
 
@@ -496,24 +498,28 @@ export default function Home() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Button className={`
-                    flex-1 rounded-xl py-3
-                    ${theme === 'light'
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : 'bg-blue-700 hover:bg-blue-800 text-white'
-                    }
-                  `}>
-                    {t("home.featuredCars.bookButton") || "Book Now"}
-                  </Button>
-                  <Button variant="outline" className={`
-                    flex-1 rounded-xl py-3
-                    ${theme === 'light'
-                      ? 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                      : 'border-gray-600 text-gray-300 hover:bg-gray-700'
-                    }
-                  `}>
-                    {t("home.featuredCars.detailsButton") || "Details"}
-                  </Button>
+                  <Link to="/dashboard/vehicles">
+                    <Button className={`
+                      flex-1 rounded-xl py-3
+                      ${theme === 'light'
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : 'bg-blue-700 hover:bg-blue-800 text-white'
+                      }
+                    `}>
+                      {t("home.featuredCars.bookButton") || "Book Now"}
+                    </Button>
+                  </Link>
+                  <Link to="/dashboard/vehicles">
+                    <Button variant="outline" className={`
+                      flex-1 rounded-xl py-3
+                      ${theme === 'light'
+                        ? 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                        : 'border-gray-600 text-gray-300 hover:bg-gray-700'
+                      }
+                    `}>
+                      {t("home.featuredCars.detailsButton") || "Details"}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -521,16 +527,18 @@ export default function Home() {
         </div>
 
         <div className="text-center mt-12">
-          <Button className={`
-            rounded-2xl px-12 py-3 text-lg
-            ${theme === 'light'
-              ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white'
-              : 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white'
-            }
-          `}>
-            {t("home.featuredCars.viewAllButton") || "View All Vehicles"}
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <a href="/dashboard/vehicles">
+            <Button className={`
+              rounded-2xl px-12 py-3 text-lg
+              ${theme === 'light'
+                ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white'
+                : 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white'
+              }
+            `}>
+              {t("home.featuredCars.viewAllButton") || "View All Vehicles"}
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </a>
         </div>
       </div>
 
