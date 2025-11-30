@@ -55,7 +55,7 @@ export default function Sign() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { t } = useLanguage();
-  
+
   // State management
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +63,7 @@ export default function Sign() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [checkingPhone, setCheckingPhone] = useState(false);
-  
+
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -77,53 +77,79 @@ export default function Sign() {
 
   // Features data
   const features: AuthFeature[] = [
-    { 
-      icon: <Car className="w-6 h-6" />, 
-      text: t('auth.features.vehicles') || "500+ Premium Vehicles",
-      description: t('auth.features.vehiclesDesc') || "Luxury cars, SUVs, and economy vehicles"
+    {
+      icon: <Car className="w-6 h-6" />,
+      text: t("auth.features.vehicles") || "500+ Premium Vehicles",
+      description:
+        t("auth.features.vehiclesDesc") ||
+        "Luxury cars, SUVs, and economy vehicles",
     },
-    { 
-      icon: <MapPin className="w-6 h-6" />, 
-      text: t('auth.features.locations') || "Multiple Pickup Locations",
-      description: t('auth.features.locationsDesc') || "Convenient locations across major cities"
+    {
+      icon: <MapPin className="w-6 h-6" />,
+      text: t("auth.features.locations") || "Multiple Pickup Locations",
+      description:
+        t("auth.features.locationsDesc") ||
+        "Convenient locations across major cities",
     },
-    { 
-      icon: <Shield className="w-6 h-6" />, 
-      text: t('auth.features.insurance') || "Fully Insured & Safe",
-      description: t('auth.features.insuranceDesc') || "Comprehensive insurance coverage included"
+    {
+      icon: <Shield className="w-6 h-6" />,
+      text: t("auth.features.insurance") || "Fully Insured & Safe",
+      description:
+        t("auth.features.insuranceDesc") ||
+        "Comprehensive insurance coverage included",
     },
-    { 
-      icon: <Clock className="w-6 h-6" />, 
-      text: t('auth.features.support') || "24/7 Customer Support",
-      description: t('auth.features.supportDesc') || "Round-the-clock assistance available"
+    {
+      icon: <Clock className="w-6 h-6" />,
+      text: t("auth.features.support") || "24/7 Customer Support",
+      description:
+        t("auth.features.supportDesc") ||
+        "Round-the-clock assistance available",
     },
   ];
 
   // Stats data
   const stats = [
-    { value: "10K+", label: t('auth.stats.customers') || "Happy Customers", icon: <Users className="w-4 h-4" /> },
-    { value: "4.9★", label: t('auth.stats.rating') || "Customer Rating", icon: <Star className="w-4 h-4" /> },
-    { value: "50+", label: t('auth.stats.vehicles') || "Premium Vehicles", icon: <Award className="w-4 h-4" /> },
+    {
+      value: "10K+",
+      label: t("auth.stats.customers") || "Happy Customers",
+      icon: <Users className="w-4 h-4" />,
+    },
+    {
+      value: "4.9★",
+      label: t("auth.stats.rating") || "Customer Rating",
+      icon: <Star className="w-4 h-4" />,
+    },
+    {
+      value: "50+",
+      label: t("auth.stats.vehicles") || "Premium Vehicles",
+      icon: <Award className="w-4 h-4" />,
+    },
   ];
 
   // Check if phone number exists
-  const checkPhoneNumberExists = async (phone: string): Promise<{ exists: boolean; user?: any }> => {
+  const checkPhoneNumberExists = async (
+    phone: string
+  ): Promise<{ exists: boolean; user?: any }> => {
     try {
-      const response = await fetch(`http://localhost:3000/api/users/check-phone?phone=${encodeURIComponent(phone)}`);
-      
+      const response = await fetch(
+        `http://localhost:3000/api/users/check-phone?phone=${encodeURIComponent(
+          phone
+        )}`
+      );
+
       if (!response.ok) {
-        throw new Error('Failed to check phone number');
+        throw new Error("Failed to check phone number");
       }
 
       const data = await response.json();
-      
+
       if (!data.success) {
-        throw new Error(data.error || 'Failed to check phone number');
+        throw new Error(data.error || "Failed to check phone number");
       }
 
       return {
         exists: data.data.exists,
-        user: data.data.user
+        user: data.data.user,
       };
     } catch (error) {
       console.error("Failed to check phone number:", error);
@@ -134,73 +160,101 @@ export default function Sign() {
   // Validation functions
   const validateEmail = (email: string): string | undefined => {
     if (!email.trim()) {
-      return t('auth.errors.emailRequired') || "Username is required";
+      return t("auth.errors.emailRequired") || "Username is required";
     }
     if (email.length < 3) {
-      return t('auth.errors.usernameTooShort') || "Username must be at least 3 characters";
+      return (
+        t("auth.errors.usernameTooShort") ||
+        "Username must be at least 3 characters"
+      );
     }
     if (!/^[a-zA-Z0-9_]+$/.test(email)) {
-      return t('auth.errors.usernameInvalid') || "Username can only contain letters, numbers, and underscores";
+      return (
+        t("auth.errors.usernameInvalid") ||
+        "Username can only contain letters, numbers, and underscores"
+      );
     }
     if (email.length > 20) {
-      return t('auth.errors.usernameTooLong') || "Username must be less than 20 characters";
+      return (
+        t("auth.errors.usernameTooLong") ||
+        "Username must be less than 20 characters"
+      );
     }
     return undefined;
   };
 
   const validatePassword = (password: string): string | undefined => {
     if (!password) {
-      return t('auth.errors.passwordRequired') || "Password is required";
+      return t("auth.errors.passwordRequired") || "Password is required";
     }
     if (password.length < 6) {
-      return t('auth.errors.passwordLength') || "Password must be at least 6 characters";
+      return (
+        t("auth.errors.passwordLength") ||
+        "Password must be at least 6 characters"
+      );
     }
     return undefined;
   };
 
-  const validateConfirmPassword = (password: string, confirmPassword: string): string | undefined => {
+  const validateConfirmPassword = (
+    password: string,
+    confirmPassword: string
+  ): string | undefined => {
     if (!confirmPassword) {
-      return t('auth.errors.confirmPasswordRequired') || "Please confirm your password";
+      return (
+        t("auth.errors.confirmPasswordRequired") ||
+        "Please confirm your password"
+      );
     }
     if (password !== confirmPassword) {
-      return t('auth.errors.passwordsDontMatch') || "Passwords don't match";
+      return t("auth.errors.passwordsDontMatch") || "Passwords don't match";
     }
     return undefined;
   };
 
   const validateFullName = (fullName: string): string | undefined => {
     if (!fullName.trim()) {
-      return t('auth.errors.fullNameRequired') || "Full name is required";
+      return t("auth.errors.fullNameRequired") || "Full name is required";
     }
     if (fullName.length < 2) {
-      return t('auth.errors.fullNameTooShort') || "Full name must be at least 2 characters";
+      return (
+        t("auth.errors.fullNameTooShort") ||
+        "Full name must be at least 2 characters"
+      );
     }
     if (!/^[a-zA-Z\s]+$/.test(fullName)) {
-      return t('auth.errors.fullNameInvalid') || "Full name can only contain letters and spaces";
+      return (
+        t("auth.errors.fullNameInvalid") ||
+        "Full name can only contain letters and spaces"
+      );
     }
     return undefined;
   };
 
   const validatePhone = async (phone: string): Promise<string | undefined> => {
     if (!phone.trim()) {
-      return t('auth.errors.phoneRequired') || "Phone number is required";
+      return t("auth.errors.phoneRequired") || "Phone number is required";
     }
-    
+
     // Remove any non-digit characters
-    const cleanPhone = phone.replace(/\D/g, '');
-    
+    const cleanPhone = phone.replace(/\D/g, "");
+
     if (cleanPhone.length !== 10) {
-      return t('auth.errors.phoneLength') || "Phone number must be 10 digits";
+      return t("auth.errors.phoneLength") || "Phone number must be 10 digits";
     }
-    
+
     if (!/^(09|07)/.test(cleanPhone)) {
-      return t('auth.errors.phonePrefix') || "Phone number must start with 09 or 07";
+      return (
+        t("auth.errors.phonePrefix") || "Phone number must start with 09 or 07"
+      );
     }
-    
+
     if (!/^\d+$/.test(cleanPhone)) {
-      return t('auth.errors.phoneDigits') || "Phone number must contain only digits";
+      return (
+        t("auth.errors.phoneDigits") || "Phone number must contain only digits"
+      );
     }
-    
+
     // Check if phone number already exists (only for sign-up)
     if (!isLogin && cleanPhone.length === 10) {
       setCheckingPhone(true);
@@ -208,58 +262,70 @@ export default function Sign() {
         const { exists, user } = await checkPhoneNumberExists(cleanPhone);
         if (exists) {
           toast.error(
-            t('auth.errors.phoneExists') || 
-            "📱 This phone number is already registered! Please use a different number or sign in with your existing account.",
+            t("auth.errors.phoneExists") ||
+              "📱 This phone number is already registered! Please use a different number or sign in with your existing account.",
             {
               duration: 5000,
               action: {
                 label: "Sign In",
-                onClick: () => setIsLogin(true)
-              }
+                onClick: () => setIsLogin(true),
+              },
             }
           );
-          return t('auth.errors.phoneExists') || "This phone number is already registered. Please use a different number.";
+          return (
+            t("auth.errors.phoneExists") ||
+            "This phone number is already registered. Please use a different number."
+          );
         }
       } catch (error) {
         console.error("Error checking phone number:", error);
         toast.warning(
-          t('auth.errors.phoneCheckFailed') || 
-          "⚠️ Unable to verify phone number availability. Please try again.",
+          t("auth.errors.phoneCheckFailed") ||
+            "⚠️ Unable to verify phone number availability. Please try again.",
           { duration: 3000 }
         );
-        return t('auth.errors.phoneCheckFailed') || "Unable to verify phone number. Please try again.";
+        return (
+          t("auth.errors.phoneCheckFailed") ||
+          "Unable to verify phone number. Please try again."
+        );
       } finally {
         setCheckingPhone(false);
       }
     }
-    
+
     return undefined;
   };
 
   const validateAddress = (address: string): string | undefined => {
     if (!address.trim()) {
-      return t('auth.errors.addressRequired') || "Address is required";
+      return t("auth.errors.addressRequired") || "Address is required";
     }
     if (address.length < 5) {
-      return t('auth.errors.addressTooShort') || "Address must be at least 5 characters";
+      return (
+        t("auth.errors.addressTooShort") ||
+        "Address must be at least 5 characters"
+      );
     }
     return undefined;
   };
 
   // Real-time validation for specific field
-  const validateField = async (name: keyof FormData, value: string): Promise<string | undefined> => {
+  const validateField = async (
+    name: keyof FormData,
+    value: string
+  ): Promise<string | undefined> => {
     switch (name) {
-      case 'email':
+      case "email":
         return validateEmail(value);
-      case 'password':
+      case "password":
         return validatePassword(value);
-      case 'confirmPassword':
+      case "confirmPassword":
         return validateConfirmPassword(formData.password, value);
-      case 'fullName':
+      case "fullName":
         return validateFullName(value);
-      case 'phone':
+      case "phone":
         return await validatePhone(value);
-      case 'address':
+      case "address":
         return validateAddress(value);
       default:
         return undefined;
@@ -274,7 +340,10 @@ export default function Sign() {
     if (!isLogin) {
       newErrors.fullName = validateFullName(formData.fullName);
       newErrors.phone = await validatePhone(formData.phone);
-      newErrors.confirmPassword = validateConfirmPassword(formData.password, formData.confirmPassword);
+      newErrors.confirmPassword = validateConfirmPassword(
+        formData.password,
+        formData.confirmPassword
+      );
       newErrors.address = validateAddress(formData.address);
     }
 
@@ -297,22 +366,25 @@ export default function Sign() {
   };
 
   // Save phone number to backend
-  const savePhoneNumber = async (email: string, phone: string): Promise<boolean> => {
+  const savePhoneNumber = async (
+    email: string,
+    phone: string
+  ): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:3000/api/users/phone', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3000/api/users/phone", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: email + "@elitedrive.com",
-          phone: phone
+          phone: phone,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save phone number');
+        throw new Error(errorData.error || "Failed to save phone number");
       }
 
       await response.json();
@@ -330,7 +402,7 @@ export default function Sign() {
   // Main form submission handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const isValid = await validateForm();
     if (!isValid) {
       return;
@@ -347,8 +419,8 @@ export default function Sign() {
     } catch (error: any) {
       console.error("Auth error:", error);
       toast.error(
-        t('auth.errors.somethingWentWrong') || 
-        "❌ Something went wrong. Please try again.",
+        t("auth.errors.somethingWentWrong") ||
+          "❌ Something went wrong. Please try again.",
         { duration: 4000 }
       );
     } finally {
@@ -365,16 +437,15 @@ export default function Sign() {
 
     if (result.error) {
       toast.error(
-        t('auth.errors.signInFailed') || 
-        "🔐 Sign in failed. Please check your credentials and try again.",
+        t("auth.errors.signInFailed") ||
+          "🔐 Sign in failed. Please check your credentials and try again.",
         { duration: 4000 }
       );
       return;
     }
 
     toast.success(
-      t('auth.success.welcomeBack') || 
-      "🎉 Welcome back to EliteDrive!",
+      t("auth.success.welcomeBack") || "🎉 Welcome back to EliteDrive!",
       { duration: 3000 }
     );
     navigate("/dashboard");
@@ -384,30 +455,33 @@ export default function Sign() {
   const handleSignUp = async () => {
     // Double-check phone number existence before signup
     if (formData.phone) {
-      const cleanPhone = formData.phone.replace(/\D/g, '');
+      const cleanPhone = formData.phone.replace(/\D/g, "");
       try {
         const { exists } = await checkPhoneNumberExists(cleanPhone);
         if (exists) {
           toast.error(
-            t('auth.errors.phoneExists') || 
-            "📱 This phone number is already registered! Please use a different number.",
+            t("auth.errors.phoneExists") ||
+              "📱 This phone number is already registered! Please use a different number.",
             {
               duration: 5000,
               action: {
                 label: "Sign In Instead",
-                onClick: () => setIsLogin(true)
-              }
+                onClick: () => setIsLogin(true),
+              },
             }
           );
-          setErrors(prev => ({ ...prev, phone: t('auth.errors.phoneExists') || "Phone number already registered" }));
+          setErrors((prev) => ({
+            ...prev,
+            phone:
+              t("auth.errors.phoneExists") || "Phone number already registered",
+          }));
           return;
         }
       } catch (error) {
         console.error("Error checking phone number during signup:", error);
-        toast.error(
-          "❌ Cannot verify phone number. Please try again later.",
-          { duration: 4000 }
-        );
+        toast.error("❌ Cannot verify phone number. Please try again later.", {
+          duration: 4000,
+        });
         return;
       }
     }
@@ -416,13 +490,13 @@ export default function Sign() {
       email: formData.email + "@elitedrive.com",
       password: formData.password,
       name: formData.fullName,
-      image: formData.address
+      image: formData.address,
     });
 
     if (result.error) {
       toast.error(
-        t('auth.errors.signUpFailed') || 
-        "❌ Sign up failed. Please try again with different credentials.",
+        t("auth.errors.signUpFailed") ||
+          "❌ Sign up failed. Please try again with different credentials.",
         { duration: 4000 }
       );
       return;
@@ -433,25 +507,25 @@ export default function Sign() {
       const phoneSaved = await savePhoneNumber(formData.email, formData.phone);
       if (!phoneSaved) {
         toast.warning(
-          t('auth.info.phoneSaveFailed') || 
-          "⚠️ Account created but phone number not saved. You can update it later in your profile.",
+          t("auth.info.phoneSaveFailed") ||
+            "⚠️ Account created but phone number not saved. You can update it later in your profile.",
           { duration: 5000 }
         );
       }
     }
 
     toast.success(
-      t('auth.success.accountCreated') || 
-      "🎉 Account created successfully! Welcome to EliteDrive!",
-      { 
+      t("auth.success.accountCreated") ||
+        "🎉 Account created successfully! Welcome to EliteDrive!",
+      {
         duration: 4000,
         action: {
           label: "Go to Dashboard",
-          onClick: () => navigate("/dashboard")
-        }
+          onClick: () => navigate("/dashboard"),
+        },
       }
     );
-    
+
     // Reset form
     setFormData({
       email: "",
@@ -459,9 +533,9 @@ export default function Sign() {
       confirmPassword: "",
       fullName: "",
       phone: "",
-      address: ""
+      address: "",
     });
-    
+
     // Switch to login mode
     setIsLogin(true);
   };
@@ -479,14 +553,14 @@ export default function Sign() {
 
       if (result.error) {
         toast.error(
-          t('auth.errors.resetFailed') || 
-          "❌ Password reset failed. Please check your email and try again.",
+          t("auth.errors.resetFailed") ||
+            "❌ Password reset failed. Please check your email and try again.",
           { duration: 4000 }
         );
       } else {
         toast.success(
-          t('auth.success.resetSent') || 
-          "📧 Password reset link sent! Check your email inbox.",
+          t("auth.success.resetSent") ||
+            "📧 Password reset link sent! Check your email inbox.",
           { duration: 5000 }
         );
         setShowForgotPassword(false);
@@ -494,8 +568,8 @@ export default function Sign() {
       }
     } catch (error: any) {
       toast.error(
-        t('auth.errors.somethingWentWrong') || 
-        "❌ Something went wrong. Please try again.",
+        t("auth.errors.somethingWentWrong") ||
+          "❌ Something went wrong. Please try again.",
         { duration: 4000 }
       );
       console.error("Forgot password error:", error);
@@ -507,24 +581,24 @@ export default function Sign() {
   // Input change handler with real-time validation
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // Format phone number input
     let processedValue = value;
-    if (name === 'phone') {
+    if (name === "phone") {
       // Remove any non-digit characters and limit to 10 digits
-      processedValue = value.replace(/\D/g, '').slice(0, 10);
+      processedValue = value.replace(/\D/g, "").slice(0, 10);
     }
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
       [name]: processedValue,
     }));
 
     // Clear error when user starts typing
     if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: undefined
+        [name]: undefined,
       }));
     }
   };
@@ -532,23 +606,27 @@ export default function Sign() {
   // Input blur handler for validation
   const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (name === 'phone' && !isLogin && value.replace(/\D/g, '').length === 10) {
+
+    if (
+      name === "phone" &&
+      !isLogin &&
+      value.replace(/\D/g, "").length === 10
+    ) {
       setCheckingPhone(true);
       try {
         const error = await validateField(name as keyof FormData, value);
-        setErrors(prev => ({
+        setErrors((prev) => ({
           ...prev,
-          [name]: error
+          [name]: error,
         }));
       } finally {
         setCheckingPhone(false);
       }
     } else {
       const error = await validateField(name as keyof FormData, value);
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: error
+        [name]: error,
       }));
     }
   };
@@ -566,40 +644,46 @@ export default function Sign() {
         confirmPassword: "",
         fullName: "",
         phone: "",
-        address: ""
+        address: "",
       });
     }
   };
 
   // Theme classes
   const themeClasses = {
-    background: theme === 'light' 
-      ? 'bg-gradient-to-br from-blue-50 via-white to-cyan-50' 
-      : 'bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900',
-    card: theme === 'light'
-      ? 'bg-white/90 backdrop-blur-sm border-white/20'
-      : 'bg-gray-800/90 backdrop-blur-sm border-gray-700/20',
+    background:
+      theme === "light"
+        ? "bg-gradient-to-br from-blue-50 via-white to-cyan-50"
+        : "bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900",
+    card:
+      theme === "light"
+        ? "bg-white/90 backdrop-blur-sm border-white/20"
+        : "bg-gray-800/90 backdrop-blur-sm border-gray-700/20",
     text: {
-      primary: theme === 'light' ? 'text-gray-900' : 'text-white',
-      secondary: theme === 'light' ? 'text-gray-600' : 'text-gray-300',
-      muted: theme === 'light' ? 'text-gray-500' : 'text-gray-400',
-      error: theme === 'light' ? 'text-red-600' : 'text-red-400',
+      primary: theme === "light" ? "text-gray-900" : "text-white",
+      secondary: theme === "light" ? "text-gray-600" : "text-gray-300",
+      muted: theme === "light" ? "text-gray-500" : "text-gray-400",
+      error: theme === "light" ? "text-red-600" : "text-red-400",
     },
     button: {
-      primary: theme === 'light'
-        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700'
-        : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600',
-      secondary: theme === 'light'
-        ? 'border-gray-300 hover:bg-gray-50'
-        : 'border-gray-600 hover:bg-gray-700/50',
+      primary:
+        theme === "light"
+          ? "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+          : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600",
+      secondary:
+        theme === "light"
+          ? "border-gray-300 hover:bg-gray-50"
+          : "border-gray-600 hover:bg-gray-700/50",
     },
     input: {
-      normal: theme === 'light'
-        ? 'border-gray-300 bg-white focus:border-blue-500'
-        : 'border-gray-600 bg-gray-700/50 text-white focus:border-blue-400',
-      error: theme === 'light'
-        ? 'border-red-500 bg-white focus:border-red-500'
-        : 'border-red-500 bg-gray-700/50 text-white focus:border-red-500',
+      normal:
+        theme === "light"
+          ? "border-gray-300 bg-white focus:border-blue-500"
+          : "border-gray-600 bg-gray-700/50 text-white focus:border-blue-400",
+      error:
+        theme === "light"
+          ? "border-red-500 bg-white focus:border-red-500"
+          : "border-red-500 bg-gray-700/50 text-white focus:border-red-500",
     },
   };
 
@@ -608,8 +692,12 @@ export default function Sign() {
     const baseClass = `w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:ring-2 outline-none transition-all duration-300 ${
       errors[fieldName] ? themeClasses.input.error : themeClasses.input.normal
     }`;
-    
-    return `${baseClass} ${errors[fieldName] ? 'focus:ring-red-500' : 'focus:ring-blue-500 focus:border-transparent'}`;
+
+    return `${baseClass} ${
+      errors[fieldName]
+        ? "focus:ring-red-500"
+        : "focus:ring-blue-500 focus:border-transparent"
+    }`;
   };
 
   // Forgot Password Modal Component
@@ -628,21 +716,30 @@ export default function Sign() {
         <div className="p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className={`p-3 rounded-full ${theme === 'light' ? 'bg-blue-100' : 'bg-blue-900/30'}`}>
+              <div
+                className={`p-3 rounded-full ${
+                  theme === "light" ? "bg-blue-100" : "bg-blue-900/30"
+                }`}
+              >
                 <Lock className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h2 className={`text-2xl font-bold ${themeClasses.text.primary}`}>
-                  {t('auth.forgotPassword.title') || "Reset Password"}
+                <h2
+                  className={`text-2xl font-bold ${themeClasses.text.primary}`}
+                >
+                  {t("auth.forgotPassword.title") || "Reset Password"}
                 </h2>
                 <p className={themeClasses.text.secondary}>
-                  {t('auth.forgotPassword.instructions') || "Enter your email to receive a reset link"}
+                  {t("auth.forgotPassword.instructions") ||
+                    "Enter your email to receive a reset link"}
                 </p>
               </div>
             </div>
             <button
               onClick={() => setShowForgotPassword(false)}
-              className={`p-2 rounded-full transition-colors ${theme === 'light' ? 'hover:bg-gray-100' : 'hover:bg-gray-700'}`}
+              className={`p-2 rounded-full transition-colors ${
+                theme === "light" ? "hover:bg-gray-100" : "hover:bg-gray-700"
+              }`}
             >
               <X className="w-5 h-5" />
             </button>
@@ -650,8 +747,10 @@ export default function Sign() {
 
           <form onSubmit={handleForgotPassword} className="space-y-6">
             <div>
-              <label className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}>
-                {t('auth.labels.email') || "Email Address"}
+              <label
+                className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}
+              >
+                {t("auth.labels.email") || "Email Address"}
               </label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -660,7 +759,9 @@ export default function Sign() {
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
                   className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 ${themeClasses.input.normal}`}
-                  placeholder={t('auth.placeholders.email') || "Enter your email"}
+                  placeholder={
+                    t("auth.placeholders.email") || "Enter your email"
+                  }
                   required
                   autoFocus
                 />
@@ -675,11 +776,11 @@ export default function Sign() {
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {t('auth.loading.sendingLink') || "Sending reset link..."}
+                  {t("auth.loading.sendingLink") || "Sending reset link..."}
                 </>
               ) : (
                 <>
-                  {t('auth.buttons.sendResetLink') || "Send Reset Link"}
+                  {t("auth.buttons.sendResetLink") || "Send Reset Link"}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -689,9 +790,13 @@ export default function Sign() {
               <button
                 type="button"
                 onClick={() => setShowForgotPassword(false)}
-                className={`font-semibold transition-colors ${theme === 'light' ? 'text-blue-600 hover:text-blue-800' : 'text-blue-400 hover:text-blue-300'}`}
+                className={`font-semibold transition-colors ${
+                  theme === "light"
+                    ? "text-blue-600 hover:text-blue-800"
+                    : "text-blue-400 hover:text-blue-300"
+                }`}
               >
-                {t('auth.buttons.backToSignIn') || "Back to Sign In"}
+                {t("auth.buttons.backToSignIn") || "Back to Sign In"}
               </button>
             </div>
           </form>
@@ -701,7 +806,9 @@ export default function Sign() {
   );
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 ${themeClasses.background}`}>
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 ${themeClasses.background}`}
+    >
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -710,7 +817,9 @@ export default function Sign() {
             y: [0, -50, 0],
             transition: { duration: 20, repeat: Infinity, ease: "linear" },
           }}
-          className={`absolute -top-20 -left-20 w-64 h-64 rounded-full blur-3xl ${theme === 'light' ? 'bg-blue-400/20' : 'bg-blue-600/10'}`}
+          className={`absolute -top-20 -left-20 w-64 h-64 rounded-full blur-3xl ${
+            theme === "light" ? "bg-blue-400/20" : "bg-blue-600/10"
+          }`}
         />
         <motion.div
           animate={{
@@ -718,7 +827,9 @@ export default function Sign() {
             y: [0, 50, 0],
             transition: { duration: 25, repeat: Infinity, ease: "linear" },
           }}
-          className={`absolute -bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl ${theme === 'light' ? 'bg-cyan-400/20' : 'bg-cyan-600/10'}`}
+          className={`absolute -bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl ${
+            theme === "light" ? "bg-cyan-400/20" : "bg-cyan-600/10"
+          }`}
         />
       </div>
 
@@ -755,10 +866,9 @@ export default function Sign() {
             transition={{ delay: 0.3 }}
             className={`text-5xl lg:text-6xl font-bold mb-6 leading-tight ${themeClasses.text.primary}`}
           >
-            {isLogin 
-              ? t('auth.titles.welcomeBack') || "Welcome Back" 
-              : t('auth.titles.joinEliteDrive') || "Join EliteDrive"
-            }
+            {isLogin
+              ? t("auth.titles.welcomeBack") || "Welcome Back"
+              : t("auth.titles.joinEliteDrive") || "Join EliteDrive"}
           </motion.h1>
 
           <motion.p
@@ -768,9 +878,10 @@ export default function Sign() {
             className={`text-xl mb-12 max-w-lg leading-relaxed ${themeClasses.text.secondary}`}
           >
             {isLogin
-              ? t('auth.subtitles.login') || "Sign in to your account to continue your premium car rental experience"
-              : t('auth.subtitles.signup') || "Create your account and unlock access to our premium vehicle fleet"
-            }
+              ? t("auth.subtitles.login") ||
+                "Sign in to your account to continue your premium car rental experience"
+              : t("auth.subtitles.signup") ||
+                "Create your account and unlock access to our premium vehicle fleet"}
           </motion.p>
 
           {/* Features */}
@@ -791,12 +902,18 @@ export default function Sign() {
               >
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
-                  className={`p-3 rounded-xl transition-all duration-300 group-hover:shadow-lg ${theme === 'light' ? 'bg-blue-100 text-blue-600 group-hover:bg-blue-200' : 'bg-blue-900/50 text-blue-400 group-hover:bg-blue-800'}`}
+                  className={`p-3 rounded-xl transition-all duration-300 group-hover:shadow-lg ${
+                    theme === "light"
+                      ? "bg-blue-100 text-blue-600 group-hover:bg-blue-200"
+                      : "bg-blue-900/50 text-blue-400 group-hover:bg-blue-800"
+                  }`}
                 >
                   {feature.icon}
                 </motion.div>
                 <div>
-                  <h3 className={`font-semibold text-lg mb-1 ${themeClasses.text.primary}`}>
+                  <h3
+                    className={`font-semibold text-lg mb-1 ${themeClasses.text.primary}`}
+                  >
                     {feature.text}
                   </h3>
                   <p className={`text-sm ${themeClasses.text.muted}`}>
@@ -822,11 +939,15 @@ export default function Sign() {
                 transition={{ delay: 0.9 + index * 0.1 }}
                 className="text-center"
               >
-                <div className={`flex items-center justify-center gap-2 mb-2 ${themeClasses.text.primary}`}>
+                <div
+                  className={`flex items-center justify-center gap-2 mb-2 ${themeClasses.text.primary}`}
+                >
                   {stat.icon}
                   <div className="text-2xl font-bold">{stat.value}</div>
                 </div>
-                <div className={`text-sm font-medium ${themeClasses.text.muted}`}>
+                <div
+                  className={`text-sm font-medium ${themeClasses.text.muted}`}
+                >
                   {stat.label}
                 </div>
               </motion.div>
@@ -844,32 +965,37 @@ export default function Sign() {
           {/* Auth Mode Toggle */}
           <motion.div
             layout
-            className={`flex rounded-2xl p-2 mb-10 relative shadow-inner ${theme === 'light' 
-              ? 'bg-gradient-to-r from-blue-100 to-cyan-100' 
-              : 'bg-gradient-to-r from-blue-900/30 to-cyan-900/30'
+            className={`flex rounded-2xl p-2 mb-10 relative shadow-inner ${
+              theme === "light"
+                ? "bg-gradient-to-r from-blue-100 to-cyan-100"
+                : "bg-gradient-to-r from-blue-900/30 to-cyan-900/30"
             }`}
           >
             <motion.button
               layout
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-4 px-8 rounded-xl font-semibold transition-all duration-300 relative z-10 ${
-                isLogin 
-                  ? "text-white" 
-                  : theme === 'light' ? "text-blue-600 hover:text-blue-700" : "text-blue-400 hover:text-blue-300"
+                isLogin
+                  ? "text-white"
+                  : theme === "light"
+                  ? "text-blue-600 hover:text-blue-700"
+                  : "text-blue-400 hover:text-blue-300"
               }`}
             >
-              {t('auth.buttons.signIn') || "Sign In"}
+              {t("auth.buttons.signIn") || "Sign In"}
             </motion.button>
             <motion.button
               layout
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-4 px-8 rounded-xl font-semibold transition-all duration-300 relative z-10 ${
-                !isLogin 
-                  ? "text-white" 
-                  : theme === 'light' ? "text-cyan-600 hover:text-cyan-700" : "text-cyan-400 hover:text-cyan-300"
+                !isLogin
+                  ? "text-white"
+                  : theme === "light"
+                  ? "text-cyan-600 hover:text-cyan-700"
+                  : "text-cyan-400 hover:text-cyan-300"
               }`}
             >
-              {t('auth.buttons.signUp') || "Sign Up"}
+              {t("auth.buttons.signUp") || "Sign Up"}
             </motion.button>
             <motion.div
               layout
@@ -891,21 +1017,27 @@ export default function Sign() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <label className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}>
-                  {t('auth.labels.fullName') || "Full Name"} *
+                <label
+                  className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}
+                >
+                  {t("auth.labels.fullName") || "Full Name"} *
                 </label>
                 <div className="relative">
-                  <User className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                    errors.fullName ? 'text-red-500' : 'text-gray-400'
-                  }`} />
+                  <User
+                    className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                      errors.fullName ? "text-red-500" : "text-gray-400"
+                    }`}
+                  />
                   <input
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={getInputClass('fullName')}
-                    placeholder={t('auth.placeholders.fullName') || "Enter your full name"}
+                    className={getInputClass("fullName")}
+                    placeholder={
+                      t("auth.placeholders.fullName") || "Enter your full name"
+                    }
                     required={!isLogin}
                   />
                 </div>
@@ -924,26 +1056,34 @@ export default function Sign() {
 
             {/* Username */}
             <div>
-              <label className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}>
-                {t('auth.labels.username') || "Username"} *
+              <label
+                className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}
+              >
+                {t("auth.labels.username") || "Username"} *
               </label>
               <div className="relative">
-                <CircleUser className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                  errors.email ? 'text-red-500' : 'text-gray-400'
-                  }`} />
+                <CircleUser
+                  className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                    errors.email ? "text-red-500" : "text-gray-400"
+                  }`}
+                />
                 <input
                   type="text"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={getInputClass('email')}
-                  placeholder={t('auth.placeholders.username') || "Enter your username"}
+                  className={getInputClass("email")}
+                  placeholder={
+                    t("auth.placeholders.username") || "Enter your username"
+                  }
                   required
                 />
-                <div className={`absolute right-4 top-1/2 transform -translate-y-1/2 text-sm ${
-                  errors.email ? 'text-red-500' : 'text-gray-400'
-                }`}>
+                <div
+                  className={`absolute right-4 top-1/2 transform -translate-y-1/2 text-sm ${
+                    errors.email ? "text-red-500" : "text-gray-400"
+                  }`}
+                >
                   @elitedrive.com
                 </div>
               </div>
@@ -967,21 +1107,27 @@ export default function Sign() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <label className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}>
-                  {t('auth.labels.phone') || "Phone Number"} *
+                <label
+                  className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}
+                >
+                  {t("auth.labels.phone") || "Phone Number"} *
                 </label>
                 <div className="relative">
-                  <Phone className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                    errors.phone ? 'text-red-500' : 'text-gray-400'
-                  }`} />
+                  <Phone
+                    className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                      errors.phone ? "text-red-500" : "text-gray-400"
+                    }`}
+                  />
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={getInputClass('phone')}
-                    placeholder={t('auth.placeholders.phone') || "07XX or 09XX XXXXXX"}
+                    className={getInputClass("phone")}
+                    placeholder={
+                      t("auth.placeholders.phone") || "07XX or 09XX XXXXXX"
+                    }
                     required={!isLogin}
                     maxLength={10}
                     disabled={checkingPhone}
@@ -1003,7 +1149,8 @@ export default function Sign() {
                   </motion.p>
                 )}
                 <p className={`text-xs mt-2 ${themeClasses.text.muted}`}>
-                  {t('auth.info.phoneFormat') || "Must be 10 digits starting with 07 or 09"}
+                  {t("auth.info.phoneFormat") ||
+                    "Must be 10 digits starting with 07 or 09"}
                 </p>
                 {checkingPhone && (
                   <motion.p
@@ -1011,7 +1158,8 @@ export default function Sign() {
                     animate={{ opacity: 1 }}
                     className={`text-xs mt-1 ${themeClasses.text.muted}`}
                   >
-                    {t('auth.loading.checkingPhone') || "Checking phone number availability..."}
+                    {t("auth.loading.checkingPhone") ||
+                      "Checking phone number availability..."}
                   </motion.p>
                 )}
               </motion.div>
@@ -1025,21 +1173,27 @@ export default function Sign() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <label className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}>
-                  {t('auth.labels.address') || "Address"} *
+                <label
+                  className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}
+                >
+                  {t("auth.labels.address") || "Address"} *
                 </label>
                 <div className="relative">
-                  <MapPin className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                    errors.address ? 'text-red-500' : 'text-gray-400'
-                  }`} />
+                  <MapPin
+                    className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                      errors.address ? "text-red-500" : "text-gray-400"
+                    }`}
+                  />
                   <input
                     type="text"
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={getInputClass('address')}
-                    placeholder={t('auth.placeholders.address') || "Enter your address"}
+                    className={getInputClass("address")}
+                    placeholder={
+                      t("auth.placeholders.address") || "Enter your address"
+                    }
                     required={!isLogin}
                   />
                 </div>
@@ -1058,21 +1212,27 @@ export default function Sign() {
 
             {/* Password */}
             <div>
-              <label className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}>
-                {t('auth.labels.password') || "Password"} *
+              <label
+                className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}
+              >
+                {t("auth.labels.password") || "Password"} *
               </label>
               <div className="relative">
-                <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                  errors.password ? 'text-red-500' : 'text-gray-400'
-                }`} />
+                <Lock
+                  className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                    errors.password ? "text-red-500" : "text-gray-400"
+                  }`}
+                />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={getInputClass('password')}
-                  placeholder={t('auth.placeholders.password') || "Enter your password"}
+                  className={getInputClass("password")}
+                  placeholder={
+                    t("auth.placeholders.password") || "Enter your password"
+                  }
                   required
                   minLength={6}
                 />
@@ -1098,25 +1258,8 @@ export default function Sign() {
                   {errors.password}
                 </motion.p>
               )}
-
-              {/* Forgot Password (Login only) */}
-              {isLogin && (
-                <div className="text-right mt-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowForgotPassword(true)}
-                    className={`text-sm font-semibold transition-colors ${theme === 'light' 
-                      ? 'text-blue-600 hover:text-blue-800' 
-                      : 'text-blue-400 hover:text-blue-300'
-                    }`}
-                  >
-                    {t('auth.buttons.forgotPassword') || "Forgot your password?"}
-                  </button>
-                </div>
-              )}
             </div>
 
-            {/* Confirm Password (Sign Up only) */}
             {!isLogin && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -1124,21 +1267,28 @@ export default function Sign() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <label className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}>
-                  {t('auth.labels.confirmPassword') || "Confirm Password"} *
+                <label
+                  className={`block text-sm font-semibold mb-3 ${themeClasses.text.primary}`}
+                >
+                  {t("auth.labels.confirmPassword") || "Confirm Password"} *
                 </label>
                 <div className="relative">
-                  <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                    errors.confirmPassword ? 'text-red-500' : 'text-gray-400'
-                  }`} />
+                  <Lock
+                    className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                      errors.confirmPassword ? "text-red-500" : "text-gray-400"
+                    }`}
+                  />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className={getInputClass('confirmPassword')}
-                    placeholder={t('auth.placeholders.confirmPassword') || "Confirm your password"}
+                    className={getInputClass("confirmPassword")}
+                    placeholder={
+                      t("auth.placeholders.confirmPassword") ||
+                      "Confirm your password"
+                    }
                     required={!isLogin}
                     minLength={6}
                   />
@@ -1167,14 +1317,16 @@ export default function Sign() {
               {loading ? (
                 <>
                   <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {isLogin 
-                    ? t('auth.loading.signingIn') || "Signing in..." 
-                    : t('auth.loading.creatingAccount') || "Creating account..."
-                  }
+                  {isLogin
+                    ? t("auth.loading.signingIn") || "Signing in..."
+                    : t("auth.loading.creatingAccount") ||
+                      "Creating account..."}
                 </>
               ) : (
                 <>
-                  {isLogin ? t('auth.buttons.signIn') || "Sign In" : t('auth.buttons.signUp') || "Create Account"}
+                  {isLogin
+                    ? t("auth.buttons.signIn") || "Sign In"
+                    : t("auth.buttons.signUp") || "Create Account"}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -1182,19 +1334,21 @@ export default function Sign() {
 
             {/* Auth Mode Toggle Text */}
             <p className={`text-center py-4 ${themeClasses.text.secondary}`}>
-              {isLogin 
-                ? t('auth.info.noAccount') || "Don't have an account?" 
-                : t('auth.info.haveAccount') || "Already have an account?"
-              }{" "}
+              {isLogin
+                ? t("auth.info.noAccount") || "Don't have an account?"
+                : t("auth.info.haveAccount") || "Already have an account?"}{" "}
               <button
                 type="button"
                 onClick={toggleAuthMode}
-                className={`font-semibold transition-colors ${theme === 'light' 
-                  ? 'text-blue-600 hover:text-blue-800' 
-                  : 'text-blue-400 hover:text-blue-300'
+                className={`font-semibold transition-colors ${
+                  theme === "light"
+                    ? "text-blue-600 hover:text-blue-800"
+                    : "text-blue-400 hover:text-blue-300"
                 }`}
               >
-                {isLogin ? t('auth.buttons.signUp') || "Sign up" : t('auth.buttons.signIn') || "Sign in"}
+                {isLogin
+                  ? t("auth.buttons.signUp") || "Sign up"
+                  : t("auth.buttons.signIn") || "Sign in"}
               </button>
             </p>
           </form>

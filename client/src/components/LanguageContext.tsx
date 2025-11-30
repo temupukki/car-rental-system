@@ -91,6 +91,7 @@ const translations = {
   "home.cars.crv.features.seats": "7 Seats",
   "home.cars.crv.features.drive": "4WD",
   "home.cars.crv.features.space": "Spacious",
+  'contact.findUs':'Here we are!',
 
   "home.cars.bmw.name": "BMW 3 Series",
   "home.cars.bmw.type": "Luxury",
