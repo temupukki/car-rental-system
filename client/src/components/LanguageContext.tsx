@@ -156,8 +156,16 @@ const translations = {
     "footer.rights": "All rights reserved.",
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Service",
-
-    // Add to your englishTranslations object
+    'auth.errors.passwordLength':'Password must be 8 characters.',
+    'auth.errors.passwordRequired':'Password Required',
+    'auth.errors.confirmPasswordRequired':'Confirm Password Required',
+    'auth.errors.addressRequired':'Address Required',
+    'auth.errors.fullNameRequired':'Fullname Required',
+    'auth.errors.emailRequired':'Username Required',
+    'auth.errors.phoneRequired':'Phone Required',
+    'auth.errors.usernameTooShort':'Username must be at least 3 characters',
+    'auth.errors.usernameInvalid': "Username can only contain letters, numbers, and underscores",
+'auth.errors.fullNameInvalid':'Full name can only contain letters and spaces',
 "vehicles.hero.title.line1": "Find Your",
 "vehicles.hero.title.line2": "Perfect Ride",
 "vehicles.hero.subtitle": "Discover our premium fleet of vehicles. From compact cars to luxury SUVs, find the perfect car that matches your style and needs.",

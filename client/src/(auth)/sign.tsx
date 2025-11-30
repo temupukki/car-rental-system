@@ -157,7 +157,7 @@ export default function Sign() {
     }
   };
 
-  // Validation functions
+ 
   const validateEmail = (email: string): string | undefined => {
     if (!email.trim()) {
       return t("auth.errors.emailRequired") || "Username is required";
@@ -187,10 +187,10 @@ export default function Sign() {
     if (!password) {
       return t("auth.errors.passwordRequired") || "Password is required";
     }
-    if (password.length < 6) {
+    if (password.length < 8) {
       return (
         t("auth.errors.passwordLength") ||
-        "Password must be at least 6 characters"
+        "Password must be at least 8 characters"
       );
     }
     return undefined;
@@ -255,7 +255,6 @@ export default function Sign() {
       );
     }
 
-    // Check if phone number already exists (only for sign-up)
     if (!isLogin && cleanPhone.length === 10) {
       setCheckingPhone(true);
       try {
