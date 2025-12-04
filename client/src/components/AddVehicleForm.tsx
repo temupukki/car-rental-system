@@ -387,8 +387,8 @@ export const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ onVehicleAdded }
         ...formData,
         images,
         mileage: formData.mileage || 'Unlimited',
-        stock: formData.stock || 0, // Use the manually set stock
-        isAvailable: (formData.stock || 0) > 0 // Set availability based on manual stock
+        stock: formData.stock || 0, 
+        isAvailable: (formData.stock || 0) > 0 
       };
 
       const result = await apiService.createVehicle(vehicleData);

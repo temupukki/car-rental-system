@@ -6,7 +6,6 @@ const router = express.Router();
 const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET_KEY || 'your_chapa_secret_key_here';
 const CHAPA_BASE_URL = 'https://api.chapa.co/v1';
 
-// Interfaces
 interface ChapaInitiateRequest {
   amount: string;
   currency: string;

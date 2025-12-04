@@ -16,7 +16,7 @@ const AdminAddVehicle: React.FC = () => {
       duration: 5000,
       action: {
         label: 'View All',
-        onClick: () => navigate('/admin/vehicles')
+        onClick: () => navigate('/dashboard/admin/manage')
       }
     });
   };
