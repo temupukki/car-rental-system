@@ -190,6 +190,7 @@ export default function Home() {
               `}>
                 {t("home.hero.cta.primary") || "View All Cars"}
               </Button></a>
+               <a href="/dashboard/contact">
               <Button variant="outline" className={`
                 rounded-2xl px-8 py-3 text-lg
                 ${theme === 'light'
@@ -199,6 +200,7 @@ export default function Home() {
               `}>
                 {t("home.hero.cta.secondary") || "Learn More"}
               </Button>
+              </a>
             </motion.div>
           </div>
           

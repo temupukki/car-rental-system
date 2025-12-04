@@ -1148,18 +1148,7 @@ export default function DVehicles() {
               "Browse our extensive collection of premium vehicles and book your dream car today. Experience the best in car rental services."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              className={`
-              font-bold rounded-2xl px-8 py-3 text-lg
-              ${
-                theme === "light"
-                  ? "bg-white text-orange-600 hover:bg-gray-100"
-                  : "bg-white text-orange-700 hover:bg-gray-100"
-              }
-            `}
-            >
-              {t("vehicles.cta.primaryButton") || "Browse All Vehicles"}
-            </Button>
+          <a href="/dashboard/contact"> 
             <Button
               variant="outline"
               className={`
@@ -1171,8 +1160,9 @@ export default function DVehicles() {
                 }
               `}
             >
-              {t("vehicles.cta.secondaryButton") || "Contact Sales"}
+              {t("vehicles.cta.secondaryButton") || "Contact "}
             </Button>
+            </a>
           </div>
         </motion.div>
       </div>
