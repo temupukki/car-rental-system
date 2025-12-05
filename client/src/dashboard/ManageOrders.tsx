@@ -10,6 +10,7 @@ interface Vehicle {
   year: number;
   pricePerDay: number;
   isAvailable: boolean;
+  stock: number; // Added stock field
   image?: string;
 }
 
@@ -56,6 +57,9 @@ const ManageOrders: React.FC = () => {
 
   const [showFilters, setShowFilters] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [updatingStock, setUpdatingStock] = useState(false);
+
+  const API_BASE_URL = "http://localhost:3000/api";
 
   useEffect(() => {
     fetchOrders();
@@ -68,7 +72,7 @@ const ManageOrders: React.FC = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/api/orders", {
+      const response = await fetch(`${API_BASE_URL}/orders`, {
         credentials: "include",
       });
 
@@ -158,7 +162,6 @@ const ManageOrders: React.FC = () => {
         return "bg-blue-100 text-blue-800";
       case "TAKEN":
         return "bg-green-100 text-green-800";
-
       case "CANCELLED":
         return "bg-red-100 text-red-800";
       default:
@@ -166,10 +169,73 @@ const ManageOrders: React.FC = () => {
     }
   };
 
-  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+  // Function to increment vehicle stock
+  const incrementVehicleStock = async (vehicleId: string): Promise<boolean> => {
     try {
+      setUpdatingStock(true);
+      
+      const response = await fetch(`${API_BASE_URL}/vehicles/${vehicleId}/stock`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ 
+          stock: 1, 
+          operation: "increment" 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to increment vehicle stock");
+      }
+
+      const data = await response.json();
+      return data.success;
+    } catch (err) {
+      console.error("Error incrementing vehicle stock:", err);
+      return false;
+    } finally {
+      setUpdatingStock(false);
+    }
+  };
+
+  // Function to decrement vehicle stock (when order is cancelled)
+  const decrementVehicleStock = async (vehicleId: string): Promise<boolean> => {
+    try {
+      setUpdatingStock(true);
+      
+      const response = await fetch(`${API_BASE_URL}/vehicles/${vehicleId}/stock`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ 
+          stock: 1, 
+          operation: "decrement" 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to decrement vehicle stock");
+      }
+
+      const data = await response.json();
+      return data.success;
+    } catch (err) {
+      console.error("Error decrementing vehicle stock:", err);
+      return false;
+    } finally {
+      setUpdatingStock(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus, vehicleId: string, currentStatus: OrderStatus) => {
+    try {
+      // First update the order status
       const response = await fetch(
-        `http://localhost:3000/api/orders/${orderId}/status`,
+        `${API_BASE_URL}/orders/${orderId}/status`,
         {
           method: "PATCH",
           headers: {
@@ -187,12 +253,53 @@ const ManageOrders: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
+        let stockUpdated = false;
+        let stockMessage = "";
+        
+        // Handle stock changes based on status transitions
+        if (newStatus === "RETURNED") {
+          // When vehicle is returned, increment stock
+          stockUpdated = await incrementVehicleStock(vehicleId);
+          stockMessage = stockUpdated 
+            ? "Order marked as RETURNED and vehicle stock increased by 1." 
+            : "Order marked as RETURNED but failed to update vehicle stock.";
+        } 
+        else if (newStatus === "CANCELLED") {
+          // If cancelling an active order, restore stock
+          const activeStatuses = ["PAYMENT_COMPLETED", "TAKEN"];
+          if (activeStatuses.includes(currentStatus)) {
+            stockUpdated = await incrementVehicleStock(vehicleId);
+            stockMessage = stockUpdated 
+              ? "Order CANCELLED and vehicle stock restored by 1." 
+              : "Order CANCELLED but failed to restore vehicle stock.";
+          } else {
+            stockMessage = "Order CANCELLED (no stock adjustment needed).";
+          }
+        }
+        else if (newStatus === "TAKEN") {
+          // When vehicle is taken, decrement stock
+          stockUpdated = await decrementVehicleStock(vehicleId);
+          stockMessage = stockUpdated 
+            ? "Order marked as TAKEN and vehicle stock decreased by 1." 
+            : "Order marked as TAKEN but failed to update vehicle stock.";
+        }
+        else {
+          stockMessage = "Order status updated successfully.";
+        }
+        
+        // Update local orders state
         setOrders(
           orders.map((order) =>
             order.id === orderId ? { ...order, status: newStatus } : order
           )
         );
-        toast.success("Order status updated successfully!");
+
+        // Show appropriate toast message
+        if (stockMessage.includes("failed")) {
+          toast.warning(stockMessage);
+        } else {
+          toast.success(stockMessage);
+        }
       } else {
         throw new Error(data.error || "Failed to update order status");
       }
@@ -204,6 +311,13 @@ const ManageOrders: React.FC = () => {
 
   const refreshOrders = async () => {
     await fetchOrders();
+  };
+
+  const getStatusOptions = (currentStatus: OrderStatus) => {
+    const allStatuses: OrderStatus[] = ["PAYMENT_COMPLETED", "TAKEN", "RETURNED", "CANCELLED"];
+    
+    // Filter out current status from options
+    return allStatuses.filter(status => status !== currentStatus);
   };
 
   if (loading) {
@@ -224,6 +338,9 @@ const ManageOrders: React.FC = () => {
           <p className="text-gray-600 text-center mt-2 text-sm sm:text-base">
             Manage vehicle rental orders and their status
           </p>
+          <p className="text-sm text-blue-600 text-center mt-1">
+            Note: Changing status to RETURNED will automatically increase vehicle stock
+          </p>
         </div>
         {error && (
           <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -234,6 +351,15 @@ const ManageOrders: React.FC = () => {
             >
               Retry
             </button>
+          </div>
+        )}
+
+        {updatingStock && (
+          <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="flex items-center justify-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <span className="text-blue-800 text-sm">Updating vehicle stock...</span>
+            </div>
           </div>
         )}
 
@@ -294,7 +420,6 @@ const ManageOrders: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               >
                 <option value="">All statuses</option>
-
                 <option value="PAYMENT_COMPLETED">Payment completed</option>
                 <option value="TAKEN">Taken</option>
                 <option value="RETURNED">Returned</option>
@@ -361,11 +486,10 @@ const ManageOrders: React.FC = () => {
               <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
                 Taken: {orders?.filter((o) => o.status === "TAKEN").length || 0}
               </span>
-              <span className="bg-red-100 text-red-800 px-2 py-1 rounded">
+              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
                 Returned:{" "}
                 {orders?.filter((o) => o.status === "RETURNED").length || 0}
               </span>
-
               <span className="bg-red-100 text-red-800 px-2 py-1 rounded">
                 Cancelled:{" "}
                 {orders?.filter((o) => o.status === "CANCELLED").length || 0}
@@ -455,14 +579,24 @@ const ManageOrders: React.FC = () => {
                   <select
                     value={order.status}
                     onChange={(e) =>
-                      updateOrderStatus(order.id, e.target.value as OrderStatus)
+                      updateOrderStatus(
+                        order.id, 
+                        e.target.value as OrderStatus, 
+                        order.vehicleId,
+                        order.status
+                      )
                     }
-                    className="text-xs px-2 py-1 rounded border border-gray-300 focus:ring-1 focus:ring-blue-500"
+                    disabled={updatingStock}
+                    className="text-xs px-2 py-1 rounded border border-gray-300 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <option value="PAYMENT_COMPLETED">PAYMENT COMPLETED</option>
-                    <option value="TAKEN">TAKEN</option>
-                    <option value="RETURNED">RETURNED</option>
-                    <option value="CANCELLED">CANCELLED</option>
+                    <option value={order.status} disabled>
+                      Current: {order.status}
+                    </option>
+                    {getStatusOptions(order.status).map((status) => (
+                      <option key={status} value={status}>
+                        Change to {status}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -543,6 +677,9 @@ const ManageOrders: React.FC = () => {
                         <div className="text-xs text-gray-500">
                           {order.vehicle.year}
                         </div>
+                        <div className="text-xs text-gray-500">
+                          Stock: {order.vehicle.stock || 0}
+                        </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div>{formatDate(order.startDate)}</div>
@@ -555,24 +692,43 @@ const ManageOrders: React.FC = () => {
                         {formatCurrency(order.totalAmount)}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <select
-                          value={order.status}
-                          onChange={(e) =>
-                            updateOrderStatus(
-                              order.id,
-                              e.target.value as OrderStatus
-                            )
-                          }
-                          className={`text-xs font-medium px-2.5 py-1 rounded-full border-0 focus:ring-2 focus:ring-blue-500 ${getStatusBadgeColor(
-                            order.status
-                          )}`}
-                        >
-                          <option value="PAYMENT_COMPLETED">PENDING</option>
-                          <option value="TAKEN">TAKEN</option>
-                          <option value="RETURNED">RETURNED</option>
-
-                          <option value="CANCELLED">CANCELLED</option>
-                        </select>
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`text-xs font-medium px-2.5 py-1 rounded-full ${getStatusBadgeColor(
+                              order.status
+                            )}`}
+                          >
+                            {order.status}
+                          </span>
+                          <select
+                            value={order.status}
+                            onChange={(e) =>
+                              updateOrderStatus(
+                                order.id,
+                                e.target.value as OrderStatus,
+                                order.vehicleId,
+                                order.status
+                              )
+                            }
+                            disabled={updatingStock}
+                            className={`text-xs px-2 py-1 rounded border border-gray-300 focus:ring-1 focus:ring-blue-500 ${
+                              order.status === "RETURNED" 
+                                ? "bg-yellow-50" 
+                                : order.status === "CANCELLED" 
+                                ? "bg-red-50" 
+                                : ""
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            <option value={order.status} disabled>
+                              Current: {order.status}
+                            </option>
+                            {getStatusOptions(order.status).map((status) => (
+                              <option key={status} value={status}>
+                                Change to {status}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                         <button
@@ -632,7 +788,7 @@ const ManageOrders: React.FC = () => {
                       </div>
                       <div>
                         <label className="text-xs text-gray-500">Status</label>
-                        <p className="text-sm">
+                        <div className="flex items-center gap-2">
                           <span
                             className={`font-medium px-2 py-1 rounded-full text-xs ${getStatusBadgeColor(
                               selectedOrder.status
@@ -640,7 +796,12 @@ const ManageOrders: React.FC = () => {
                           >
                             {selectedOrder.status}
                           </span>
-                        </p>
+                          {selectedOrder.status === "RETURNED" && (
+                            <span className="text-xs text-green-600">
+                              (Stock increased)
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div>
                         <label className="text-xs text-gray-500">Created</label>
@@ -783,6 +944,22 @@ const ManageOrders: React.FC = () => {
                         {formatCurrency(selectedOrder.vehicle.pricePerDay)}
                       </p>
                     </div>
+                    <div>
+                      <label className="text-xs text-gray-500">
+                        Current Stock
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedOrder.vehicle.stock || 0} units
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500">
+                        Availability
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedOrder.vehicle.isAvailable ? "Available" : "Not Available"}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -833,6 +1010,9 @@ const ManageOrders: React.FC = () => {
                 </div>
 
                 <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">
+                    User Information
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs text-gray-500">Full Name</label>
@@ -841,20 +1021,32 @@ const ManageOrders: React.FC = () => {
                       </p>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500">User name</label>
+                      <label className="text-xs text-gray-500">Email</label>
                       <p className="text-sm text-gray-900">
                         {selectedOrder.user.email}
                       </p>
                     </div>
                     <div>
                       <label className="text-xs text-gray-500">
-                        User Phone
+                        Phone
                       </label>
                       <p className="text-sm text-gray-900">
                         {selectedOrder.user.phone || "Not provided"}
                       </p>
                     </div>
                   </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-blue-800 mb-2">
+                    Stock Management Note
+                  </h4>
+                  <p className="text-sm text-blue-700">
+                    When you change the order status to <strong>RETURNED</strong>, 
+                    the vehicle stock will automatically increase by 1. When changed to 
+                    <strong> TAKEN</strong>, stock decreases by 1. When <strong>CANCELLED</strong> 
+                    from an active state, stock is restored.
+                  </p>
                 </div>
               </div>
               <div className="p-4 border-t border-gray-200 flex justify-end gap-2">

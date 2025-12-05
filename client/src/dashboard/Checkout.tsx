@@ -134,7 +134,7 @@ const enhancedApiService = {
         licenseBackImage: checkoutData.driverLicense?.backImage,
         pickupLocation: checkoutData.userInfo.address || "Main Office",
         dropoffLocation: checkoutData.userInfo.address || "Main Office",
-        status: "COMPLETED",
+        status: "PENDING",
         vehicle: checkoutData.cartItems[0],
       };
 

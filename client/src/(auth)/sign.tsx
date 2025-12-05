@@ -81,28 +81,28 @@ export default function Sign() {
       icon: <Car className="w-6 h-6" />,
       text: t("auth.features.vehicles") || "500+ Premium Vehicles",
       description:
-        t("auth.features.vehiclesDesc") ||
+        
         "Luxury cars, SUVs, and economy vehicles",
     },
     {
       icon: <MapPin className="w-6 h-6" />,
       text: t("auth.features.locations") || "Multiple Pickup Locations",
       description:
-        t("auth.features.locationsDesc") ||
+        
         "Convenient locations across major cities",
     },
     {
       icon: <Shield className="w-6 h-6" />,
       text: t("auth.features.insurance") || "Fully Insured & Safe",
       description:
-        t("auth.features.insuranceDesc") ||
+        
         "Comprehensive insurance coverage included",
     },
     {
       icon: <Clock className="w-6 h-6" />,
-      text: t("auth.features.support") || "24/7 Customer Support",
+      text:  "24/7 Customer Support",
       description:
-        t("auth.features.supportDesc") ||
+    
         "Round-the-clock assistance available",
     },
   ];
