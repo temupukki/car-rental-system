@@ -200,37 +200,6 @@ const ManageOrders: React.FC = () => {
     }
   };
 
-  // Function to decrement vehicle stock (when order is cancelled)
-  const decrementVehicleStock = async (vehicleId: string): Promise<boolean> => {
-    try {
-      setUpdatingStock(true);
-      
-      const response = await fetch(`${API_BASE_URL}/vehicles/${vehicleId}/stock`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ 
-          stock: 1, 
-          operation: "decrement" 
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to decrement vehicle stock");
-      }
-
-      const data = await response.json();
-      return data.success;
-    } catch (err) {
-      console.error("Error decrementing vehicle stock:", err);
-      return false;
-    } finally {
-      setUpdatingStock(false);
-    }
-  };
-
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus, vehicleId: string, currentStatus: OrderStatus) => {
     try {
       // First update the order status
@@ -275,13 +244,6 @@ const ManageOrders: React.FC = () => {
           } else {
             stockMessage = "Order CANCELLED (no stock adjustment needed).";
           }
-        }
-        else if (newStatus === "TAKEN") {
-          // When vehicle is taken, decrement stock
-          stockUpdated = await decrementVehicleStock(vehicleId);
-          stockMessage = stockUpdated 
-            ? "Order marked as TAKEN and vehicle stock decreased by 1." 
-            : "Order marked as TAKEN but failed to update vehicle stock.";
         }
         else {
           stockMessage = "Order status updated successfully.";
@@ -1044,8 +1006,7 @@ const ManageOrders: React.FC = () => {
                   <p className="text-sm text-blue-700">
                     When you change the order status to <strong>RETURNED</strong>, 
                     the vehicle stock will automatically increase by 1. When changed to 
-                    <strong> TAKEN</strong>, stock decreases by 1. When <strong>CANCELLED</strong> 
-                    from an active state, stock is restored.
+                    <strong> CANCELLED</strong> from an active state, stock is restored.
                   </p>
                 </div>
               </div>
