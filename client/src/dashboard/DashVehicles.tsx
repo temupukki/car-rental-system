@@ -1436,23 +1436,7 @@ const VehicleCard: React.FC<EnhancedVehicleCardProps> = ({
           onLoad={() => setImageLoaded(true)}
           onError={() => setImageError(true)}
         />
-        <button
-          onClick={() => onToggleFavorite(safeVehicle.id)}
-          className={`
-            absolute top-3 right-3 p-2 rounded-full hover:bg-white transition-colors shadow-lg backdrop-blur-sm
-            ${theme === "light" ? "bg-white/90" : "bg-gray-800/90"}
-          `}
-        >
-          <Heart
-            className={`w-5 h-5 transition-colors ${
-              false
-                ? "fill-red-500 text-red-500"
-                : theme === "light"
-                ? "text-gray-600 hover:text-red-500"
-                : "text-gray-400 hover:text-red-500"
-            }`}
-          />
-        </button>
+    
         <div className="absolute top-3 left-3">
           <span
             className={`

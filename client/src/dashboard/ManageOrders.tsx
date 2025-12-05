@@ -10,7 +10,7 @@ interface Vehicle {
   year: number;
   pricePerDay: number;
   isAvailable: boolean;
-  stock: number; // Added stock field
+  stock: number;
   image?: string;
 }
 
@@ -169,7 +169,6 @@ const ManageOrders: React.FC = () => {
     }
   };
 
-  // Function to increment vehicle stock
   const incrementVehicleStock = async (vehicleId: string): Promise<boolean> => {
     try {
       setUpdatingStock(true);
@@ -202,7 +201,6 @@ const ManageOrders: React.FC = () => {
 
   const updateOrderStatus = async (orderId: string, newStatus: OrderStatus, vehicleId: string, currentStatus: OrderStatus) => {
     try {
-      // First update the order status
       const response = await fetch(
         `${API_BASE_URL}/orders/${orderId}/status`,
         {
@@ -225,16 +223,13 @@ const ManageOrders: React.FC = () => {
         let stockUpdated = false;
         let stockMessage = "";
         
-        // Handle stock changes based on status transitions
         if (newStatus === "RETURNED") {
-          // When vehicle is returned, increment stock
           stockUpdated = await incrementVehicleStock(vehicleId);
           stockMessage = stockUpdated 
             ? "Order marked as RETURNED and vehicle stock increased by 1." 
             : "Order marked as RETURNED but failed to update vehicle stock.";
         } 
         else if (newStatus === "CANCELLED") {
-          // If cancelling an active order, restore stock
           const activeStatuses = ["PAYMENT_COMPLETED", "TAKEN"];
           if (activeStatuses.includes(currentStatus)) {
             stockUpdated = await incrementVehicleStock(vehicleId);
@@ -249,14 +244,12 @@ const ManageOrders: React.FC = () => {
           stockMessage = "Order status updated successfully.";
         }
         
-        // Update local orders state
         setOrders(
           orders.map((order) =>
             order.id === orderId ? { ...order, status: newStatus } : order
           )
         );
 
-        // Show appropriate toast message
         if (stockMessage.includes("failed")) {
           toast.warning(stockMessage);
         } else {
@@ -275,11 +268,28 @@ const ManageOrders: React.FC = () => {
     await fetchOrders();
   };
 
-  const getStatusOptions = (currentStatus: OrderStatus) => {
-    const allStatuses: OrderStatus[] = ["PAYMENT_COMPLETED", "TAKEN", "RETURNED", "CANCELLED"];
+  const getStatusOptions = (currentStatus: OrderStatus): OrderStatus[] => {
+    // Special rules:
+    // 1. RETURNED status - no further changes allowed
+    // 2. TAKEN status - can only change to RETURNED
+    // 3. Other statuses - all options except current
     
-    // Filter out current status from options
+    if (currentStatus === "RETURNED") {
+      return []; // No options for RETURNED status
+    }
+    
+    if (currentStatus === "TAKEN") {
+      return ["RETURNED"]; // Only RETURNED option for TAKEN
+    }
+    
+    // For PAYMENT_COMPLETED and CANCELLED, show all options except current
+    const allStatuses: OrderStatus[] = ["PAYMENT_COMPLETED", "TAKEN", "RETURNED", "CANCELLED"];
     return allStatuses.filter(status => status !== currentStatus);
+  };
+
+  const canChangeStatus = (currentStatus: OrderStatus): boolean => {
+    // Only allow status changes for non-RETURNED orders
+    return currentStatus !== "RETURNED";
   };
 
   if (loading) {
@@ -538,28 +548,34 @@ const ManageOrders: React.FC = () => {
                   >
                     View Details
                   </button>
-                  <select
-                    value={order.status}
-                    onChange={(e) =>
-                      updateOrderStatus(
-                        order.id, 
-                        e.target.value as OrderStatus, 
-                        order.vehicleId,
-                        order.status
-                      )
-                    }
-                    disabled={updatingStock}
-                    className="text-xs px-2 py-1 rounded border border-gray-300 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value={order.status} disabled>
-                      Current: {order.status}
-                    </option>
-                    {getStatusOptions(order.status).map((status) => (
-                      <option key={status} value={status}>
-                        Change to {status}
+                  {canChangeStatus(order.status) ? (
+                    <select
+                      value={order.status}
+                      onChange={(e) =>
+                        updateOrderStatus(
+                          order.id, 
+                          e.target.value as OrderStatus, 
+                          order.vehicleId,
+                          order.status
+                        )
+                      }
+                      disabled={updatingStock}
+                      className="text-xs px-2 py-1 rounded border border-gray-300 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value={order.status} disabled>
+                        Current: {order.status}
                       </option>
-                    ))}
-                  </select>
+                      {getStatusOptions(order.status).map((status) => (
+                        <option key={status} value={status}>
+                          Change to {status}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="text-xs text-gray-500 italic">
+                      Status locked
+                    </span>
+                  )}
                 </div>
               </div>
             )) || []
@@ -662,34 +678,40 @@ const ManageOrders: React.FC = () => {
                           >
                             {order.status}
                           </span>
-                          <select
-                            value={order.status}
-                            onChange={(e) =>
-                              updateOrderStatus(
-                                order.id,
-                                e.target.value as OrderStatus,
-                                order.vehicleId,
-                                order.status
-                              )
-                            }
-                            disabled={updatingStock}
-                            className={`text-xs px-2 py-1 rounded border border-gray-300 focus:ring-1 focus:ring-blue-500 ${
-                              order.status === "RETURNED" 
-                                ? "bg-yellow-50" 
-                                : order.status === "CANCELLED" 
-                                ? "bg-red-50" 
-                                : ""
-                            } disabled:opacity-50 disabled:cursor-not-allowed`}
-                          >
-                            <option value={order.status} disabled>
-                              Current: {order.status}
-                            </option>
-                            {getStatusOptions(order.status).map((status) => (
-                              <option key={status} value={status}>
-                                Change to {status}
+                          {canChangeStatus(order.status) ? (
+                            <select
+                              value={order.status}
+                              onChange={(e) =>
+                                updateOrderStatus(
+                                  order.id,
+                                  e.target.value as OrderStatus,
+                                  order.vehicleId,
+                                  order.status
+                                )
+                              }
+                              disabled={updatingStock}
+                              className={`text-xs px-2 py-1 rounded border border-gray-300 focus:ring-1 focus:ring-blue-500 ${
+                                order.status === "RETURNED" 
+                                  ? "bg-yellow-50" 
+                                  : order.status === "CANCELLED" 
+                                  ? "bg-red-50" 
+                                  : ""
+                              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                              <option value={order.status} disabled>
+                                Current: {order.status}
                               </option>
-                            ))}
-                          </select>
+                              {getStatusOptions(order.status).map((status) => (
+                                <option key={status} value={status}>
+                                  Change to {status}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <span className="text-xs text-gray-500 italic">
+                              Final status - cannot be changed
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
@@ -1001,13 +1023,14 @@ const ManageOrders: React.FC = () => {
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <h4 className="text-sm font-medium text-blue-800 mb-2">
-                    Stock Management Note
+                    Status Change Rules
                   </h4>
-                  <p className="text-sm text-blue-700">
-                    When you change the order status to <strong>RETURNED</strong>, 
-                    the vehicle stock will automatically increase by 1. When changed to 
-                    <strong> CANCELLED</strong> from an active state, stock is restored.
-                  </p>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• <strong>RETURNED</strong>: Final status - cannot be changed</li>
+                    <li>• <strong>TAKEN</strong>: Can only be changed to <strong>RETURNED</strong></li>
+                    <li>• <strong>PAYMENT_COMPLETED</strong>: Can be changed to TAKEN, RETURNED, or CANCELLED</li>
+                    <li>• <strong>CANCELLED</strong>: Can be changed to PAYMENT_COMPLETED, TAKEN, or RETURNED</li>
+                  </ul>
                 </div>
               </div>
               <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
