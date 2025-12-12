@@ -39,7 +39,7 @@ interface PaymentInitiateRequest {
   checkoutData: any;
 }
 
-// Initialize payment
+
 router.post('/initialize', async (req: express.Request, res: express.Response) => {
   try {
     const { 
@@ -55,7 +55,7 @@ router.post('/initialize', async (req: express.Request, res: express.Response) =
       amount, email, firstName, lastName, phoneNumber
     });
 
-    // Validate required fields
+
     if (!phoneNumber) {
       return res.status(400).json({
         success: false,
@@ -63,7 +63,7 @@ router.post('/initialize', async (req: express.Request, res: express.Response) =
       });
     }
 
-    // Validate amount
+
     if (!amount || amount <= 0) {
       return res.status(400).json({
         success: false,
@@ -71,7 +71,6 @@ router.post('/initialize', async (req: express.Request, res: express.Response) =
       });
     }
 
-    // Generate unique transaction reference
     const txRef = `vehicle-rental-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     const payload: ChapaInitiateRequest = {
@@ -85,12 +84,12 @@ router.post('/initialize', async (req: express.Request, res: express.Response) =
       callback_url: `${process.env.BASE_URL || 'http://localhost:3000'}/api/payment/callback`,
       return_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard/bookings`,
       customization: {
-        title: 'Vehicle Rental', // Fixed: 13 characters (under 16)
+        title: 'Vehicle Rental', 
         description: 'Vehicle rental payment'
       }
     };
 
-    console.log('🔄 Sending to Chapa:', payload);
+    console.log(' Sending to Chapa:', payload);
 
     const response = await axios.post<ChapaInitiateResponse>(
       `${CHAPA_BASE_URL}/transaction/initialize`,
@@ -104,7 +103,7 @@ router.post('/initialize', async (req: express.Request, res: express.Response) =
       }
     );
 
-    console.log('✅ Chapa response:', response.data);
+    console.log(' Chapa response:', response.data);
 
     res.json({
       success: true,
@@ -131,14 +130,13 @@ router.post('/initialize', async (req: express.Request, res: express.Response) =
   }
 });
 
-// Callback endpoint - Chapa will call this after payment
+
 router.get('/callback', async (req: express.Request, res: express.Response) => {
   try {
     const { trx_ref, ref_id, status } = req.query;
 
-    console.log('📞 Chapa callback received:', { trx_ref, ref_id, status });
+    console.log('Chapa callback received:', { trx_ref, ref_id, status });
 
-    // Verify the transaction
     const verifyResponse = await axios.get(
       `${CHAPA_BASE_URL}/transaction/verify/${ref_id}`,
       {
@@ -151,7 +149,7 @@ router.get('/callback', async (req: express.Request, res: express.Response) => {
     console.log('✅ Payment verification result:', verifyResponse.data);
 
     if (verifyResponse.data.status === 'success' && verifyResponse.data.data.status === 'success') {
-      // Payment successful - create order
+    
       await createOrder(trx_ref as string, verifyResponse.data.data);
       
       res.status(200).json({
@@ -174,15 +172,13 @@ router.get('/callback', async (req: express.Request, res: express.Response) => {
   }
 });
 
-// Verify payment endpoint (for frontend to check payment status)
 router.get('/verify/:txRef', async (req: express.Request, res: express.Response) => {
   try {
     const { txRef } = req.params;
 
     console.log('🔍 Verifying payment:', txRef);
 
-    // For now, return mock success response
-    // In production, verify with Chapa API
+   
     res.json({
       success: true,
       data: {
@@ -201,17 +197,16 @@ router.get('/verify/:txRef', async (req: express.Request, res: express.Response)
   }
 });
 
-// Create order after successful payment
 async function createOrder(txRef: string, paymentData: any): Promise<void> {
   try {
-    console.log('📦 Creating order for transaction:', txRef);
-    console.log('💰 Payment data:', paymentData);
+    console.log('Creating order for transaction:', txRef);
+    console.log('Payment data:', paymentData);
     
 
-    console.log('✅ Order created successfully for:', txRef);
+    console.log('Order created successfully for:', txRef);
     
   } catch (error) {
-    console.error('❌ Order creation error:', error);
+    console.error(' Order creation error:', error);
     throw error;
   }
 }

@@ -25,15 +25,6 @@ app.use(
   })
 );
 
-
-app.use((req: Request, res: Response, next) => {
-  console.log(`📍 ${new Date().toISOString()} ${req.method} ${req.url}`);
-  console.log('📦 Body received:', req.body);
-  console.log('📦 Content-Type:', req.headers['content-type']);
-  console.log('---');
-  next();
-});
-
 app.all("/api/auth/*", toNodeHandler(auth));
 
 app.get("/api/me", async (req: Request, res: Response) => {
@@ -60,20 +51,7 @@ app.get("/api/health", (req: Request, res: Response) => {
   });
 });
 
-app.post("/api/debug", (req: Request, res: Response) => {
-  console.log('=== 🐛 DEBUG ENDPOINT ===');
-  console.log('📍 Headers:', req.headers);
-  console.log('📍 Body:', req.body);
-  console.log('📍 Body type:', typeof req.body);
-  console.log('=== END DEBUG ===');
-  
-  res.json({ 
-    success: true, 
-    message: "Debug received",
-    body: req.body,
-    bodyType: typeof req.body
-  });
-});
+
 app.get("/api/user", async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany(); 
@@ -119,7 +97,7 @@ app.patch("/api/user/:id/role", async (req, res) => {
       user: updatedUser,
     });
   } catch (error) {
-    console.error("❌ Error updating role:", error);
+    console.error(" Error updating role:", error);
     res.status(500).json({ error: "Failed to update role" });
   }
 });

@@ -5,7 +5,7 @@ import { ApiResponse } from "../types.js";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// POST /api/users/phone - Save phone number
+
 router.post(
   "/phone",
   async (
@@ -22,7 +22,7 @@ router.post(
         });
       }
 
-      // Validate phone number format
+    
       const phoneRegex = /^\+?[\d\s-()]{10,}$/;
       if (!phoneRegex.test(phone)) {
         return res.status(400).json({ 
@@ -31,7 +31,7 @@ router.post(
         });
       }
 
-      // Update user's phone number
+   
       const updatedUser = await prisma.user.update({
         where: { email },
         data: { phone },
@@ -62,8 +62,7 @@ router.post(
   }
 );
 
-// GET /api/users/check-phone - Check if phone number exists
-// GET /api/users/check-phone - Check if phone number exists
+
 router.get(
   "/check-phone",
   async (
@@ -80,7 +79,6 @@ router.get(
         });
       }
 
-      // Clean the phone number (remove any non-digit characters)
       const cleanPhone = String(phone).replace(/\D/g, '');
 
       if (cleanPhone.length !== 10) {
@@ -90,7 +88,6 @@ router.get(
         });
       }
 
-      // Get all users and check if any has the same clean phone number
       const users = await prisma.user.findMany({
         select: {
           id: true,
@@ -100,7 +97,7 @@ router.get(
         },
       });
 
-      // Check if any user has the same phone number (after cleaning)
+  
       const existingUser = users.find(user => {
         if (!user.phone) return false;
         const userCleanPhone = user.phone.replace(/\D/g, '');
@@ -124,7 +121,7 @@ router.get(
   }
 );
 
-// GET /api/users - Get all users
+
 router.get("/", async (req: Request, res: Response<ApiResponse>) => {
   try {
     const users = await prisma.user.findMany({
@@ -147,7 +144,7 @@ router.get("/", async (req: Request, res: Response<ApiResponse>) => {
   }
 });
 
-// PATCH /api/users/:id - Update user
+
 router.patch("/:id", async (req: Request, res: Response<ApiResponse>) => {
   try {
     const { id } = req.params;

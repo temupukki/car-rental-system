@@ -168,7 +168,7 @@ router.put("/:licenseId", async (req: express.Request, res: express.Response) =>
   }
 });
 
-// Delete driver license
+
 router.delete("/:licenseId", async (req: express.Request, res: express.Response) => {
   try {
     const { licenseId } = req.params;
@@ -185,7 +185,7 @@ router.delete("/:licenseId", async (req: express.Request, res: express.Response)
     res.json(response);
 
   } catch (error: any) {
-    console.error("❌ Error deleting driver license:", error);
+    console.error(" Error deleting driver license:", error);
     
     const response: DriverLicenseResponse = {
       success: false,
